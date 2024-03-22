@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "knox",
     "corsheaders",
     "users",
 ]
@@ -56,6 +57,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 
 AUTH_USER_MODEL = "users.CustomUser"
+
+AUTHENTICATION_BACKENDS = ["users.auth_backend.EmailAuthBackend"]
 
 ROOT_URLCONF = "core.urls"
 
@@ -77,6 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": ("knox.auth.TokenAuthentication",)}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
