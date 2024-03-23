@@ -86,10 +86,10 @@ export default function Navbar(props) {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
+      <AppBar position="fixed" open={open} sx={{backgroundColor:'#fff', boxShadow: '0px 1px 0px 0px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(0,0,0,0.1)'}}>
+        <Toolbar >
           <IconButton
-            color="inherit"
+            color="#1D212F"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
@@ -97,7 +97,7 @@ export default function Navbar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
             Navbar
           </Typography>
         </Toolbar>
@@ -109,6 +109,8 @@ export default function Navbar(props) {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: '#1D212F',
+            color: 'rgba(245, 247, 249, 0.7)',
           },
         }}
         variant="persistent"
@@ -117,14 +119,14 @@ export default function Navbar(props) {
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/> : <ChevronRightIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/>}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
             <ListItem key={1} disablePadding>
               <ListItemButton component={Link} to="/" selected={"/"===path}>
-                <ListItemIcon>
+                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
                   <HomeIcon />
                 </ListItemIcon>
                 <ListItemText primary={"Home"} />
@@ -133,7 +135,7 @@ export default function Navbar(props) {
 
             <ListItem key={2} disablePadding>
               <ListItemButton component={Link} to="/login" selected={"/login"===path}>
-                <ListItemIcon>
+                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
                   <InfoIcon />
                 </ListItemIcon>
                 <ListItemText primary={"Login"} />
