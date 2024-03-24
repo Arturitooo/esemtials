@@ -12,11 +12,11 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ArrowRightSharpIcon from '@mui/icons-material/ArrowRightSharp';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
 import {Link, useLocation} from 'react-router-dom'
 
@@ -82,6 +82,7 @@ export default function Navbar(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -100,6 +101,7 @@ export default function Navbar(props) {
           <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
             Navbar
           </Typography>
+
         </Toolbar>
       </AppBar>
       <Drawer
@@ -118,6 +120,13 @@ export default function Navbar(props) {
         open={open}
       >
         <DrawerHeader>
+        <Box sx={{ marginRight: '25px', marginTop: '10px' }}>
+        <a href='/'><img 
+          src="..\src\assets\smtials_logo.png" 
+          alt="SMtials logo" 
+          width={"100%"}
+        /></a>
+        </Box>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/> : <ChevronRightIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/>}
           </IconButton>
@@ -125,15 +134,29 @@ export default function Navbar(props) {
         <Divider />
         <List>
             <ListItem key={1} disablePadding>
-              <ListItemButton component={Link} to="/" selected={"/"===path}>
-                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Home"} />
+              <ListItemButton component={Link} to="/dashboard" selected={"/dashboard"===path}>
+                <ListItemText sx={{color: '#F5F7F9'}} primary={"Dashboard"} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem key={1} disablePadding>
+              <ListItemButton component={Link} to="/team" selected={"/team"===path}>
+                <ListItemText sx={{color: '#F5F7F9'}} primary={"Team"} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem key={1} disablePadding>
+              <ListItemButton component={Link} to="/monitoring" selected={path === "/monitoring" || path === "/monitoring/risk_register"}>
+                <ListItemText sx={{color: '#F5F7F9'}} primary={"Monitoring"} />
               </ListItemButton>
             </ListItem>
 
             <ListItem key={2} disablePadding>
+              <ListItemButton component={Link} to="/monitoring/risk_register" selected={"/monitoring/risk_register"===path} sx={{paddingTop:'0px', paddingBottom:'0px'}}>
+                <ArrowRightSharpIcon sx={{color:'rgba(245, 247, 249, 0.7)', marginLeft:'10px' , marginRight:'5px'}}/><ListItemText primary={"Risk register"} />
+              </ListItemButton>
+            </ListItem>
+
+
+            <ListItem key={3} disablePadding>
               <ListItemButton component={Link} to="/login" selected={"/login"===path}>
                 <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
                   <InfoIcon />
