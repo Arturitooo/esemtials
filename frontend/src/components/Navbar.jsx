@@ -99,7 +99,7 @@ export default function Navbar(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
-            Navbar
+            Navbar content
           </Typography>
 
         </Toolbar>

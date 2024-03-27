@@ -16,7 +16,7 @@ TM_POSITION = [
 TM_SENIORITY = [
     ("intern", "Internship"),
     ("junior", "Junior level"),
-    ("regular", "Mid-level"),
+    ("regular", "Medium level"),
     ("senior", "Senior level"),
     ("expert", "Expert level"),
 ]
