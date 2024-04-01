@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "knox",
     "corsheaders",
     "users",
+    "knox",
+    "django_rest_passwordreset",
+    "rest_framework_swagger",
     "team",
 ]
 
@@ -61,14 +63,17 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 
 AUTH_USER_MODEL = "users.CustomUser"
 
-AUTHENTICATION_BACKENDS = ["users.auth_backend.EmailAuthBackend"]
+AUTHENTICATION_BACKENDS = [
+    "users.auth_backend.EmailAuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -114,6 +119,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "esemtials"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

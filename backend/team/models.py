@@ -36,7 +36,9 @@ class Teammember(models.Model):
     )
     tm_joined = models.DateField(null=False)
     tm_summary = models.TextField(max_length=250, null=True, blank=True)
-    tm_photo = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
+    tm_photo = models.ImageField(
+        upload_to="teammembers_profile_pictures/", null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.tm_name} {self.tm_lname}"
