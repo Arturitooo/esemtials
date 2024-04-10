@@ -56,13 +56,22 @@ export const Login = () => {
             type = {"submit"}
           />
         </Box>
-        <Box className={"itemBox"}>
+        <Box className={"itemBox"} sx={{marginBottom:'0px'}}>
+        <Link to="/password-reset">
+            <MyTextButton
+              label = {"Forgot password? Reset it here"}
+            />
+          </Link>
+        </Box>
+        <Box className={"itemBox"} sx={{marginTop:'0px'}}>
           <Link to="/register">
             <MyTextButton
               label = {"No account? Register here!"}
             />
           </Link>
         </Box>
+
+
       </Box>
       </form>
     </div>
