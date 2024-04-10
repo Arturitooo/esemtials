@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
-
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 # Create your models here.
 
 
@@ -57,8 +61,6 @@ class CustomUser(AbstractUser):
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
-<<<<<<< Updated upstream
-=======
 
 
 @receiver(reset_password_token_created)
@@ -85,4 +87,3 @@ def password_reset_token_created(reset_password_token, *args, **kwargs):
 
     msg.attach_alternative(html_message, "text/html")
     msg.send()
->>>>>>> Stashed changes

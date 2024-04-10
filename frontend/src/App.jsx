@@ -6,13 +6,10 @@ import Navbar from './components/Navbar'
 import { Register } from './components/Register'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-<<<<<<< Updated upstream
-=======
 import { Dashboard } from './components/dashboard/Dashboard'
 import { Team } from './components/dashboard/Team'
 import { PasswordReset } from './components/PasswordReset'
 import { ConfirmPasswordReset } from './components/ConfirmPasswordReset'
->>>>>>> Stashed changes
 
 function App() {
   const location = useLocation()
