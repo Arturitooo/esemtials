@@ -1,6 +1,6 @@
 import { React, useEffect, useMemo, useState } from 'react'
-import AxiosInstance from '../AxiosInstance'
-import { NewTMForm } from './team/NewTMForm'
+import AxiosInstance from '../../AxiosInstance'
+import { NewTMForm } from './NewTMForm'
 import { Box } from '@mui/material'
 import SignalWifi0BarIcon from '@mui/icons-material/SignalWifi0Bar';
 import NetworkWifi1BarIcon from '@mui/icons-material/NetworkWifi1Bar'
