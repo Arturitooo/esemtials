@@ -39,6 +39,7 @@ class CustomUser(AbstractUser):
         ("tl", "Team leader"),
         ("des", "Designer"),
         ("qa", "Quality Engineer"),
+        ("ba", "Businesss Analyst"),
         ("head", "Head of Department"),
         ("ceo", "Chief executive officer"),
     ]

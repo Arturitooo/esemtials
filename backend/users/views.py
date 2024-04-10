@@ -16,23 +16,18 @@ class LoginViewset(viewsets.ViewSet):
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
-
         if serializer.is_valid():
             email = serializer.validated_data["email"]
             password = serializer.validated_data["password"]
-
             user = authenticate(request, email=email, password=password)
-
+            print(email, password)
             if user:
-                _, token = AuthToken.objects.create(
-                    user
-                )  # the _, generates tuple, the new token gonna be first item in it
+                _, token = AuthToken.objects.create(user)
                 return Response(
                     {"user": self.serializer_class(user).data, "token": token}
                 )
             else:
                 return Response({"error": "Invalid credentials"}, status=401)
-
         else:
             return Response(serializer.errors, status=400)
 
@@ -52,7 +47,7 @@ class RegisterViewset(viewsets.ViewSet):
 
 
 class UsersListViewset(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
