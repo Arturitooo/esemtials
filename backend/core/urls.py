@@ -19,7 +19,6 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.schemas import get_schema_view
 from django.views.generic import TemplateView
-from knox import views as knox_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -36,9 +35,7 @@ urlpatterns = [
         name="api-swagger",
     ),
     path("", include("users.urls")),
-    # path("api/auth/", include("knox.urls")),
-    path("logout/", knox_views.LogoutView.as_view(), name="knox_logout"),
-    path("logout/", knox_views.LogoutAllView.as_view(), name="knox_logoutall"),
+    path("api/auth/", include("knox.urls")),
     path(
         "api/password_reset/",
         include("django_rest_passwordreset.urls", namespace="password_reset"),
