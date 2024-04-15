@@ -7,7 +7,7 @@ import { Register } from './components/Register'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import { Dashboard } from './components/dashboard/Dashboard'
-import { Team } from './components/dashboard/Team'
+import { Team } from './components/dashboard/team/Team'
 import { PasswordReset } from './components/PasswordReset'
 import { ConfirmPasswordReset } from './components/ConfirmPasswordReset'
 
