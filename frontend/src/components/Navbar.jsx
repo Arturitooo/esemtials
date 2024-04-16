@@ -19,6 +19,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InfoIcon from '@mui/icons-material/Info';
 import {useNavigate, Link, useLocation} from 'react-router-dom';
+import { AccountMenuNavbar } from './AccountMenuNavbar';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AxiosInstance from './AxiosInstance'
 
@@ -100,20 +101,21 @@ export default function Navbar(props) {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open} sx={{backgroundColor:'#fff', boxShadow: '0px 1px 0px 0px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(0,0,0,0.1)'}}>
-        <Toolbar >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between'}}>
           <IconButton
             color="#1D212F"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            sx={{ mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
             Navbar content
           </Typography>
-
+          <AccountMenuNavbar/>
+          
         </Toolbar>
       </AppBar>
       <Drawer
@@ -174,15 +176,6 @@ export default function Navbar(props) {
                   <InfoIcon />
                 </ListItemIcon>
                 <ListItemText primary={"Login"} />
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem key={4} disablePadding>
-              <ListItemButton onClick={logoutUser}>
-                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
-                  <LogoutIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Logout"} />
               </ListItemButton>
             </ListItem>
 
