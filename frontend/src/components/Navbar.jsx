@@ -15,12 +15,9 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowRightSharpIcon from '@mui/icons-material/ArrowRightSharp';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InfoIcon from '@mui/icons-material/Info';
 import {useNavigate, Link, useLocation} from 'react-router-dom';
-import { AccountMenuNavbar } from './AccountMenuNavbar';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { AccountMenuNavbar } from './navbar/AccountMenuNavbar';
 import AxiosInstance from './AxiosInstance'
 
 const drawerWidth = 240;
@@ -86,16 +83,6 @@ export default function Navbar(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const logoutUser = () => {
-    AxiosInstance.post(`logout/`, {})
-    .then(
-      () => {
-        localStorage.removeItem('Token')
-        navigate('/')
-      }
-    )
-  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -169,15 +156,6 @@ export default function Navbar(props) {
               </ListItemButton>
             </ListItem>
 
-
-            <ListItem key={3} disablePadding>
-              <ListItemButton component={Link} to="/login" selected={"/login"===path}>
-                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
-                  <InfoIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Login"} />
-              </ListItemButton>
-            </ListItem>
 
         </List>
       </Drawer>
