@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,7 +9,8 @@ import Logout from '@mui/icons-material/Logout';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import AxiosInstance from '../AxiosInstance'
 import {useNavigate, Link} from 'react-router-dom';
-import {MyTextButton} from '../forms/MyTextButton';
+import { LoginRegisterNavButton } from './LoginRegisterNavButton';
+
 
 export function AccountMenuNavbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -117,21 +118,18 @@ export function AccountMenuNavbar() {
     </React.Fragment>
     ) : ( 
     <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-      <Box>
-        <Link to="/login">
-          <MyTextButton
-            label = {"Login"}
+        <Link to="/login" style={{ textDecoration: 'none'}}>
+          <LoginRegisterNavButton 
+            label={'Login'} 
+            sx={{
+              color: '#1D212F',
+              '&:hover': {backgroundColor: 'rgba(0, 0, 0, 0.2)', },
+              '&:active': {backgroundColor: 'rgba(0, 0, 0, 0.4)', },}} 
           />
         </Link>
-      </Box>
-
-      <Box>
-        <Link to="/register">
-          <MyTextButton
-            label = {"Register"}
-          />
+        <Link to="/register" style={{ textDecoration: 'none', color: '#1D212F' }}>
+          <LoginRegisterNavButton label={'Register'}/>
         </Link>
-      </Box>
       
     </Box>
     

@@ -18,7 +18,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import {useNavigate, Link, useLocation} from 'react-router-dom';
 import { AccountMenuNavbar } from './navbar/AccountMenuNavbar';
-import AxiosInstance from './AxiosInstance'
 
 const drawerWidth = 240;
 
@@ -67,7 +66,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+
 export default function Navbar(props) {
+  //what's shown in the sidebar
   const {content} = props
   const location = useLocation()
   const path = location.pathname

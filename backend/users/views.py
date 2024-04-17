@@ -4,6 +4,8 @@ from .models import *
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model, authenticate
 from knox.models import AuthToken
+from knox.auth import TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 
 User = get_user_model()
 
@@ -54,4 +56,14 @@ class UsersListViewset(viewsets.ViewSet):
     def list(self, request):
         queryset = User.objects.all()
         serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+
+class UserInfoView(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        user = request.user
+        serializer = RegisterSerializer(user)  # Use your serializer
         return Response(serializer.data)
