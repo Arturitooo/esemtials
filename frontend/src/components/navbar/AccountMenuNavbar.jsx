@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,6 +23,8 @@ export function AccountMenuNavbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true)
 
   const logoutUser = () => {
     AxiosInstance.post(`logout/`, {})
@@ -50,22 +52,35 @@ export function AccountMenuNavbar() {
     setAuthenticated(isAuthenticated);
   }, []);
 
+  const getUserData = () => {
+    AxiosInstance.get('user-info/').then((res) => {
+      setUserData(res.data)
+      setLoading(false)
+    })
+  }
+  useEffect(() => {
+    getUserData();
+  },[])
+
   return (
     <>
     {authenticated ? (
     <React.Fragment>
-      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+      <Box>
         <Tooltip title="Account settings">
+          <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', color: '#1D212F' }}>
+          {loading ? null : <p>Hello <b>{ userData && userData.username}</b></p>}
           <IconButton
             onClick={handleClick}
             size="medium"
-            sx={{ ml: 2, color: '#1D212F' }}
+            sx={{ ml: 2, color: '#1D212F', marginLeft: '-3px' }}
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
             <AccountCircleRoundedIcon/>
           </IconButton>
+          </Box>
         </Tooltip>
       </Box>
       <Menu
