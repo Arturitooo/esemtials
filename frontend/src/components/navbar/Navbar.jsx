@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -10,14 +10,13 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowRightSharpIcon from '@mui/icons-material/ArrowRightSharp';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import {useNavigate, Link, useLocation} from 'react-router-dom';
-import { AccountMenuNavbar } from './navbar/AccountMenuNavbar';
+import { AccountMenuNavbar } from './AccountMenuNavbar';
 
 const drawerWidth = 240;
 
@@ -67,7 +66,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 
-export default function Navbar(props) {
+export function Navbar(props) {
   //what's shown in the sidebar
   const {content} = props
   const location = useLocation()
@@ -76,13 +75,20 @@ export default function Navbar(props) {
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(false);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+const checkAuthenticationStatus = () => {
+  const token = localStorage.getItem('Token');
+  return token; 
+};
 
-  const handleDrawerClose = () => {
-    setOpen(false);
+useEffect(() => {
+  const isAuthenticated = checkAuthenticationStatus();
+  setAuthenticated(isAuthenticated);
+}, []);
+
+  const handleDrawerToggle = () => {
+    setOpen(!open);
   };
 
   return (
@@ -90,15 +96,17 @@ export default function Navbar(props) {
       <CssBaseline />
       <AppBar position="fixed" open={open} sx={{backgroundColor:'#fff', boxShadow: '0px 1px 0px 0px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(0,0,0,0.1)'}}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between'}}>
+        {authenticated ? (
           <IconButton
-            color="#1D212F"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+          color="#1D212F"
+          aria-label="open drawer"
+          onClick={handleDrawerToggle}
+          edge="start"
+          sx={{ mr: 2 }}
+        >
+          { open ? ( <ChevronLeftIcon />) : (<MenuIcon />) }  
+        </IconButton>
+        ) : (null)}
           <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
             Navbar content
           </Typography>
@@ -129,9 +137,6 @@ export default function Navbar(props) {
           width={"100%"}
         /></a>
         </Box>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/> : <ChevronRightIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/>}
-          </IconButton>
         </DrawerHeader>
         <Divider />
         <List>

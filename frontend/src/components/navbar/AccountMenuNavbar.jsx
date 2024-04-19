@@ -16,6 +16,8 @@ export function AccountMenuNavbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate()
   const [authenticated, setAuthenticated] = React.useState(false);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true)
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -23,8 +25,6 @@ export function AccountMenuNavbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true)
 
   const logoutUser = () => {
     AxiosInstance.post(`logout/`, {})
@@ -32,6 +32,8 @@ export function AccountMenuNavbar() {
       () => {
         localStorage.removeItem('Token')
         navigate('/')
+        window.location.reload();
+
       }
     )
   }
@@ -47,20 +49,19 @@ export function AccountMenuNavbar() {
     return token; 
   };
 
-  React.useEffect(() => {
-    const isAuthenticated = checkAuthenticationStatus(); 
+  useEffect(() => {
+    const isAuthenticated = checkAuthenticationStatus();
     setAuthenticated(isAuthenticated);
   }, []);
 
-  const getUserData = () => {
-    AxiosInstance.get('user-info/').then((res) => {
-      setUserData(res.data)
-      setLoading(false)
-    })
-  }
   useEffect(() => {
-    getUserData();
-  },[])
+    if (authenticated) {
+      AxiosInstance.get('user-info/').then((res) => {
+        setUserData(res.data);
+        setLoading(false);
+      });
+    }
+  }, [authenticated]);
 
   return (
     <>
