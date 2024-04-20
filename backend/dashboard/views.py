@@ -49,7 +49,7 @@ class NoteListAPIView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Note.objects.filter(note_owner=user)
+        return Note.objects.filter(note_owner=user).order_by("-note_updated")
 
 
 class NoteDetailAPIView(RetrieveAPIView):
