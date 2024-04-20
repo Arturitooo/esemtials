@@ -131,7 +131,7 @@ useEffect(() => {
       >
         <DrawerHeader>
         <Box sx={{ marginRight: '25px', marginTop: '10px' }}>
-        <a href='/'><img 
+        <a href='/dashboard'><img 
           src="..\src\assets\smtials_logo.png" 
           alt="SMtials logo" 
           width={"100%"}
