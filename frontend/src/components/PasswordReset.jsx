@@ -25,6 +25,17 @@ export const PasswordReset = () => {
   }
   return (
     <div className={'background'}>
+      <Box sx={{
+        position: 'absolute',
+        top: 10,
+        left: 10,
+      }}>
+        <Link to="/">
+          <MyTextButton
+            label = {"< Home"}
+          />
+        </Link>
+      </Box>
       {showMessage ? <MyMessage text={`If the email is correct you should receive email with instruction on how to reset the password`} severity={"info"} /> : null }
       <form onSubmit={handleSubmit(submission)}> 
       <Box className={"loginWhiteBox"}>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -10,17 +10,13 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowRightSharpIcon from '@mui/icons-material/ArrowRightSharp';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InfoIcon from '@mui/icons-material/Info';
 import {useNavigate, Link, useLocation} from 'react-router-dom';
-import LogoutIcon from '@mui/icons-material/Logout';
-import AxiosInstance from './AxiosInstance'
+import { AccountMenuNavbar } from './AccountMenuNavbar';
 
 const drawerWidth = 240;
 
@@ -69,7 +65,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-export default function Navbar(props) {
+
+export function Navbar(props) {
+  //what's shown in the sidebar
   const {content} = props
   const location = useLocation()
   const path = location.pathname
@@ -77,43 +75,43 @@ export default function Navbar(props) {
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(false);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+const checkAuthenticationStatus = () => {
+  const token = localStorage.getItem('Token');
+  return token; 
+};
+
+useEffect(() => {
+  const isAuthenticated = checkAuthenticationStatus();
+  setAuthenticated(isAuthenticated);
+}, []);
+
+  const handleDrawerToggle = () => {
+    setOpen(!open);
   };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const logoutUser = () => {
-    AxiosInstance.post(`logout/`, {})
-    .then(
-      () => {
-        localStorage.removeItem('Token')
-        navigate('/')
-      }
-    )
-  }
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open} sx={{backgroundColor:'#fff', boxShadow: '0px 1px 0px 0px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(0,0,0,0.1)'}}>
-        <Toolbar >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between'}}>
+        {authenticated ? (
           <IconButton
-            color="#1D212F"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
+          color="#1D212F"
+          aria-label="open drawer"
+          onClick={handleDrawerToggle}
+          edge="start"
+          sx={{ mr: 2 }}
+        >
+          { open ? ( <ChevronLeftIcon />) : (<MenuIcon />) }  
+        </IconButton>
+        ) : (null)}
           <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
             Navbar content
           </Typography>
-
+            <AccountMenuNavbar/>
+          
         </Toolbar>
       </AppBar>
       <Drawer
@@ -133,15 +131,12 @@ export default function Navbar(props) {
       >
         <DrawerHeader>
         <Box sx={{ marginRight: '25px', marginTop: '10px' }}>
-        <a href='/'><img 
+        <a href='/dashboard'><img 
           src="..\src\assets\smtials_logo.png" 
           alt="SMtials logo" 
           width={"100%"}
         /></a>
         </Box>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/> : <ChevronRightIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}/>}
-          </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
@@ -167,24 +162,6 @@ export default function Navbar(props) {
               </ListItemButton>
             </ListItem>
 
-
-            <ListItem key={3} disablePadding>
-              <ListItemButton component={Link} to="/login" selected={"/login"===path}>
-                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
-                  <InfoIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Login"} />
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem key={4} disablePadding>
-              <ListItemButton onClick={logoutUser}>
-                <ListItemIcon sx={{color:'rgba(245, 247, 249, 0.7)'}}>
-                  <LogoutIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Logout"} />
-              </ListItemButton>
-            </ListItem>
 
         </List>
       </Drawer>
