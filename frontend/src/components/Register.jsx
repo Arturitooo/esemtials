@@ -27,6 +27,17 @@ export const Register = () => {
   
   return (
     <div className={'background'}>
+      <Box sx={{
+        position: 'absolute',
+        top: 10,
+        left: 10,
+      }}>
+        <Link to="/">
+          <MyTextButton
+            label = {"< Home"}
+          />
+        </Link>
+      </Box>
       <form onSubmit={handleSubmit(submission)}>
       <Box className={"registerWhiteBox"}>
         <Box className={"itemBox"}>
