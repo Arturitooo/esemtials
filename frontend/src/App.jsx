@@ -7,7 +7,7 @@ import {Navbar} from './components/navbar/Navbar'
 import { Register } from './components/Register'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { Dashboard } from './components/dashboard/Dashboard'
-import { Team } from './components/dashboard/team/Team'
+import { Team } from './components/dashboard/Team'
 import { PasswordReset } from './components/PasswordReset'
 import { ConfirmPasswordReset } from './components/ConfirmPasswordReset'
 

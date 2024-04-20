@@ -2,7 +2,6 @@ import { Box } from '@mui/material'
 import { useState } from 'react'
 import '../App.css'
 import { MyTextField } from './forms/MyTextField'
-import { MyPassField } from './forms/MyPassField'
 import { MyContainedButton } from './forms/MyContainedButton'
 import { MyTextButton } from './forms/MyTextButton'
 import { Link, useNavigate } from 'react-router-dom'
@@ -16,7 +15,7 @@ export const PasswordReset = () => {
     const [ showMessage, setShowMessage ]  = useState(false)
 
     const submission = (data) => {
-    AxiosInstance.post('api/password_reset/', {
+    AxiosInstance.post('password_reset/', {
       email: data.email,
     }) 
     .then ((response) => { 
