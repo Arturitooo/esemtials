@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import { Box } from '@mui/material';
-import { Editor, EditorState, getDefaultKeyBinding, RichUtils } from 'draft-js';
+import { Editor, EditorState, convertFromRaw, getDefaultKeyBinding, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css'; // for styling
 import "./NotesRTE.css";
 
@@ -14,18 +14,57 @@ import ListIcon from '@mui/icons-material/List';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CodeIcon from '@mui/icons-material/Code';
 
+const mockData = {
+  blocks: [
+    {
+      key: 'abc123',
+      text: 'This is a sample note.',
+      type: 'unstyled',
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {}
+    },
+    {
+      key: 'def456',
+      text: 'It contains some text with different styling.',
+      type: 'unstyled',
+      depth: 0,
+      inlineStyleRanges: [
+        {
+          offset: 19,
+          length: 13,
+          style: 'BOLD'
+        },
+        {
+          offset: 38,
+          length: 9,
+          style: 'ITALIC'
+        }
+      ],
+      entityRanges: [],
+      data: {}
+    }
+  ],
+  entityMap: {}
+};
+
 class NotesRTE extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { editorState: EditorState.createEmpty() };
+    this.editorRef = React.createRef();
+    this.state = { editorState: EditorState.createWithContent(convertFromRaw(mockData)) };
 
-    this.focus = () => this.refs.editor.focus();
     this.onChange = (editorState) => this.setState({ editorState });
 
     this.handleKeyCommand = this._handleKeyCommand.bind(this);
     this.mapKeyToEditorCommand = this._mapKeyToEditorCommand.bind(this);
     this.toggleBlockType = this._toggleBlockType.bind(this);
     this.toggleInlineStyle = this._toggleInlineStyle.bind(this);
+  }
+
+  componentDidMount() {
+    this.editorRef.current.focus();
   }
 
   _handleKeyCommand(command, editorState) {
@@ -72,6 +111,16 @@ class NotesRTE extends React.Component {
 
   render() {
     const { editorState } = this.state;
+    // eslint-disable-next-line react/prop-types
+    const { myNotesList, selectedNoteContent } = this.props;
+
+    let content = '';
+    if (selectedNoteContent) {
+      content = selectedNoteContent;
+    } else if (myNotesList && myNotesList.length > 0) {
+      // eslint-disable-next-line react/prop-types
+      content = myNotesList[0].note_content;
+    }
 
     // If the user changes block type before entering any text, we can
     // either style the placeholder or hide it. Let's just hide it now.
@@ -95,7 +144,7 @@ class NotesRTE extends React.Component {
             onToggle={this.toggleBlockType}
           />
         </div>
-        <div className={className} onClick={this.focus}>
+        <div className={className} onClick={() => this.editorRef.current.focus()}>
           <Editor
             blockStyleFn={getBlockStyle}
             customStyleMap={styleMap}
@@ -104,12 +153,13 @@ class NotesRTE extends React.Component {
             keyBindingFn={this.mapKeyToEditorCommand}
             onChange={this.onChange}
             placeholder="Type here..."
-            ref="editor"
+            ref={this.editorRef}
             spellCheck={true}
+            value={selectedNoteContent}
           />
         </div>
       </div>
-    );    
+    );
   }
 }
 
@@ -135,12 +185,14 @@ class StyleButton extends React.Component {
     super();
     this.onToggle = (e) => {
       e.preventDefault();
+      // eslint-disable-next-line react/prop-types
       this.props.onToggle(this.props.style);
     };
   }
 
   render() {
     let className = 'RichEditor-styleButton';
+    // eslint-disable-next-line react/prop-types
     if (this.props.active) {
       className += ' RichEditor-activeButton';
     }

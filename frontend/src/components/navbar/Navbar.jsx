@@ -145,18 +145,18 @@ useEffect(() => {
                 <ListItemText sx={{color: '#F5F7F9'}} primary={"Dashboard"} />
               </ListItemButton>
             </ListItem>
-            <ListItem key={1} disablePadding>
+            <ListItem key={2} disablePadding>
               <ListItemButton component={Link} to="/team" selected={"/team"===path}>
                 <ListItemText sx={{color: '#F5F7F9'}} primary={"Team"} />
               </ListItemButton>
             </ListItem>
-            <ListItem key={1} disablePadding>
+            <ListItem key={3} disablePadding>
               <ListItemButton component={Link} to="/monitoring" selected={path === "/monitoring" || path === "/monitoring/risk_register"}>
                 <ListItemText sx={{color: '#F5F7F9'}} primary={"Monitoring"} />
               </ListItemButton>
             </ListItem>
 
-            <ListItem key={2} disablePadding>
+            <ListItem key={4} disablePadding>
               <ListItemButton component={Link} to="/monitoring/risk_register" selected={"/monitoring/risk_register"===path} sx={{paddingTop:'0px', paddingBottom:'0px'}}>
                 <ArrowRightSharpIcon sx={{color:'rgba(245, 247, 249, 0.7)', marginLeft:'10px' , marginRight:'5px'}}/><ListItemText primary={"Risk register"} />
               </ListItemButton>

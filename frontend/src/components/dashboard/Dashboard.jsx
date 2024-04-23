@@ -10,7 +10,6 @@ export const Dashboard = () => {
         <h2 style={{marginTop: '20px'}}>Team efficiency</h2>
       </Box>
       <Box flexBasis="50%">
-        <h2 style={{margin: '0px'}}>Notes</h2>
         <Notes/>
 
         <h2 style={{marginTop: '20px'}}>Notifications</h2>
