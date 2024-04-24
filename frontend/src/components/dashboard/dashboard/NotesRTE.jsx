@@ -1,8 +1,8 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
-import { Editor, EditorState, convertFromRaw, getDefaultKeyBinding, RichUtils } from 'draft-js';
+import { Editor, EditorState, convertFromRaw, convertToRaw, getDefaultKeyBinding, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css'; // for styling
 import "./NotesRTE.css";
+import AxiosInstance from '../../AxiosInstance';
 
 // Import icons
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
@@ -14,48 +14,19 @@ import ListIcon from '@mui/icons-material/List';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CodeIcon from '@mui/icons-material/Code';
 
-const mockData = {
-  blocks: [
-    {
-      key: 'abc123',
-      text: 'This is a sample note.',
-      type: 'unstyled',
-      depth: 0,
-      inlineStyleRanges: [],
-      entityRanges: [],
-      data: {}
-    },
-    {
-      key: 'def456',
-      text: 'It contains some text with different styling.',
-      type: 'unstyled',
-      depth: 0,
-      inlineStyleRanges: [
-        {
-          offset: 19,
-          length: 13,
-          style: 'BOLD'
-        },
-        {
-          offset: 38,
-          length: 9,
-          style: 'ITALIC'
-        }
-      ],
-      entityRanges: [],
-      data: {}
-    }
-  ],
-  entityMap: {}
-};
-
 class NotesRTE extends React.Component {
   constructor(props) {
     super(props);
     this.editorRef = React.createRef();
-    this.state = { editorState: EditorState.createWithContent(convertFromRaw(mockData)) };
+    this.state = { editorState: EditorState.createEmpty() }; // Initialize with empty content
 
-    this.onChange = (editorState) => this.setState({ editorState });
+    this.onChange = (editorState) => {
+      this.setState({ editorState }, () => {
+        // Automatically update note content after a brief delay when the editor content changes
+        clearTimeout(this.saveTimeout);
+        this.saveTimeout = setTimeout(this.updateNoteContent, 1000); // adjust delay as needed
+      });
+    };
 
     this.handleKeyCommand = this._handleKeyCommand.bind(this);
     this.mapKeyToEditorCommand = this._mapKeyToEditorCommand.bind(this);
@@ -65,7 +36,59 @@ class NotesRTE extends React.Component {
 
   componentDidMount() {
     this.editorRef.current.focus();
+    if (this.props.selectedNote && this.props.selectedNote.note_content) {
+      const contentState = convertFromRaw(this.props.selectedNote.note_content);
+      this.setState({ editorState: EditorState.createWithContent(contentState) });
+    }
   }
+
+  componentDidUpdate(prevProps) {
+    // Check if selectedNote prop has changed
+    if (this.props.selectedNote !== prevProps.selectedNote) {
+      // Convert selectedNote content to ContentState and update editorState
+      const contentState = convertFromRaw(this.props.selectedNote.note_content);
+      this.setState({ editorState: EditorState.createWithContent(contentState) });
+    }
+  }
+
+  componentWillUnmount() {
+    // Clear any pending update timeout when the component unmounts
+    clearTimeout(this.saveTimeout);
+  }
+
+  updateNoteContent = () => {
+    const { selectedNote } = this.props;
+    if (!selectedNote) {
+      console.error('No note selected');
+      return;
+    }
+  
+    const contentState = this.state.editorState.getCurrentContent();
+    const rawContentState = convertToRaw(contentState);
+  
+    // Compare the current content state with the previous content state
+    if (JSON.stringify(rawContentState) === JSON.stringify(selectedNote.note_content)) {
+      // Content hasn't changed, no need to send update request
+      console.log('Content not changed');
+      return;
+    }
+  
+    const updatedNote = {
+      ...selectedNote,
+      note_content: rawContentState,
+    };
+  
+    // Send a PUT request to update the note
+    AxiosInstance.put(`dashboard/note/${selectedNote.id}/update/`, updatedNote)
+      .then((res) => {
+        console.log('Note updated successfully:', res.data);
+        // You can add any additional logic here, such as showing a success message
+      })
+      .catch((error) => {
+        console.error('Error updating note:', error);
+        // You can add error handling logic here, such as showing an error message
+      });
+  };
 
   _handleKeyCommand(command, editorState) {
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -111,16 +134,6 @@ class NotesRTE extends React.Component {
 
   render() {
     const { editorState } = this.state;
-    // eslint-disable-next-line react/prop-types
-    const { myNotesList, selectedNoteContent } = this.props;
-
-    let content = '';
-    if (selectedNoteContent) {
-      content = selectedNoteContent;
-    } else if (myNotesList && myNotesList.length > 0) {
-      // eslint-disable-next-line react/prop-types
-      content = myNotesList[0].note_content;
-    }
 
     // If the user changes block type before entering any text, we can
     // either style the placeholder or hide it. Let's just hide it now.
@@ -155,7 +168,6 @@ class NotesRTE extends React.Component {
             placeholder="Type here..."
             ref={this.editorRef}
             spellCheck={true}
-            value={selectedNoteContent}
           />
         </div>
       </div>
@@ -185,14 +197,12 @@ class StyleButton extends React.Component {
     super();
     this.onToggle = (e) => {
       e.preventDefault();
-      // eslint-disable-next-line react/prop-types
       this.props.onToggle(this.props.style);
     };
   }
 
   render() {
     let className = 'RichEditor-styleButton';
-    // eslint-disable-next-line react/prop-types
     if (this.props.active) {
       className += ' RichEditor-activeButton';
     }

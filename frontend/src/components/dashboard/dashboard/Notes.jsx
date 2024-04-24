@@ -79,7 +79,9 @@ export const Notes = () => {
         )}
       </div>
 
-      <NotesRTE selectedNoteContent={selectedNote?.note_content} />
+      {selectedNote && (
+        <NotesRTE selectedNote={selectedNote} />
+      )}
     </Box>
   );
 };

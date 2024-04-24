@@ -7,7 +7,7 @@ from users.models import CustomUser
 class Note(models.Model):
     note_owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     note_name = models.CharField(max_length=32, blank=True, null=True)
-    note_content = models.TextField(blank=True, null=True)
+    note_content = models.JSONField(blank=True, null=True)
     note_updated = models.DateTimeField(null=False)
 
     def __str__(self):
