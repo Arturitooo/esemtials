@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box } from '@mui/material'
-import { Notes } from './dashboard/Notes'
+import NotesRTE from './dashboard/NotesRTE'
 
 export const Dashboard = () => {
   return (
@@ -10,7 +10,10 @@ export const Dashboard = () => {
         <h2 style={{marginTop: '20px'}}>Team efficiency</h2>
       </Box>
       <Box flexBasis="50%">
-        <Notes/>
+      <h2 style={{margin: '0px'}}>Notes</h2>
+        <Box style={{ maxWidth: '100%', width: '100%' }}>
+          <NotesRTE limitHeight={true}/>
+        </Box>
 
         <h2 style={{marginTop: '20px'}}>Notifications</h2>
       </Box>

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Editor, EditorState, convertFromRaw, convertToRaw, getDefaultKeyBinding, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css'; // for styling
 import "./NotesRTE.css";
 import AxiosInstance from '../../AxiosInstance';
+import Button from '@mui/material/Button';
 
 // Import icons
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
@@ -14,56 +15,52 @@ import ListIcon from '@mui/icons-material/List';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CodeIcon from '@mui/icons-material/Code';
 
-class NotesRTE extends React.Component {
-  constructor(props) {
-    super(props);
-    this.editorRef = React.createRef();
-    this.state = { editorState: EditorState.createEmpty() }; // Initialize with empty content
+const NotesRTE = ({ limitHeight }) => {
+  const [loading, setLoading] = useState(true);
+  const [myNotesList, setMyNotesList] = useState(null);
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
-    this.onChange = (editorState) => {
-      this.setState({ editorState }, () => {
-        // Automatically update note content after a brief delay when the editor content changes
-        clearTimeout(this.saveTimeout);
-        this.saveTimeout = setTimeout(this.updateNoteContent, 1000); // adjust delay as needed
+  const editorRef = React.createRef();
+  let saveTimeout;
+
+  useEffect(() => {
+    GetNotesList();
+  }, []);
+
+  const GetNotesList = () => {
+    AxiosInstance.get('dashboard/note/list/')
+      .then((res) => {
+        setMyNotesList(res.data);
+        setLoading(false);
+        if (res.data.length > 0) {
+          setSelectedNote(res.data[0]); // by default selected note = updated lately
+          fetchNoteContent(res.data[0]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching notes list:', error);
       });
-    };
+  };
 
-    this.handleKeyCommand = this._handleKeyCommand.bind(this);
-    this.mapKeyToEditorCommand = this._mapKeyToEditorCommand.bind(this);
-    this.toggleBlockType = this._toggleBlockType.bind(this);
-    this.toggleInlineStyle = this._toggleInlineStyle.bind(this);
-  }
+  const fetchNoteContent = (note) => {
+    AxiosInstance.get(`dashboard/note/${note.id}/`)
+      .then((res) => {
+        const contentState = convertFromRaw(res.data.note_content);
+        setEditorState(EditorState.createWithContent(contentState));
+      })
+      .catch(error => {
+        console.error('Error fetching note content:', error);
+      });
+  };
 
-  componentDidMount() {
-    this.editorRef.current.focus();
-    if (this.props.selectedNote && this.props.selectedNote.note_content) {
-      const contentState = convertFromRaw(this.props.selectedNote.note_content);
-      this.setState({ editorState: EditorState.createWithContent(contentState) });
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    // Check if selectedNote prop has changed
-    if (this.props.selectedNote !== prevProps.selectedNote) {
-      // Convert selectedNote content to ContentState and update editorState
-      const contentState = convertFromRaw(this.props.selectedNote.note_content);
-      this.setState({ editorState: EditorState.createWithContent(contentState) });
-    }
-  }
-
-  componentWillUnmount() {
-    // Clear any pending update timeout when the component unmounts
-    clearTimeout(this.saveTimeout);
-  }
-
-  updateNoteContent = () => {
-    const { selectedNote } = this.props;
+  const updateNoteContent = () => {
     if (!selectedNote) {
       console.error('No note selected');
       return;
     }
   
-    const contentState = this.state.editorState.getCurrentContent();
+    const contentState = editorState.getCurrentContent();
     const rawContentState = convertToRaw(contentState);
   
     // Compare the current content state with the previous content state
@@ -90,90 +87,128 @@ class NotesRTE extends React.Component {
       });
   };
 
-  _handleKeyCommand(command, editorState) {
+  const handleNoteClick = (note) => {
+    setSelectedNote(note);
+    fetchNoteContent(note);
+  };
+
+  const onChange = (editorState) => {
+    setEditorState(editorState);
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(updateNoteContent, 500);
+  };
+
+  const handleKeyCommand = (command, editorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
-      this.onChange(newState);
+      onChange(newState);
       return true;
     }
     return false;
-  }
+  };
 
-  _mapKeyToEditorCommand(e) {
+  const mapKeyToEditorCommand = (e) => {
     if (e.keyCode === 9 /* TAB */) {
       const newEditorState = RichUtils.onTab(
         e,
-        this.state.editorState,
+        editorState,
         4, /* maxDepth */
       );
-      if (newEditorState !== this.state.editorState) {
-        this.onChange(newEditorState);
+      if (newEditorState !== editorState) {
+        onChange(newEditorState);
       }
       return;
     }
     return getDefaultKeyBinding(e);
-  }
+  };
 
-  _toggleBlockType(blockType) {
-    this.onChange(
+  const toggleBlockType = (blockType) => {
+    onChange(
       RichUtils.toggleBlockType(
-        this.state.editorState,
+        editorState,
         blockType
       )
     );
-  }
+  };
 
-  _toggleInlineStyle(inlineStyle) {
-    this.onChange(
+  const toggleInlineStyle = (inlineStyle) => {
+    onChange(
       RichUtils.toggleInlineStyle(
-        this.state.editorState,
+        editorState,
         inlineStyle
       )
     );
-  }
+  };
 
-  render() {
-    const { editorState } = this.state;
-
-    // If the user changes block type before entering any text, we can
-    // either style the placeholder or hide it. Let's just hide it now.
-    let className = 'RichEditor-editor';
-    var contentState = editorState.getCurrentContent();
-    if (!contentState.hasText()) {
-      if (contentState.getBlockMap().first().getType() !== 'unstyled') {
-        className += ' RichEditor-hidePlaceholder';
-      }
+  // If the user changes block type before entering any text, we can
+  // either style the placeholder or hide it. Let's just hide it now.
+  let className = 'RichEditor-editor';
+  var contentState = editorState.getCurrentContent();
+  if (!contentState.hasText()) {
+    if (contentState.getBlockMap().first().getType() !== 'unstyled') {
+      className += ' RichEditor-hidePlaceholder';
     }
-
-    return (
-      <div className="RichEditor-root">
-        <div className="RichEditor-controls-container">
-          <InlineStyleControls
-            editorState={editorState}
-            onToggle={this.toggleInlineStyle}
-          />
-          <BlockStyleControls
-            editorState={editorState}
-            onToggle={this.toggleBlockType}
-          />
-        </div>
-        <div className={className} onClick={() => this.editorRef.current.focus()}>
-          <Editor
-            blockStyleFn={getBlockStyle}
-            customStyleMap={styleMap}
-            editorState={editorState}
-            handleKeyCommand={this.handleKeyCommand}
-            keyBindingFn={this.mapKeyToEditorCommand}
-            onChange={this.onChange}
-            placeholder="Type here..."
-            ref={this.editorRef}
-            spellCheck={true}
-          />
-        </div>
-      </div>
-    );
   }
-}
+
+  return (
+    <div className={`RichEditor-root ${limitHeight ? 'limit-height' : ''}` }>
+        <div style={{width:'100%', display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
+          
+        <div style={{ display: 'flex', alignItems:'end' , flex: 0.75 }}>
+          {myNotesList &&
+            myNotesList.map((note, index) => (
+              <div
+                key={note.id}
+                onClick={() => handleNoteClick(note)}
+                style={{
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  marginRight: '15px',
+                  fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal',
+                  padding: '0 5px',
+                  borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none',
+                  paddingBottom: '3px',
+                }}
+              >
+                {note.note_name}
+              </div>
+            ))}
+        </div>
+
+
+          <div style={{display:'flex'}}>
+            <Button variant="outlined" style={{padding: "0 10px", textTransform: 'none' , color:'rgba(29, 33, 47, 0.5)', borderColor:'rgba(29, 33, 47, 0.2)', borderRadius: '7px', marginBottom:'10px' }} >+ New page</Button>
+          </div>
+        </div>
+
+      <div className={className} onClick={() => editorRef.current.focus()}></div>
+      
+      <div className="RichEditor-controls-container">
+        <InlineStyleControls
+          editorState={editorState}
+          onToggle={toggleInlineStyle}
+        />
+        <BlockStyleControls
+          editorState={editorState}
+          onToggle={toggleBlockType}
+        />
+      </div>
+      <div className={className} onClick={() => editorRef.current.focus()}>
+        <Editor
+          blockStyleFn={getBlockStyle}
+          customStyleMap={styleMap}
+          editorState={editorState}
+          handleKeyCommand={handleKeyCommand}
+          keyBindingFn={mapKeyToEditorCommand}
+          onChange={onChange}
+          placeholder="Type here..."
+          ref={editorRef}
+          spellCheck={true}
+        />
+      </div>
+    </div>
+  );
+};
 
 // Custom overrides for "code" style.
 const styleMap = {
@@ -192,28 +227,23 @@ function getBlockStyle(block) {
   }
 }
 
-class StyleButton extends React.Component {
-  constructor() {
-    super();
-    this.onToggle = (e) => {
-      e.preventDefault();
-      this.props.onToggle(this.props.style);
-    };
+const StyleButton = (props) => {
+  const onToggle = (e) => {
+    e.preventDefault();
+    props.onToggle(props.style);
+  };
+
+  let className = 'RichEditor-styleButton';
+  if (props.active) {
+    className += ' RichEditor-activeButton';
   }
 
-  render() {
-    let className = 'RichEditor-styleButton';
-    if (this.props.active) {
-      className += ' RichEditor-activeButton';
-    }
-
-    return (
-      <span className={className} onMouseDown={this.onToggle}>
-        {this.props.icon ? this.props.icon : this.props.label}
-      </span>
-    );
-  }
-}
+  return (
+    <span className={className} onMouseDown={onToggle}>
+      {props.icon ? props.icon : props.label}
+    </span>
+  );
+};
 
 const BLOCK_TYPES = [
   { label: 'Blockquote', style: 'blockquote', icon: <FormatQuoteIcon fontSize="small" /> },

@@ -3,10 +3,12 @@ import './App.css'
 import ProtectedRoute from './components/ProtectedRoute'
 import { Home } from './components/Home'
 import { Login } from './components/Login'
-import {Navbar} from './components/navbar/Navbar'
+import { Navbar } from './components/navbar/Navbar'
 import { Register } from './components/Register'
 import { Routes, Route, useLocation } from 'react-router-dom'
+
 import { Dashboard } from './components/dashboard/Dashboard'
+import { NotesFullScreen } from './components/dashboard/dashboard/NotesFullScreen'
 import { Team } from './components/dashboard/Team'
 import { PasswordReset } from './components/PasswordReset'
 import { ConfirmPasswordReset } from './components/ConfirmPasswordReset'
@@ -32,7 +34,8 @@ function App() {
       <Routes>
         <Route element={<ProtectedRoute/>}>
           {/* THESE ARE LINKS UNAVAILABLE WITHOUT LOGGING IN - it redirects now to login - TO DO - CHANGE IT LATER */}
-          <Route path='/dashboard' element = { <Dashboard/> } />  
+          <Route path='/dashboard' element = { <Dashboard/> } />
+          <Route path='/dashboard/notes' element = { <NotesFullScreen/> } />
           <Route path='/team' element = { <Team/> } />  
         </Route>
         <Route path='/' element = { <Home/> } />  

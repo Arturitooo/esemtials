@@ -16,6 +16,22 @@ class NoteSerializer(serializers.ModelSerializer):
         if "note_name" not in validated_data:
             validated_data["note_name"] = f"Note #{Note.objects.count() + 1}"
 
+        # Automatically set note_content to an empty JSON object
+        validated_data["note_content"] = {
+            "blocks": [
+                {
+                    "key": "5q4ju",
+                    "text": "",
+                    "type": "unstyled",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {},
+                }
+            ],
+            "entityMap": {},
+        }
+
         # Update note_updated date
         validated_data["note_updated"] = timezone.now()
 
