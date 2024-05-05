@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Editor, EditorState, convertFromRaw, convertToRaw, getDefaultKeyBinding, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css'; // for styling
+import debounce from 'lodash.debounce';
+
 import "./NotesRTE.css";
 import AxiosInstance from '../../AxiosInstance';
 import Button from '@mui/material/Button';
+import { UserInfo } from '../../UserInfo';
 
 // Import icons
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
@@ -14,15 +17,20 @@ import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import ListIcon from '@mui/icons-material/List';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CodeIcon from '@mui/icons-material/Code';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 const NotesRTE = ({ limitHeight }) => {
   const [loading, setLoading] = useState(true);
   const [myNotesList, setMyNotesList] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [editingNoteName, setEditingNoteName] = useState(false); // State to manage editing mode
+  const [editedNoteName, setEditedNoteName] = useState(""); // State to store the edited note name
+  const { userData } = UserInfo();
 
   const editorRef = React.createRef();
-  let saveTimeout;
 
   useEffect(() => {
     GetNotesList();
@@ -34,7 +42,7 @@ const NotesRTE = ({ limitHeight }) => {
         setMyNotesList(res.data);
         setLoading(false);
         if (res.data.length > 0) {
-          setSelectedNote(res.data[0]); // by default selected note = updated lately
+          setSelectedNote(res.data[0]);
           fetchNoteContent(res.data[0]);
         }
       })
@@ -75,15 +83,11 @@ const NotesRTE = ({ limitHeight }) => {
       note_content: rawContentState,
     };
   
-    // Send a PUT request to update the note
     AxiosInstance.put(`dashboard/note/${selectedNote.id}/update/`, updatedNote)
       .then((res) => {
-        console.log('Note updated successfully:', res.data);
-        // You can add any additional logic here, such as showing a success message
       })
       .catch((error) => {
         console.error('Error updating note:', error);
-        // You can add error handling logic here, such as showing an error message
       });
   };
 
@@ -92,10 +96,11 @@ const NotesRTE = ({ limitHeight }) => {
     fetchNoteContent(note);
   };
 
+  const debouncedUpdateNoteContent = debounce(updateNoteContent, 500);
+
   const onChange = (editorState) => {
     setEditorState(editorState);
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(updateNoteContent, 500);
+    debouncedUpdateNoteContent();
   };
 
   const handleKeyCommand = (command, editorState) => {
@@ -140,8 +145,60 @@ const NotesRTE = ({ limitHeight }) => {
     );
   };
 
-  // If the user changes block type before entering any text, we can
-  // either style the placeholder or hide it. Let's just hide it now.
+  const handleNewPageClick = () => {
+    const newNote = {
+      note_updated: new Date().toISOString(),
+      note_owner: userData.id,
+    };
+
+    AxiosInstance.post('dashboard/note/create/', newNote)
+      .then((res) => {
+        console.log('New note created successfully:', res.data.note_name);
+        GetNotesList();
+      })
+      .catch((error) => {
+        console.error('Error while creating new note:', error);
+      });
+  };
+
+  const handleEditNoteName = () => {
+    setEditingNoteName(true); // Enable editing mode
+    setEditedNoteName(selectedNote.note_name); // Set the current note name for editing
+  };
+
+  const handleCheckNoteName = () => {
+    const updatedNote = {
+      ...selectedNote,
+      note_name: editedNoteName,
+    };
+  
+    AxiosInstance.put(`dashboard/note/${selectedNote.id}/update/`, updatedNote)
+      .then((res) => {
+        console.log('Note name updated successfully:', res.data.note_name);
+        setEditingNoteName(false); // Disable editing mode
+        GetNotesList();
+        fetchNoteContent(updatedNote);
+      })
+      .catch((error) => {
+        console.error('Error updating note name:', error);
+      });
+  };
+
+  const handleDeleteNote = () => {
+    const updatedNote = {
+      ...selectedNote,
+    };
+  
+    AxiosInstance.delete(`dashboard/note/${selectedNote.id}/delete/`, updatedNote)
+      .then((res) => {
+        console.log('Note deleted successfully');
+        GetNotesList();
+      })
+      .catch((error) => {
+        console.error('Error while deleting note', error);
+      });
+  };
+
   let className = 'RichEditor-editor';
   var contentState = editorState.getCurrentContent();
   if (!contentState.hasText()) {
@@ -163,22 +220,69 @@ const NotesRTE = ({ limitHeight }) => {
                 style={{
                   cursor: 'pointer',
                   fontSize: '16px',
-                  marginRight: '15px',
-                  fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal',
-                  padding: '0 5px',
-                  borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none',
-                  paddingBottom: '3px',
+                  marginRight: '3px',
                 }}
               >
-                {note.note_name}
+                <div className="note-name" style={{ cursor: 'pointer', fontSize: '16px', marginRight: '15px', fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal', padding: '0 5px', borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none', paddingBottom: '3px' }}>
+                  {editingNoteName && selectedNote.id === note.id ? ( // Display input field if in editing mode and selected note matches
+                    <>
+                      <input
+                        type="text"
+                        value={editedNoteName}
+                        onChange={(e) => setEditedNoteName(e.target.value)}
+                      />
+                      <CheckBoxIcon
+                        style={{ 
+                          fontSize:'medium',
+                          marginLeft: '3px', 
+                          color: '#1D212F66', 
+                          paddingTop:'2px'
+                        }} 
+                        onMouseEnter={(e) => e.target.style.color = 'black'}
+                        onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
+                        onClick={handleCheckNoteName} 
+                      />
+                    </>
+                  ) : (
+                    <>
+                      {note.note_name}
+                      {selectedNote && selectedNote.id === note.id && ( // Check if the note is selected or bolded
+                        <>
+                          <EditIcon 
+                            style={{ 
+                              fontSize:'medium',
+                              marginLeft: '3px', 
+                              color: '#1D212F66', 
+                              paddingTop:'2px' 
+                            }} 
+                            onMouseEnter={(e) => e.target.style.color = 'black'}
+                            onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
+                            onClick={handleEditNoteName} // Enable editing mode on click
+                          />
+                          <DeleteIcon 
+                            style={{ 
+                              fontSize:'medium',
+                              marginLeft: '0px', 
+                              color: '#1D212F66', 
+                              paddingTop:'2px'
+                            }} 
+                            onMouseEnter={(e) => e.target.style.color = 'black'}
+                            onMouseLeave={(e) => e.target.style.color = '#1D212F66'}
+                            onClick={handleDeleteNote} 
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             ))}
         </div>
 
 
-          <div style={{display:'flex'}}>
-            <Button variant="outlined" style={{padding: "0 10px", textTransform: 'none' , color:'rgba(29, 33, 47, 0.5)', borderColor:'rgba(29, 33, 47, 0.2)', borderRadius: '7px', marginBottom:'10px' }} >+ New page</Button>
-          </div>
+        <div className="Button-container">
+          <Button variant="outlined" style={{padding: "0 10px", textTransform: 'none' , color:'rgba(29, 33, 47, 0.5)', borderColor:'rgba(29, 33, 47, 0.2)', borderRadius: '7px', marginBottom:'10px' }} onClick={handleNewPageClick}>+ New Page</Button>
+        </div>
         </div>
 
       <div className={className} onClick={() => editorRef.current.focus()}></div>

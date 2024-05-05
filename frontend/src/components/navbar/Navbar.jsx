@@ -15,7 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import {useNavigate, Link, useLocation} from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AccountMenuNavbar } from './AccountMenuNavbar';
 
 const drawerWidth = 240;
@@ -129,15 +129,14 @@ useEffect(() => {
         anchor="left"
         open={open}
       >
-        <DrawerHeader>
-        <Box sx={{ marginRight: '25px', marginTop: '10px' }}>
+        <Box sx={{ marginLeft:'10px', marginTop: '10px' }}>
         <a href='/dashboard'><img 
           src="..\src\assets\smtials_logo.png" 
           alt="SMtials logo" 
-          width={"100%"}
+          width={"60%"}
         /></a>
         </Box>
-        </DrawerHeader>
+
         <Divider />
         <List>
             <ListItem key={1} disablePadding>

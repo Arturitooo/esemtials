@@ -13,8 +13,7 @@ class NoteSerializer(serializers.ModelSerializer):
         validated_data["note_owner"] = self.context["request"].user
 
         # Automatically set note_name if not provided
-        if "note_name" not in validated_data:
-            validated_data["note_name"] = f"Note #{Note.objects.count() + 1}"
+        validated_data["note_name"] = f"Note #{Note.objects.count() + 1}"
 
         # Automatically set note_content to an empty JSON object
         validated_data["note_content"] = {
