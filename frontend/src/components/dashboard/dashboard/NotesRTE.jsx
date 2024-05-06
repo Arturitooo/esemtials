@@ -7,6 +7,7 @@ import "./NotesRTE.css";
 import AxiosInstance from '../../AxiosInstance';
 import Button from '@mui/material/Button';
 import { UserInfo } from '../../UserInfo';
+import MyModal from '../../forms/MyModal';
 
 // Import icons
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
@@ -28,7 +29,9 @@ const NotesRTE = ({ limitHeight }) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [editingNoteName, setEditingNoteName] = useState(false); // State to manage editing mode
   const [editedNoteName, setEditedNoteName] = useState(""); // State to store the edited note name
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const { userData } = UserInfo();
+  
 
   const editorRef = React.createRef();
 
@@ -92,6 +95,9 @@ const NotesRTE = ({ limitHeight }) => {
   };
 
   const handleNoteClick = (note) => {
+    if (note != selectedNote && editingNoteName) {
+      setEditingNoteName(false);
+    }
     setSelectedNote(note);
     fetchNoteContent(note);
   };
@@ -99,6 +105,9 @@ const NotesRTE = ({ limitHeight }) => {
   const debouncedUpdateNoteContent = debounce(updateNoteContent, 500);
 
   const onChange = (editorState) => {
+    if (!editorState.getCurrentContent().hasText() && !selectedNote) {
+    handleNewPageClick();
+  }
     setEditorState(editorState);
     debouncedUpdateNoteContent();
   };
@@ -155,6 +164,7 @@ const NotesRTE = ({ limitHeight }) => {
       .then((res) => {
         console.log('New note created successfully:', res.data.note_name);
         GetNotesList();
+        handleEditNoteName();
       })
       .catch((error) => {
         console.error('Error while creating new note:', error);
@@ -184,14 +194,20 @@ const NotesRTE = ({ limitHeight }) => {
       });
   };
 
+  const handleConfirmDeleteNote = () => {
+    setDeleteModalOpen(true);
+  }
+
   const handleDeleteNote = () => {
     const updatedNote = {
       ...selectedNote,
     };
+
   
     AxiosInstance.delete(`dashboard/note/${selectedNote.id}/delete/`, updatedNote)
       .then((res) => {
         console.log('Note deleted successfully');
+        setDeleteModalOpen(false);
         GetNotesList();
       })
       .catch((error) => {
@@ -209,7 +225,19 @@ const NotesRTE = ({ limitHeight }) => {
 
   return (
     <div className={`RichEditor-root ${limitHeight ? 'limit-height' : ''}` }>
-        <div style={{width:'100%', display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
+        
+        <MyModal
+          open={deleteModalOpen}
+          handleClose={() => setDeleteModalOpen(false)}
+          title="Confirm Deletion"
+          content="Are you sure you want to delete this note?"
+          actions={[
+            { label: 'Yes', onClick: handleDeleteNote },
+            { label: 'No', onClick: () => setDeleteModalOpen(false) },
+          ]}
+        />
+        
+        <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
           
         <div style={{ display: 'flex', alignItems:'end' , flex: 0.75 }}>
           {myNotesList &&
@@ -223,7 +251,7 @@ const NotesRTE = ({ limitHeight }) => {
                   marginRight: '3px',
                 }}
               >
-                <div className="note-name" style={{ cursor: 'pointer', fontSize: '16px', marginRight: '15px', fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal', padding: '0 5px', borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none', paddingBottom: '3px' }}>
+                <div className="note-name" style={{ cursor: 'pointer', fontSize: '16px', fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal', padding: '0 5px', borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none', paddingBottom: '3px' }}>
                   {editingNoteName && selectedNote.id === note.id ? ( // Display input field if in editing mode and selected note matches
                     <>
                       <input
@@ -268,7 +296,7 @@ const NotesRTE = ({ limitHeight }) => {
                             }} 
                             onMouseEnter={(e) => e.target.style.color = 'black'}
                             onMouseLeave={(e) => e.target.style.color = '#1D212F66'}
-                            onClick={handleDeleteNote} 
+                            onClick={handleConfirmDeleteNote} 
                           />
                         </>
                       )}

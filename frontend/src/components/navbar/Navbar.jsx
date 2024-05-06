@@ -17,6 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AccountMenuNavbar } from './AccountMenuNavbar';
+import './Navbar.css'
 
 const drawerWidth = 240;
 
@@ -37,6 +38,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
       marginLeft: 0,
     }),
   }),
+  
 );
 
 const AppBar = styled(MuiAppBar, {
