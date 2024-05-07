@@ -20,7 +20,7 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CodeIcon from '@mui/icons-material/Code';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 
 const NotesRTE = ({ limitHeight }) => {
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,6 @@ const NotesRTE = ({ limitHeight }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const { userData } = UserInfo();
   
-
   const editorRef = React.createRef();
 
   useEffect(() => {
@@ -237,7 +236,7 @@ const NotesRTE = ({ limitHeight }) => {
           ]}
         />
         
-        <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
+        <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between', marginRight:'110px', maxWidth:'calc(100% - 50px)',overflowX: 'auto' }}>
           
         <div style={{ display: 'flex', alignItems:'end' , flex: 0.75 }}>
           {myNotesList &&
@@ -251,20 +250,22 @@ const NotesRTE = ({ limitHeight }) => {
                   marginRight: '3px',
                 }}
               >
-                <div className="note-name" style={{ cursor: 'pointer', fontSize: '16px', fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal', padding: '0 5px', borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none', paddingBottom: '3px' }}>
+                <div className="note-list-item" style={{fontWeight: selectedNote && selectedNote.id === note.id ? 'bold' : 'normal', padding: '0 5px', borderBottom: selectedNote && selectedNote.id === note.id ? '2px solid #0451E5' : 'none', paddingBottom: '3px' }}>
                   {editingNoteName && selectedNote.id === note.id ? ( // Display input field if in editing mode and selected note matches
                     <>
                       <input
                         type="text"
                         value={editedNoteName}
+                        style={{borderWidth:'0px', width:'100px' ,maxWidth:'100%', fontSize:'16px', fontWeight:'bold', padding: '3px 0', marginRight: '3px'}}
                         onChange={(e) => setEditedNoteName(e.target.value)}
                       />
-                      <CheckBoxIcon
+                      <ThumbUpAltIcon
                         style={{ 
+                          position: 'relative',
+                          top: '4px',
                           fontSize:'medium',
                           marginLeft: '3px', 
                           color: '#1D212F66', 
-                          paddingTop:'2px'
                         }} 
                         onMouseEnter={(e) => e.target.style.color = 'black'}
                         onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
@@ -273,15 +274,16 @@ const NotesRTE = ({ limitHeight }) => {
                     </>
                   ) : (
                     <>
-                      {note.note_name}
+                      <div className='note-name'>{note.note_name}</div>
                       {selectedNote && selectedNote.id === note.id && ( // Check if the note is selected or bolded
-                        <>
+                        <div className='note-edit-icons'>
                           <EditIcon 
                             style={{ 
+                              position: 'relative',
                               fontSize:'medium',
                               marginLeft: '3px', 
-                              color: '#1D212F66', 
-                              paddingTop:'2px' 
+                              color: '#1D212F66',  
+                              top: '2px',
                             }} 
                             onMouseEnter={(e) => e.target.style.color = 'black'}
                             onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
@@ -289,16 +291,17 @@ const NotesRTE = ({ limitHeight }) => {
                           />
                           <DeleteIcon 
                             style={{ 
+                              position: 'relative',
                               fontSize:'medium',
                               marginLeft: '0px', 
                               color: '#1D212F66', 
-                              paddingTop:'2px'
+                              top: '2px',
                             }} 
                             onMouseEnter={(e) => e.target.style.color = 'black'}
                             onMouseLeave={(e) => e.target.style.color = '#1D212F66'}
                             onClick={handleConfirmDeleteNote} 
                           />
-                        </>
+                        </div>
                       )}
                     </>
                   )}
@@ -309,9 +312,9 @@ const NotesRTE = ({ limitHeight }) => {
 
 
         <div className="Button-container">
-          <Button variant="outlined" style={{padding: "0 10px", textTransform: 'none' , color:'rgba(29, 33, 47, 0.5)', borderColor:'rgba(29, 33, 47, 0.2)', borderRadius: '7px', marginBottom:'10px' }} onClick={handleNewPageClick}>+ New Page</Button>
+          <Button variant="outlined" style={{padding: "0 10px",textTransform: 'none' , color:'rgba(29, 33, 47, 0.5)', borderColor:'rgba(29, 33, 47, 0.2)', borderRadius: '7px', backgroundColor:'white'}} onClick={handleNewPageClick}>+ New Page</Button>
         </div>
-        </div>
+      </div>
 
       <div className={className} onClick={() => editorRef.current.focus()}></div>
       

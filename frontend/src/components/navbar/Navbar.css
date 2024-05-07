@@ -3,5 +3,5 @@ main{
 }
 
 .css-1k455el{
-    display: none;
+    display: none !important;
 }

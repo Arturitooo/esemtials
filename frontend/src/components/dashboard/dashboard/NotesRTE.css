@@ -1,4 +1,5 @@
 .RichEditor-root {
+  position: relative;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 15px;
@@ -75,18 +76,47 @@
   color: #5890ff;
 }
 
-.note-name {
+.note-list-item {
+  display: flex;
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+  max-width: 100%;
+  cursor: pointer; 
+  font-size: 16px;
+}
+
+.note-name{
+  max-width: 150px;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .Button-container {
-  display: flex;
-  flex-shrink: 0; /* Prevent button from shrinking */
+  position: absolute;
+  right: 10px;
 }
 
-.EditDeleteNote {
-  font-size: medium;
-  color: '#1D212F66'
+
+.RichEditor-root ::-webkit-scrollbar {
+  height: 5px;
+  border-radius: 3px;
+}
+
+/* Track */
+.RichEditor-root ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.RichEditor-root ::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+
+}
+
+/* Handle on hover */
+.RichEditor-root ::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
