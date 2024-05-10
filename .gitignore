@@ -1,8 +1,8 @@
 # Byte-compiled / optimized / DLL files
 backend/*/__pycache__/*
-backend/*.pyc
-backend/*.py[cod]
-backend/*$py.class
+backend/*/*.pyc
+backend/*/*.py[cod]
+backend/*/*$py.class
 
 
 # Distribution / packaging
@@ -45,6 +45,12 @@ backend/*.log
 backend/local_settings.py
 backend/db.sqlite3
 backend/db.sqlite3-journal
+*.sqlite3
+migrations/
+db.sqlite3
+backend/*.sqlite3
+backend/db.sqlite3
+
 
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
