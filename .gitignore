@@ -46,6 +46,7 @@ backend/local_settings.py
 backend/db.sqlite3
 backend/db.sqlite3-journal
 
+
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/
 
@@ -57,4 +58,3 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-backend/db.sqlite3
