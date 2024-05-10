@@ -1,11 +1,41 @@
-:root {
+body #root {
+  font-family: 'Ubuntu';
+  font-weight: 300;
+  margin: 0;
+  padding: 0;
+}
+
+#root * {
   font-family: 'Ubuntu';
 }
 
-html,body{
-  height: 100%;
-  margin: 0;
-  padding: 0;
+h1 {
+  font-size: 27px;
+  line-height: 31px;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 21px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+h3 {
+  font-size: 17px;
+  line-height: 19px;
+  font-weight: 400;
+}
+
+p, span {
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+small {
+  font-size: 11.2px;
+  line-height: 11px;
 }
 
 body {

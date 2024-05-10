@@ -110,7 +110,6 @@ useEffect(() => {
         </IconButton>
         ) : (null)}
           <Typography variant="h6" noWrap component="div" sx={{color:'#1D212F'}}>
-            Navbar content
           </Typography>
             <AccountMenuNavbar/>
           

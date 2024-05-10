@@ -11,12 +11,12 @@ export const Dashboard = () => {
   return (
     <Box display="flex" justifyContent="space-between">
       <Box flexBasis="50%" style={{ maxWidth: '50%'}}>
-        <h2 style={{margin: '0px'}}>Sprint progress</h2>
-        <h2 style={{marginTop: '20px'}}>Team efficiency</h2>
+        <h2 style={{}}>Sprint progress</h2>
+        <h2 style={{}}>Team efficiency</h2>
       </Box>
       <Box flexBasis="50%" style={{ maxWidth: '50%'}}>
         <Box sx={{display:'flex', alignItems: 'center'}}>
-          <h2 style={{margin: '0px', paddingRight:'3px'}}>Notes</h2>
+          <h2 style={{paddingRight:'3px'}}>Notes</h2>
           <Link to="/dashboard/notes">
             <OpenInNewIcon sx={{fontSize:'medium', color:'#1D212F66', marginTop:'6px'}}/>
           </Link>
@@ -25,7 +25,7 @@ export const Dashboard = () => {
           <NotesRTE limitHeight={true}/>
         </Box>
 
-        <h2 style={{marginTop: '20px'}}>Notifications</h2>
+        <h2 style={{}}>Notifications</h2>
       </Box>
     </Box>
   )
