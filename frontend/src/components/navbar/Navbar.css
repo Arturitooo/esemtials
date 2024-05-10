@@ -1,19 +1,18 @@
 main{
     margin-top: 55px;
 }
+header.MuiPaper-root {
+    box-shadow:none;
+    border-bottom: 1px solid #ddd;
+}
 
 .css-1k455el{
     display: none !important;
 }
-/* 
-.Mui-selected .MuiListItemText-root {
-    padding: 6px 10px;
-    background-color: #0451E5;
-    border-radius: 10px;
-} */
+
 a.MuiButtonBase-root {
     margin: 2px 10px;
-    padding: 5px 15px;
+    padding: 3px 15px;
     border-radius: 10px;
     transition: 0.3s;
 
