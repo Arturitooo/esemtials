@@ -39,5 +39,7 @@ class NoteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # Update note_updated date
         validated_data["note_updated"] = timezone.now()
+        if "note_name" not in validated_data or not validated_data["note_name"]:
+            validated_data["note_name"] = f"Note #{Note.objects.count() + 1}"
 
         return super().update(instance, validated_data)
