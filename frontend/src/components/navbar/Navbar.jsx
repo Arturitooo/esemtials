@@ -130,19 +130,24 @@ useEffect(() => {
         anchor="left"
         open={open}
       >
+
         <Box sx={{ marginLeft:'10px', marginTop: '10px' }}>
-        <a href='/dashboard'><img 
+        <a href='/'><img 
           src="..\src\assets\smtials_logo.png" 
           alt="SMtials logo" 
           width={"60%"}
         /></a>
         </Box>
-
         <Divider />
         <List>
-            <ListItem key={1} disablePadding>
+            {/* <ListItem key={1} disablePadding>
               <ListItemButton component={Link} to="/dashboard" selected={"/dashboard"===path}>
                 <ListItemText sx={{color: '#F5F7F9'}} primary={"Dashboard"} />
+              </ListItemButton>
+            </ListItem> */}
+            <ListItem key={1} disablePadding>
+              <ListItemButton component={Link} to="/dashboard/notes" selected={"/dashboard/notes"===path}>
+                <ListItemText sx={{color: '#F5F7F9'}} primary={"Notes"} />
               </ListItemButton>
             </ListItem>
             <ListItem key={2} disablePadding>

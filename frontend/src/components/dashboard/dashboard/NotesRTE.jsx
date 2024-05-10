@@ -154,6 +154,7 @@ const NotesRTE = ({ limitHeight }) => {
   };
 
   const handleNewPageClick = () => {
+    setEditedNoteName("");
     const newNote = {
       note_updated: new Date().toISOString(),
       note_owner: userData.id,
@@ -258,6 +259,7 @@ const NotesRTE = ({ limitHeight }) => {
                         value={editedNoteName}
                         style={{borderWidth:'0px', width:'100px' ,maxWidth:'100%', fontSize:'16px', fontWeight:'bold', padding: '3px 0', marginRight: '3px'}}
                         onChange={(e) => setEditedNoteName(e.target.value)}
+                        autoComplete='off'
                       />
                       <ThumbUpAltIcon
                         style={{ 
