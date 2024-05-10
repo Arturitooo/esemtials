@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "knox",
     "django_rest_passwordreset",
     "rest_framework_swagger",
+    "dashboard",
     "team",
 ]
 
