@@ -1,6 +1,5 @@
 import { React, useEffect, useMemo, useState } from 'react'
 import AxiosInstance from '../AxiosInstance'
-import { NewTMForm } from './team/NewTMForm'
 import { Box } from '@mui/material'
 import SignalWifi0BarIcon from '@mui/icons-material/SignalWifi0Bar';
 import NetworkWifi1BarIcon from '@mui/icons-material/NetworkWifi1Bar'
@@ -40,31 +39,31 @@ export const Team = () => {
       case 'intern':
         return (
           <>
-            <SignalWifi0BarIcon sx={{fontSize:'medium'}}/> {' Internship'} 
+            <SignalWifi0BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{' Internship'} 
           </>
         );
       case 'junior':
         return (
           <>
-            <NetworkWifi1BarIcon sx={{fontSize:'medium'}}/> {'Junior level'} 
+            <NetworkWifi1BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{'Junior'} 
           </>
         );
       case 'regular':
         return (
           <>
-            <NetworkWifi3BarIcon sx={{fontSize:'medium'}}/> {'Medium level'} 
+            <NetworkWifi3BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{'Medium'} 
           </>
         );
       case 'senior':
         return (
           <>
-            <NetworkWifiIcon sx={{fontSize:'medium'}}/> {'Senior level'} 
+            <NetworkWifiIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{'Senior'} 
           </>
         );
       case 'expert':
         return (
           <>
-            <SignalWifi4BarIcon sx={{fontSize:'medium'}}/> {'Expert level'} 
+            <SignalWifi4BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px'}}/>{'Expert'} 
           </>
         );
       default:
@@ -87,15 +86,21 @@ export const Team = () => {
     <div>
       { loading ? <p>loading data...</p> : <div>
         {teamData.map((item, index) => (
-          <Box key={index} sx={{p:2, m:2, boxShadow:3}}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
-              <div style={{ marginLeft: '50px' }}>{item.tm_photo}
+          <Box key={index} sx={{p:2, m:2, boxShadow:2}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', paddingLeft:'50px', paddingRight:'50px' }}>
+              {item.tm_photo? (
+                <div style={{ height: '150px', width: '150px' }}>{`http://localhost:8000/backend${item.tm_photo}`}
                 <img 
-                  src={item.tm_photo}
+                  src={`http://localhost:8000/esemtials/backend${item.tm_photo}`}
                   alt="Team member photo"
                   style={{ maxWidth: '150px', maxHeight: '150px' }}
                 />
               </div>
+              ) : (
+                <div style={{ height:'150px', width:'150px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'15px', display:'flex', justifyContent:'center',alignItems:'center'}}>No photo</div>
+              )
+            }
+              
               <div style={{ marginRight: '100px' }}>
                 <div>Name: {item.tm_name} {item.tm_lname}</div>
                 <div>Role: {getRoleLabel(item.tm_position)}</div>
@@ -105,7 +110,6 @@ export const Team = () => {
             </div>
           </Box>
         ))}
-        <NewTMForm/>
       </div>}
     </div>
   )

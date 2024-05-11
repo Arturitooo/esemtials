@@ -16,12 +16,11 @@ TM_POSITION = [
 
 TM_SENIORITY = [
     ("intern", "Internship"),
-    ("junior", "Junior level"),
-    ("regular", "Medium level"),
-    ("senior", "Senior level"),
-    ("expert", "Expert level"),
+    ("junior", "Junior"),
+    ("regular", "Medium"),
+    ("senior", "Senior"),
+    ("expert", "Expert"),
 ]
-
 # Create your models here.
 
 
