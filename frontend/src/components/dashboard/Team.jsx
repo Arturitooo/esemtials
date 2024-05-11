@@ -8,6 +8,7 @@ import NetworkWifiIcon from '@mui/icons-material/NetworkWifi';
 import SignalWifi4BarIcon from '@mui/icons-material/SignalWifi4Bar';
 
 
+
 export const Team = () => {
   const [teamData, setTeamData] = useState()
   const [loading, setLoading] = useState(true)
@@ -86,14 +87,14 @@ export const Team = () => {
     <div>
       { loading ? <p>loading data...</p> : <div>
         {teamData.map((item, index) => (
-          <Box key={index} sx={{p:2, m:2, boxShadow:2}}>
+          <Box key={index} sx={{p:2, m:2, boxShadow:2, backgroundColor:'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', paddingLeft:'50px', paddingRight:'50px' }}>
               {item.tm_photo? (
-                <div style={{ height: '150px', width: '150px' }}>{`http://localhost:8000/backend${item.tm_photo}`}
+                <div style={{ height: '150px', width: '150px', overflow:'hidden',border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'15px', display:'flex', justifyContent:'center',alignItems:'center',}}>
                 <img 
-                  src={`http://localhost:8000/esemtials/backend${item.tm_photo}`}
+                  src={`${item.tm_photo}`}
                   alt="Team member photo"
-                  style={{ maxWidth: '150px', maxHeight: '150px' }}
+                  style={{ minWidth: '150px', minHeight: '150px', objectFit:'cover', objectPosition:'center' }}
                 />
               </div>
               ) : (
