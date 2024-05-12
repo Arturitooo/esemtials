@@ -1,6 +1,13 @@
 import { React, useEffect, useMemo, useState } from 'react'
 import AxiosInstance from '../AxiosInstance'
-import { Box } from '@mui/material'
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Face6Icon from '@mui/icons-material/Face6';
 import SignalWifi0BarIcon from '@mui/icons-material/SignalWifi0Bar';
 import NetworkWifi1BarIcon from '@mui/icons-material/NetworkWifi1Bar'
 import NetworkWifi3BarIcon from '@mui/icons-material/NetworkWifi3Bar';
@@ -40,31 +47,31 @@ export const Team = () => {
       case 'intern':
         return (
           <>
-            <SignalWifi0BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{' Internship'} 
+            <SignalWifi0BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Internship'} 
           </>
         );
       case 'junior':
         return (
           <>
-            <NetworkWifi1BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{'Junior'} 
+            <NetworkWifi1BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Junior'} 
           </>
         );
       case 'regular':
         return (
           <>
-            <NetworkWifi3BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{'Medium'} 
+            <NetworkWifi3BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Medium'} 
           </>
         );
       case 'senior':
         return (
           <>
-            <NetworkWifiIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px' }}/>{'Senior'} 
+            <NetworkWifiIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Senior'} 
           </>
         );
       case 'expert':
         return (
           <>
-            <SignalWifi4BarIcon sx={{fontSize:'medium', paddingTop: '2px', marginRight:'1px'}}/>{'Expert'} 
+            <SignalWifi4BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px'}}/>{'Expert'} 
           </>
         );
       default:
@@ -85,33 +92,54 @@ export const Team = () => {
 
   return (
     <div>
+      <h1>Team Members</h1>
       { loading ? <p>loading data...</p> : <div>
-        {teamData.map((item, index) => (
-          <Box key={index} sx={{p:2, m:2, boxShadow:2, backgroundColor:'white' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', paddingLeft:'50px', paddingRight:'50px' }}>
-              {item.tm_photo? (
-                <div style={{ height: '150px', width: '150px', overflow:'hidden',border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'15px', display:'flex', justifyContent:'center',alignItems:'center',}}>
-                <img 
-                  src={`${item.tm_photo}`}
-                  alt="Team member photo"
-                  style={{ minWidth: '150px', minHeight: '150px', objectFit:'cover', objectPosition:'center' }}
-                />
-              </div>
-              ) : (
-                <div style={{ height:'150px', width:'150px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'15px', display:'flex', justifyContent:'center',alignItems:'center'}}>No photo</div>
-              )
-            }
-              
-              <div style={{ marginRight: '100px' }}>
-                <div>Name: {item.tm_name} {item.tm_lname}</div>
-                <div>Role: {getRoleLabel(item.tm_position)}</div>
-                <div>Seniority: {getSeniorityLabel(item.tm_seniority)}</div>
-              </div>
-              <div style={{ marginRight: '50px' }}>LINK</div>
-            </div>
-          </Box>
-        ))}
+      <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="Team members">
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Team Member</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Seniority</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+            {teamData.map((item, index) => (
+              <TableRow
+                key={index}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>
+                  <div style={{ display: 'flex', alignItems:'center', columnGap: '12px',}}>
+                    {item.tm_photo? (
+                      <div style={{ height: '50px', width: '50px', overflow:'hidden', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center',}}>
+                        <img 
+                          src={`${item.tm_photo}`}
+                          alt="Team member photo"
+                          style={{ minWidth: '50px', minHeight: '50px', objectFit:'cover', objectPosition:'center' }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ height:'50px', width:'50px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center'}}>
+                        <Face6Icon style={{opacity: '40%'}}/>
+                      </div>
+                      )
+                    }
+                    {item.tm_name} {item.tm_lname}
+                  </div>
+                </TableCell>
+                <TableCell>{getRoleLabel(item.tm_position)}</TableCell>
+                <TableCell>{getSeniorityLabel(item.tm_seniority)}</TableCell>
+                <TableCell>Link to details</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
       </div>}
     </div>
-  )
+  );
 }
