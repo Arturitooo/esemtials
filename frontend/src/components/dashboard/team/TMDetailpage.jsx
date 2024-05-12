@@ -1,9 +1,10 @@
 import React from 'react'
 import { MyTextButton } from '../../forms/MyTextButton'
 
-export const TMDetailpage = (TM) => {
+export const TMDetailpage = () => {
   return (
-    <div>TMDetailpage</div>
+    <div>
     <div style={{ marginLeft: '50px' }}><MyTextButton label={"Add photo"}/></div>
+    </div>
   )
 }

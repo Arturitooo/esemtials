@@ -1,6 +1,11 @@
 import { React, useEffect, useMemo, useState } from 'react'
 import AxiosInstance from '../AxiosInstance'
 import { Box } from '@mui/material'
+import { Link, useLocation } from 'react-router-dom';
+import { MyTextButton } from '../forms/MyTextButton';
+import { TMDetailpage } from './team/TMDetailpage';
+
+//import MUI icons
 import SignalWifi0BarIcon from '@mui/icons-material/SignalWifi0Bar';
 import NetworkWifi1BarIcon from '@mui/icons-material/NetworkWifi1Bar'
 import NetworkWifi3BarIcon from '@mui/icons-material/NetworkWifi3Bar';
@@ -102,12 +107,16 @@ export const Team = () => {
               )
             }
               
-              <div style={{ marginRight: '100px' }}>
+              <div>
                 <div>Name: {item.tm_name} {item.tm_lname}</div>
                 <div>Role: {getRoleLabel(item.tm_position)}</div>
                 <div>Seniority: {getSeniorityLabel(item.tm_seniority)}</div>
               </div>
-              <div style={{ marginRight: '50px' }}>LINK</div>
+              <div>
+                <Link to={`${item.tm_name}-${item.tm_lname}/`}>
+                  <MyTextButton label = {"Details page"} />
+                </Link>
+              </div>
             </div>
           </Box>
         ))}
