@@ -6,6 +6,7 @@ TM_POSITION = [
     ("sm", "Scrum Master"),
     ("fe_dev", "Frontend Developer"),
     ("be_dev", "Backend Developer"),
+    ("fs_dev", "Fullstack Developer"),
     ("devops", "DevOps"),
     ("des", "Designer"),
     ("qa", "Quality Engineer"),
@@ -15,12 +16,11 @@ TM_POSITION = [
 
 TM_SENIORITY = [
     ("intern", "Internship"),
-    ("junior", "Junior level"),
-    ("regular", "Medium level"),
-    ("senior", "Senior level"),
-    ("expert", "Expert level"),
+    ("junior", "Junior"),
+    ("regular", "Medium"),
+    ("senior", "Senior"),
+    ("expert", "Expert"),
 ]
-
 # Create your models here.
 
 
@@ -34,6 +34,7 @@ class Teammember(models.Model):
     tm_position = models.CharField(
         max_length=64, choices=TM_POSITION, blank=False, null=False
     )
+    tm_stack = models.TextField(max_length=32, null=True, blank=True)
     tm_joined = models.DateField(null=False)
     tm_summary = models.TextField(max_length=250, null=True, blank=True)
     tm_photo = models.ImageField(
