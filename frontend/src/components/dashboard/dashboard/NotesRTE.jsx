@@ -224,8 +224,9 @@ const NotesRTE = ({ limitHeight }) => {
   }
 
   return (
+    <>
+    <h1>Notes</h1>
     <div className={`RichEditor-root ${limitHeight ? 'limit-height' : ''}` }>
-        
         <MyModal
           open={deleteModalOpen}
           handleClose={() => setDeleteModalOpen(false)}
@@ -344,6 +345,7 @@ const NotesRTE = ({ limitHeight }) => {
         />
       </div>
     </div>
+    </>
   );
 };
 
