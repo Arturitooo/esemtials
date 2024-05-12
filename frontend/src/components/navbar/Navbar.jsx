@@ -149,7 +149,7 @@ useEffect(() => {
               </ListItemButton>
             </ListItem> */}
             <ListItem key={1} disablePadding>
-              <ListItemButton component={Link} to="/dashboard/notes" selected={"/dashboard/notes"===path}>
+              <ListItemButton component={Link} to="/dashboard/notes/" selected={"/dashboard/notes/"===path}>
                 <StickyNote2Icon
                   style={{ 
                     position: 'relative',
@@ -161,7 +161,7 @@ useEffect(() => {
               </ListItemButton>
             </ListItem>
             <ListItem key={2} disablePadding>
-              <ListItemButton component={Link} to="/team" selected={"/team"===path}>
+              <ListItemButton component={Link} to="/team/" selected={"/team/"===path}>
                 <GroupIcon
                   style={{ 
                     position: 'relative',
@@ -173,7 +173,7 @@ useEffect(() => {
               </ListItemButton>
             </ListItem>
             <ListItem key={3} disablePadding>
-              <ListItemButton component={Link} to="/monitoring" selected={path === "/monitoring" || path === "/monitoring/risk_register"}>
+              <ListItemButton component={Link} to="/monitoring/" selected={path === "/monitoring/" || path === "/monitoring/risk_register"}>
                 <DataSaverOffIcon
                   style={{ 
                     position: 'relative',

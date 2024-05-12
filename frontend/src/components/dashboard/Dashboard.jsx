@@ -7,7 +7,6 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 
 export const Dashboard = () => {
-  const navigate = useNavigate()
   return (
     <Box display="flex" justifyContent="space-between">
       <Box flexBasis="50%" style={{ maxWidth: '50%'}}>
