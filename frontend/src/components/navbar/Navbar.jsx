@@ -141,7 +141,7 @@ export function Navbar(props) {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} className="main-navbar">
       <CssBaseline />
       <AppBar position="fixed" open={open} sx={{backgroundColor:'#fff', boxShadow: '0px 1px 0px 0px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(0,0,0,0.1)'}}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between'}}>
@@ -180,46 +180,28 @@ export function Navbar(props) {
           
         </DrawerHeader>
         <Divider />
-        <List>
+        <List className="main-navbar__list">
             {/* <ListItem key={1} disablePadding>
               <ListItemButton component={Link} to="/dashboard" selected={"/dashboard"===path}>
                 <ListItemText sx={{color: '#F5F7F9'}} primary={"Dashboard"} />
               </ListItemButton>
             </ListItem> */}
-            <ListItem key={1} disablePadding>
+            <ListItem key={1} disablePadding className="main-navbar__list__item">
               <ListItemButton component={Link} to="/dashboard/notes/" selected={"/dashboard/notes/"===path}>
-                <StickyNote2Icon
-                  style={{ 
-                    position: 'relative',
-                    fontSize:'large',
-                    marginRight: '12px', 
-                  }} 
-                />
-                <ListItemText sx={{color: '#F5F7F9'}} primary={"Notes"} />
+                <StickyNote2Icon/>
+                <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Notes"} />
               </ListItemButton>
             </ListItem>
-            <ListItem key={2} disablePadding>
+            <ListItem key={2} disablePadding className="main-navbar__list__item">
               <ListItemButton component={Link} to="/team/" selected={"/team/"===path}>
-                <GroupIcon
-                  style={{ 
-                    position: 'relative',
-                    fontSize:'large',
-                    marginRight: '12px', 
-                  }} 
-                />
-                <ListItemText sx={{color: '#F5F7F9'}} primary={"Team"} />
+                <GroupIcon/>
+                <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Team"} />
               </ListItemButton>
             </ListItem>
-            <ListItem key={3} disablePadding>
+            <ListItem key={3} disablePadding className="main-navbar__list__item">
               <ListItemButton component={Link} to="/monitoring/" selected={path === "/monitoring/" || path === "/monitoring/risk_register"}>
-                <DataSaverOffIcon
-                  style={{ 
-                    position: 'relative',
-                    fontSize:'large',
-                    marginRight: '12px', 
-                  }} 
-                />
-                <ListItemText sx={{color: '#F5F7F9'}} primary={"Monitoring"} />
+                <DataSaverOffIcon/>
+                <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Monitoring"} />
               </ListItemButton>
             </ListItem>
 

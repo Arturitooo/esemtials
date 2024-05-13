@@ -11,20 +11,35 @@ header.MuiPaper-root {
     display: none !important;
 }
 
-a.MuiButtonBase-root {
+.main-navbar__list__item a {
     margin: 2px 10px;
     padding: 3px 15px;
     border-radius: 10px;
-    transition: 0.3s;
+    transition: 0.2s;
+    opacity: 0.6;
 
 }
-a.MuiButtonBase-root:hover {
+.main-navbar__list__item a:hover {
     background-color: #0453e51d;
     transition: 0.3s;
+    opacity: 1;
 }
-a.MuiButtonBase-root.Mui-selected:hover {
+.main-navbar__list__item a.MuiButtonBase-root.Mui-selected:hover {
     background-color: #0451E5;
+    opacity: 1;
 }
-a.MuiButtonBase-root.Mui-selected {
+.main-navbar__list__item a.MuiButtonBase-root.Mui-selected {
     background-color: #0451E5;
+    opacity: 1;
+}
+
+.main-navbar__list svg {
+    color: #fff;
+    position: relative;
+    margin-right: 12px;
+    font-size: large;
+}
+
+.css-dqtqht-MuiDrawer-docked .main-navbar__list__item-text {
+    visibility: hidden;
 }
