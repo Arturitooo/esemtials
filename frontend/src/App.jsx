@@ -36,7 +36,7 @@ function App() {
           {/* THESE ARE LINKS UNAVAILABLE WITHOUT LOGGING IN - it redirects now to login - TO DO - CHANGE IT LATER */}
           <Route path='/dashboard' element = { <Dashboard/> } />
           <Route path='/dashboard/notes' element = { <NotesFullScreen/> } />
-          <Route path='/team' element = { <Team/> } />  
+          <Route path='/team/' element = { <Team/> } />  
         </Route>
         <Route path='/' element = { <Home/> } />  
       </Routes>}

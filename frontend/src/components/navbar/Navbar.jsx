@@ -165,6 +165,7 @@ export function Navbar(props) {
           <AccountMenuNavbar/>
         </Toolbar>
       </AppBar>
+      {authenticated ? (
       <Drawer variant="permanent" open={open}>
         <DrawerHeader sx={{backgroundColor:'#1D212F',}}>
         <Box sx={{ marginLeft:'10px', marginTop: '10px' }}>
@@ -207,7 +208,7 @@ export function Navbar(props) {
 
 
         </List>
-      </Drawer>
+      </Drawer>) : (null)}
       <Main open={open}>
         <DrawerHeader />
             {content}      
