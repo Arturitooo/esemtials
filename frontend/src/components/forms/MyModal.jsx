@@ -16,7 +16,7 @@ const style = {
   p: 4,
 };
 
-const MyModal = ({ open, handleClose, title, content, actions }) => {
+export const MyModal = ({ open, handleClose, title, content, actions }) => {
   return (
     <Modal
       open={open}
@@ -43,4 +43,3 @@ const MyModal = ({ open, handleClose, title, content, actions }) => {
   );
 };
 
-export default MyModal;

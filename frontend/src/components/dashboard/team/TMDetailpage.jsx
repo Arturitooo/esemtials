@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import { MyTextButton } from '../../forms/MyTextButton';
+import { useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../AxiosInstance';
+import {MyModal} from '../../forms/MyModal';
+import { MyTextButton } from '../../forms/MyTextButton';
+
+
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -23,9 +27,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export const TMDetailpage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true)
-  const [TMData, setTMData] = useState(null)
+  const [tMData, setTMData] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const handleConfirmDeleteTM = () => {
+    setDeleteModalOpen(true);
+  }
 
   const getRoleLabel = (roleCode) => {
     switch (roleCode) {
@@ -97,6 +106,20 @@ export const TMDetailpage = () => {
     })
   }
 
+  const handleDeleteTM = () => {
+    DeleteTM();
+    setDeleteModalOpen(false);
+    navigate('/team/');
+  }
+
+  const DeleteTM = () => {
+    const url = `team/teammember/${id}`;
+    AxiosInstance.delete(url)
+    .then(() => {
+      console.log("you've successfully deleted the team member")
+    })
+  }
+
   useEffect(() => {
     GetData(id);
   },[id])
@@ -105,6 +128,7 @@ export const TMDetailpage = () => {
 
 
   return (
+    
 
     <div>
       { loading ? <p>loading data...</p> : <div>
@@ -126,10 +150,10 @@ export const TMDetailpage = () => {
               >
                 <TableCell>
                   <div style={{ display: 'flex', alignItems:'center', columnGap: '12px',}}>
-                    {TMData.tm_photo? (
+                    {tMData.tm_photo? (
                       <div style={{ height: '50px', width: '50px', overflow:'hidden', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center',}}>
                         <img 
-                          src={TMData.tm_photo}
+                          src={tMData.tm_photo}
                           alt="Team member photo"
                           style={{ minWidth: '50px', minHeight: '50px', objectFit:'cover', objectPosition:'center' }}
                         />
@@ -140,16 +164,16 @@ export const TMDetailpage = () => {
                       </div>
                       )
                     }
-                    {TMData.tm_name} {TMData.tm_lname} 
+                    {tMData.tm_name} {tMData.tm_lname} 
                   </div>
                 </TableCell>
-                <TableCell>{getRoleLabel(TMData.tm_position)}</TableCell>
-                <TableCell>{getSeniorityLabel(TMData.tm_seniority)}</TableCell>
+                <TableCell>{getRoleLabel(tMData.tm_position)}</TableCell>
+                <TableCell>{getSeniorityLabel(tMData.tm_seniority)}</TableCell>
                 <TableCell>
-                  {TMData.tm_joined} 
+                  {tMData.tm_joined} 
                 </TableCell>
                 <TableCell>
-                  {TMData.tm_summary} 
+                  {tMData.tm_summary} 
                 </TableCell>
                 <TableCell>
                   <EditIcon 
@@ -159,6 +183,7 @@ export const TMDetailpage = () => {
                       marginLeft: '3px', 
                       color: '#1D212F66',  
                       top: '2px',
+                      cursor:'pointer',
                       }} 
                     onMouseEnter={(e) => e.target.style.color = 'black'}
                     onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
@@ -171,10 +196,11 @@ export const TMDetailpage = () => {
                       marginLeft: '0px', 
                       color: '#1D212F66', 
                       top: '2px',
+                      cursor:'pointer',
                     }} 
                     onMouseEnter={(e) => e.target.style.color = 'black'}
                     onMouseLeave={(e) => e.target.style.color = '#1D212F66'}
-                    // onClick={handleConfirmDeleteTM} 
+                    onClick={handleConfirmDeleteTM} 
                   />
                 </TableCell>
               </TableRow>
@@ -182,6 +208,30 @@ export const TMDetailpage = () => {
         </Table>
       </TableContainer>
       </div>}
+
+      <MyModal
+        open={deleteModalOpen}
+        handleClose={() => setDeleteModalOpen(false)}
+        title="Confirm Deletion"
+        content={
+          <span>
+            Are you sure you want to delete team member{' '}
+            {tMData ? (
+              <>
+                <strong>{tMData.tm_name}</strong> <strong>{tMData.tm_lname}</strong>
+              </>
+            ) : (
+              ''
+            )}
+            ?
+          </span>
+        }
+        actions={[
+          { label: 'Yes', onClick: handleDeleteTM },
+          { label: 'No', onClick: () => setDeleteModalOpen(false) },
+        ]}
+      />
+
     </div>
   );
 };

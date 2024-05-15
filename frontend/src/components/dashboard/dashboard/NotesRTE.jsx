@@ -7,7 +7,7 @@ import "./NotesRTE.css";
 import AxiosInstance from '../../AxiosInstance';
 import Button from '@mui/material/Button';
 import { UserInfo } from '../../UserInfo';
-import MyModal from '../../forms/MyModal';
+import {MyModal} from '../../forms/MyModal';
 
 // Import icons
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
