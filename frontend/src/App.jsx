@@ -10,6 +10,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import { Dashboard } from './components/dashboard/Dashboard'
 import { NotesFullScreen } from './components/dashboard/dashboard/NotesFullScreen'
 import { Team } from './components/dashboard/Team'
+import { TMDetailpage } from './components/dashboard/team/TMDetailpage'
 import { PasswordReset } from './components/PasswordReset'
 import { ConfirmPasswordReset } from './components/ConfirmPasswordReset'
 
@@ -36,7 +37,8 @@ function App() {
           {/* THESE ARE LINKS UNAVAILABLE WITHOUT LOGGING IN - it redirects now to login - TO DO - CHANGE IT LATER */}
           <Route path='/dashboard' element = { <Dashboard/> } />
           <Route path='/dashboard/notes' element = { <NotesFullScreen/> } />
-          <Route path='/team' element = { <Team/> } />  
+          <Route path='/team' element = { <Team/> } />   
+          <Route path='/team/member/:id' element = { <TMDetailpage/> } />   
         </Route>
         <Route path='/' element = { <Home/> } />  
       </Routes>}

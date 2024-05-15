@@ -21,6 +21,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AccountMenuNavbar } from './AccountMenuNavbar';
 import './Navbar.css'
+import logo from '../../assets/smtials_logo.png';
 
 const drawerWidth = 240;
 
@@ -82,6 +83,8 @@ export function Navbar(props) {
   const [open, setOpen] = React.useState(false);
   const [authenticated, setAuthenticated] = React.useState(false);
 
+  const isTeamSelected = path === "/team/" || /^\/team\/member\/\d+$/.test(path);
+
 const checkAuthenticationStatus = () => {
   const token = localStorage.getItem('Token');
   return token; 
@@ -136,7 +139,7 @@ useEffect(() => {
 
         <Box sx={{ marginLeft:'10px', marginTop: '10px' }}>
         <a href='/'><img 
-          src="..\src\assets\smtials_logo.png" 
+          src={logo} 
           alt="SMtials logo" 
           width={"60%"}
         /></a>
@@ -161,7 +164,7 @@ useEffect(() => {
               </ListItemButton>
             </ListItem>
             <ListItem key={2} disablePadding>
-              <ListItemButton component={Link} to="/team/" selected={"/team/"===path}>
+              <ListItemButton component={Link} to="/team/" selected={isTeamSelected}>
                 <GroupIcon
                   style={{ 
                     position: 'relative',

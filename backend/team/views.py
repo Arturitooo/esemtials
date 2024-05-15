@@ -1,37 +1,55 @@
+# views.py
 from rest_framework import viewsets, permissions, response, status
-from rest_framework.views import APIView
 from .models import Teammember
 from .serializers import TeammemberSerializer
 
 
 class TeammemberViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Teammember.objects.all()
     serializer_class = TeammemberSerializer
 
-    def list(self, request):
+    def get_queryset(self):
+        # Filter queryset to only include team members created by the authenticated user
         user = self.request.user
-        queryset = Teammember.objects.all().filter(created_by=user).order_by("-id")
+        return Teammember.objects.filter(created_by=user).order_by("-id")
+
+    def list(self, request, *args, **kwargs):
+        # List all team members for the authenticated user
+        queryset = self.get_queryset()
         serializer = self.serializer_class(queryset, many=True)
         return response.Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
+        # Create a new team member for the authenticated user
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(created_by=request.user)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def retrieve(self, request, *args, **kwargs):
+        # Retrieve a specific team member if the user is the creator
+        instance = self.get_object()
+        if instance.created_by != request.user:
+            return response.Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = self.get_serializer(instance)
+        return response.Response(serializer.data)
 
-class TeammemberImageView(APIView):
-    permission_classes = [permissions.AllowAny]  # Adjust permissions as needed
+    def update(self, request, *args, **kwargs):
+        # Update a specific team member if the user is the creator
+        instance = self.get_object()
+        if instance.created_by != request.user:
+            return response.Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=kwargs.pop("partial", False)
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return response.Response(serializer.data)
 
-    def get(self, request, pk):
-        try:
-            teammember = Teammember.objects.get(pk=pk)
-            if teammember.tm_photo:
-                with open(teammember.tm_photo.path, "rb") as f:
-                    return response.Response(f.read(), content_type="image/png")
-            else:
-                return response.Response(status=status.HTTP_404_NOT_FOUND)
-        except Teammember.DoesNotExist:
-            return response.Response(status=status.HTTP_404_NOT_FOUND)
+    def destroy(self, request, *args, **kwargs):
+        # Delete a specific team member if the user is the creator
+        instance = self.get_object()
+        if instance.created_by != request.user:
+            return response.Response(status=status.HTTP_403_FORBIDDEN)
+        self.perform_destroy(instance)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)

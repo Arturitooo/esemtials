@@ -1,5 +1,8 @@
-import { React, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AxiosInstance from '../AxiosInstance'
+import { MyTextButton } from '../forms/MyTextButton';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -120,7 +123,7 @@ export const Team = () => {
                     {item.tm_photo? (
                       <div style={{ height: '50px', width: '50px', overflow:'hidden', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center',}}>
                         <img 
-                          src={`${item.tm_photo}`}
+                          src={`http://127.0.0.1:8000${item.tm_photo}`}
                           alt="Team member photo"
                           style={{ minWidth: '50px', minHeight: '50px', objectFit:'cover', objectPosition:'center' }}
                         />
@@ -136,7 +139,13 @@ export const Team = () => {
                 </TableCell>
                 <TableCell>{getRoleLabel(item.tm_position)}</TableCell>
                 <TableCell>{getSeniorityLabel(item.tm_seniority)}</TableCell>
-                <TableCell>Link to details</TableCell>
+                <TableCell>
+                  <Link to={`/team/member/${item.id}`}>
+                    <MyTextButton 
+                      label="Details"
+                     />
+                  </Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
