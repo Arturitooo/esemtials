@@ -114,6 +114,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
+
 export function Navbar(props) {
   const {content} = props
   const location = useLocation()
@@ -122,7 +123,7 @@ export function Navbar(props) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [authenticated, setAuthenticated] = React.useState(false);
-  
+
   const isTeamSelected = path === "/team/" || /^\/team\/member\/\d+$/.test(path);
   
   const checkAuthenticationStatus = () => {
@@ -134,7 +135,6 @@ export function Navbar(props) {
     const isAuthenticated = checkAuthenticationStatus();
     setAuthenticated(isAuthenticated);
   }, []);
-
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -174,7 +174,7 @@ export function Navbar(props) {
         <DrawerHeader sx={{backgroundColor:'#1D212F',}}>
         <Box sx={{ marginLeft:'10px', marginTop: '10px' }}>
         <a href='/'><img 
-          src={logo} 
+          src={logo}
           alt="SMtials logo" 
           width={"60%"}
         /></a>
@@ -197,16 +197,10 @@ export function Navbar(props) {
                 <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Notes"} />
               </ListItemButton>
             </ListItem>
-            <ListItem key={2} disablePadding>
+            <ListItem key={2} disablePadding className="main-navbar__list__item">
               <ListItemButton component={Link} to="/team/" selected={isTeamSelected}>
-                <GroupIcon
-                  style={{ 
-                    position: 'relative',
-                    fontSize:'large',
-                    marginRight: '8px', 
-                  }} 
-                />
-                <ListItemText sx={{color: '#F5F7F9'}} primary={"Team"} />
+                <GroupIcon/>
+                <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Team"} />
               </ListItemButton>
             </ListItem>
             <ListItem key={3} disablePadding className="main-navbar__list__item">
