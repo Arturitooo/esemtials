@@ -2,18 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../AxiosInstance';
+import './TMDetailpage.css'
 import {MyModal} from '../../forms/MyModal';
-import { MyTextButton } from '../../forms/MyTextButton';
 
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
 
-
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
 //icons
 import Face6Icon from '@mui/icons-material/Face6';
@@ -29,12 +24,14 @@ export const TMDetailpage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true)
-  const [tMData, setTMData] = useState(null)
+  const [tmData, setTMData] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
 
   const handleConfirmDeleteTM = () => {
     setDeleteModalOpen(true);
   }
+
 
   const getRoleLabel = (roleCode) => {
     switch (roleCode) {
@@ -70,25 +67,25 @@ export const TMDetailpage = () => {
       case 'junior':
         return (
           <>
-            <NetworkWifi1BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Junior'} 
+            <NetworkWifi1BarIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px' }}/>{'Junior'} 
           </>
         );
       case 'regular':
         return (
           <>
-            <NetworkWifi3BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Medium'} 
+            <NetworkWifi3BarIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px' }}/>{'Medium'} 
           </>
         );
       case 'senior':
         return (
           <>
-            <NetworkWifiIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Senior'} 
+            <NetworkWifiIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px' }}/>{'Senior'} 
           </>
         );
       case 'expert':
         return (
           <>
-            <SignalWifi4BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px'}}/>{'Expert'} 
+            <SignalWifi4BarIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px'}}/>{'Expert'} 
           </>
         );
       default:
@@ -106,6 +103,9 @@ export const TMDetailpage = () => {
     })
   }
 
+  useEffect(() => {
+    GetData(id);
+  },[id])
   const handleDeleteTM = () => {
     DeleteTM();
     setDeleteModalOpen(false);
@@ -120,93 +120,61 @@ export const TMDetailpage = () => {
     })
   }
 
-  useEffect(() => {
-    GetData(id);
-  },[id])
-
-  
-
-
   return (
-    
-
     <div>
       { loading ? <p>loading data...</p> : <div>
-      <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="Team members">
-        <TableHead>
-          <TableRow>
-            <TableCell>Team Member</TableCell>
-            <TableCell>Role</TableCell>
-            <TableCell>Seniority</TableCell>
-            <TableCell>Joined</TableCell>
-            <TableCell>Summary</TableCell>
-            <TableCell>Modify</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-              <TableRow
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell>
-                  <div style={{ display: 'flex', alignItems:'center', columnGap: '12px',}}>
-                    {tMData.tm_photo? (
-                      <div style={{ height: '50px', width: '50px', overflow:'hidden', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center',}}>
-                        <img 
-                          src={tMData.tm_photo}
-                          alt="Team member photo"
-                          style={{ minWidth: '50px', minHeight: '50px', objectFit:'cover', objectPosition:'center' }}
-                        />
-                      </div>
-                    ) : (
-                      <div style={{ height:'50px', width:'50px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center'}}>
-                        <Face6Icon style={{opacity: '40%'}}/>
-                      </div>
-                      )
-                    }
-                    {tMData.tm_name} {tMData.tm_lname} 
+        <h1>Team member</h1>
+        <Card className='team-member__card'>
+          <CardContent className='team-member__content'>
+            <div className='team-member__content--photo'>
+                {tmData.tm_photo? (
+                  <div style={{ height: '180px', width: '180px', overflow:'hidden', borderRadius:'90px', display:'flex', justifyContent:'center', alignItems:'center',}}>
+                    <img 
+                      src={tmData.tm_photo}
+                      alt="Team member photo"
+                      style={{ minWidth: '180px', minHeight: '180px', objectFit:'cover', objectPosition:'center' }}
+                    />
                   </div>
-                </TableCell>
-                <TableCell>{getRoleLabel(tMData.tm_position)}</TableCell>
-                <TableCell>{getSeniorityLabel(tMData.tm_seniority)}</TableCell>
-                <TableCell>
-                  {tMData.tm_joined} 
-                </TableCell>
-                <TableCell>
-                  {tMData.tm_summary} 
-                </TableCell>
-                <TableCell>
-                  <EditIcon 
-                    style={{ 
-                      position: 'relative',
-                      fontSize:'large',
-                      marginLeft: '3px', 
-                      color: '#1D212F66',  
-                      top: '2px',
-                      cursor:'pointer',
-                      }} 
-                    onMouseEnter={(e) => e.target.style.color = 'black'}
-                    onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
-                    // onClick={handleEditNoteName} 
-                  />
-                  <DeleteIcon 
-                    style={{ 
-                      position: 'relative',
-                      fontSize:'large',
-                      marginLeft: '0px', 
-                      color: '#1D212F66', 
-                      top: '2px',
-                      cursor:'pointer',
-                    }} 
-                    onMouseEnter={(e) => e.target.style.color = 'black'}
-                    onMouseLeave={(e) => e.target.style.color = '#1D212F66'}
-                    onClick={handleConfirmDeleteTM} 
-                  />
-                </TableCell>
-              </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+                ) : (
+                  <div style={{ height:'180px', width:'180px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center'}}>
+                    <Face6Icon style={{opacity: '40%'}}/>
+                  </div>
+                  )
+                } 
+            </div>
+            <div>
+              <div className='team-member__content--name'>
+                <h2>{tmData.tm_name} {tmData.tm_lname} </h2>
+              </div>
+              <div className='team-member__content--details'>
+                <div>
+                  <h4>Role</h4>
+                  <p>{getRoleLabel(tmData.tm_position)}</p>
+                </div>
+                <div>
+                  <h4>Seniority</h4>
+                  <p>{getSeniorityLabel(tmData.tm_seniority)}</p>
+                </div>
+                <div>
+                  <h4>Joined</h4>
+                  <p>{tmData.tm_joined} </p>
+                </div>
+                <div>
+                  <h4>Summary</h4>
+                  <p>{tmData.tm_summary}</p>
+                </div>  
+              </div>
+              <div className="team-member__content--actions">
+                <Button variant="outlined" startIcon={<EditIcon />}>
+                  Edit details
+                </Button>
+                <Button variant="outlined" onClick={handleConfirmDeleteTM} startIcon={<DeleteIcon />}>
+                  Delete member
+                </Button>
+              </div>
+            </div>
+            </CardContent>
+        </Card>
       </div>}
 
       <MyModal
@@ -216,9 +184,9 @@ export const TMDetailpage = () => {
         content={
           <span>
             Are you sure you want to delete team member{' '}
-            {tMData ? (
+            {tmData ? (
               <>
-                <strong>{tMData.tm_name}</strong> <strong>{tMData.tm_lname}</strong>
+                <strong>{tmData.tm_name}</strong> <strong>{tmData.tm_lname}</strong>
               </>
             ) : (
               ''
@@ -231,7 +199,6 @@ export const TMDetailpage = () => {
           { label: 'No', onClick: () => setDeleteModalOpen(false) },
         ]}
       />
-
     </div>
   );
 };
