@@ -23,7 +23,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AccountMenuNavbar } from './AccountMenuNavbar';
 import './Navbar.css'
-import logo from '../../assets/smtials_logo.png';
 
 const drawerWidth = 240;
 
@@ -123,8 +122,6 @@ export function Navbar(props) {
   const [open, setOpen] = React.useState(false);
   const [authenticated, setAuthenticated] = React.useState(false);
   
-  const isTeamSelected = path === "/team/" || /^\/team\/member\/\d+$/.test(path);
-  
   const checkAuthenticationStatus = () => {
     const token = localStorage.getItem('Token');
     return token; 
@@ -134,7 +131,6 @@ export function Navbar(props) {
     const isAuthenticated = checkAuthenticationStatus();
     setAuthenticated(isAuthenticated);
   }, []);
-
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -174,7 +170,7 @@ export function Navbar(props) {
         <DrawerHeader sx={{backgroundColor:'#1D212F',}}>
         <Box sx={{ marginLeft:'10px', marginTop: '10px' }}>
         <a href='/'><img 
-          src={logo} 
+          src="..\src\assets\smtials_logo.png" 
           alt="SMtials logo" 
           width={"60%"}
         /></a>
@@ -197,16 +193,10 @@ export function Navbar(props) {
                 <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Notes"} />
               </ListItemButton>
             </ListItem>
-            <ListItem key={2} disablePadding>
-              <ListItemButton component={Link} to="/team/" selected={isTeamSelected}>
-                <GroupIcon
-                  style={{ 
-                    position: 'relative',
-                    fontSize:'large',
-                    marginRight: '8px', 
-                  }} 
-                />
-                <ListItemText sx={{color: '#F5F7F9'}} primary={"Team"} />
+            <ListItem key={2} disablePadding className="main-navbar__list__item">
+              <ListItemButton component={Link} to="/team/" selected={"/team/"===path}>
+                <GroupIcon/>
+                <ListItemText className="main-navbar__list__item-text" sx={{color: '#F5F7F9'}} primary={"Team"} />
               </ListItemButton>
             </ListItem>
             <ListItem key={3} disablePadding className="main-navbar__list__item">
