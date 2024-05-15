@@ -98,7 +98,7 @@ export const Team = () => {
 
   return (
     <div>
-      <h1>Team Members</h1>
+      <h1>Team</h1>
       { loading ? <p>loading data...</p> : <div>
       <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Team members">
