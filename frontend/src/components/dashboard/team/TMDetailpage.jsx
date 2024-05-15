@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { MyTextButton } from '../../forms/MyTextButton';
 import AxiosInstance from '../../AxiosInstance';
+import './TMDetailpage.css'
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,6 +11,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+
 
 //icons
 import Face6Icon from '@mui/icons-material/Face6';
@@ -61,25 +66,25 @@ export const TMDetailpage = () => {
       case 'junior':
         return (
           <>
-            <NetworkWifi1BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Junior'} 
+            <NetworkWifi1BarIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px' }}/>{'Junior'} 
           </>
         );
       case 'regular':
         return (
           <>
-            <NetworkWifi3BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Medium'} 
+            <NetworkWifi3BarIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px' }}/>{'Medium'} 
           </>
         );
       case 'senior':
         return (
           <>
-            <NetworkWifiIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px' }}/>{'Senior'} 
+            <NetworkWifiIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px' }}/>{'Senior'} 
           </>
         );
       case 'expert':
         return (
           <>
-            <SignalWifi4BarIcon sx={{fontSize:'medium', position:'relative', top:'2px', marginRight:'4px'}}/>{'Expert'} 
+            <SignalWifi4BarIcon sx={{fontSize:'small', position:'relative', top:'2px', marginRight:'4px'}}/>{'Expert'} 
           </>
         );
       default:
@@ -101,86 +106,61 @@ export const TMDetailpage = () => {
     GetData(id);
   },[id])
 
-  
-
-
   return (
-
     <div>
       { loading ? <p>loading data...</p> : <div>
-      <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="Team members">
-        <TableHead>
-          <TableRow>
-            <TableCell>Team Member</TableCell>
-            <TableCell>Role</TableCell>
-            <TableCell>Seniority</TableCell>
-            <TableCell>Joined</TableCell>
-            <TableCell>Summary</TableCell>
-            <TableCell>Modify</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-              <TableRow
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell>
-                  <div style={{ display: 'flex', alignItems:'center', columnGap: '12px',}}>
-                    {TMData.tm_photo? (
-                      <div style={{ height: '50px', width: '50px', overflow:'hidden', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center',}}>
-                        <img 
-                          src={TMData.tm_photo}
-                          alt="Team member photo"
-                          style={{ minWidth: '50px', minHeight: '50px', objectFit:'cover', objectPosition:'center' }}
-                        />
-                      </div>
-                    ) : (
-                      <div style={{ height:'50px', width:'50px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center'}}>
-                        <Face6Icon style={{opacity: '40%'}}/>
-                      </div>
-                      )
-                    }
-                    {TMData.tm_name} {TMData.tm_lname} 
+        <h1>Team member</h1>
+        <Card className='team-member__card'>
+          <CardContent className='team-member__content'>
+            <div className='team-member__content--photo'>
+                {TMData.tm_photo? (
+                  <div style={{ height: '180px', width: '180px', overflow:'hidden', borderRadius:'90px', display:'flex', justifyContent:'center', alignItems:'center',}}>
+                    <img 
+                      src={TMData.tm_photo}
+                      alt="Team member photo"
+                      style={{ minWidth: '180px', minHeight: '180px', objectFit:'cover', objectPosition:'center' }}
+                    />
                   </div>
-                </TableCell>
-                <TableCell>{getRoleLabel(TMData.tm_position)}</TableCell>
-                <TableCell>{getSeniorityLabel(TMData.tm_seniority)}</TableCell>
-                <TableCell>
-                  {TMData.tm_joined} 
-                </TableCell>
-                <TableCell>
-                  {TMData.tm_summary} 
-                </TableCell>
-                <TableCell>
-                  <EditIcon 
-                    style={{ 
-                      position: 'relative',
-                      fontSize:'large',
-                      marginLeft: '3px', 
-                      color: '#1D212F66',  
-                      top: '2px',
-                      }} 
-                    onMouseEnter={(e) => e.target.style.color = 'black'}
-                    onMouseLeave={(e) => e.target.style.color = '#1D212F66'} 
-                    // onClick={handleEditNoteName} 
-                  />
-                  <DeleteIcon 
-                    style={{ 
-                      position: 'relative',
-                      fontSize:'large',
-                      marginLeft: '0px', 
-                      color: '#1D212F66', 
-                      top: '2px',
-                    }} 
-                    onMouseEnter={(e) => e.target.style.color = 'black'}
-                    onMouseLeave={(e) => e.target.style.color = '#1D212F66'}
-                    // onClick={handleConfirmDeleteTM} 
-                  />
-                </TableCell>
-              </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+                ) : (
+                  <div style={{ height:'180px', width:'180px', border:'solid rgba(29, 33, 47, 0.1) 2px', borderRadius:'30px', display:'flex', justifyContent:'center',alignItems:'center'}}>
+                    <Face6Icon style={{opacity: '40%'}}/>
+                  </div>
+                  )
+                } 
+            </div>
+            <div>
+              <div className='team-member__content--name'>
+                <h2>{TMData.tm_name} {TMData.tm_lname} </h2>
+              </div>
+              <div className='team-member__content--details'>
+                <div>
+                  <h4>Role</h4>
+                  <p>{getRoleLabel(TMData.tm_position)}</p>
+                </div>
+                <div>
+                  <h4>Seniority</h4>
+                  <p>{getSeniorityLabel(TMData.tm_seniority)}</p>
+                </div>
+                <div>
+                  <h4>Joined</h4>
+                  <p>{TMData.tm_joined} </p>
+                </div>
+                <div>
+                  <h4>Summary</h4>
+                  <p>{TMData.tm_summary}</p>
+                </div>  
+              </div>
+              <div className="team-member__content--actions">
+                <Button variant="outlined" startIcon={<EditIcon />}>
+                  Edit details
+                </Button>
+                <Button variant="outlined" startIcon={<DeleteIcon />}>
+                  Delete member
+                </Button>
+              </div>
+            </div>
+            </CardContent>
+        </Card>
       </div>}
     </div>
   );
