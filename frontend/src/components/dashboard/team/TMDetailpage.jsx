@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import { MyTextButton } from '../../forms/MyTextButton';
+import { useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../AxiosInstance';
 import './TMDetailpage.css'
+import {MyModal} from '../../forms/MyModal';
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
@@ -28,9 +22,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export const TMDetailpage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true)
-  const [TMData, setTMData] = useState(null)
+  const [tmData, setTMData] = useState(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+
+  const handleConfirmDeleteTM = () => {
+    setDeleteModalOpen(true);
+  }
+
 
   const getRoleLabel = (roleCode) => {
     switch (roleCode) {
@@ -105,6 +106,19 @@ export const TMDetailpage = () => {
   useEffect(() => {
     GetData(id);
   },[id])
+  const handleDeleteTM = () => {
+    DeleteTM();
+    setDeleteModalOpen(false);
+    navigate('/team/');
+  }
+
+  const DeleteTM = () => {
+    const url = `team/teammember/${id}`;
+    AxiosInstance.delete(url)
+    .then(() => {
+      console.log("you've successfully deleted the team member")
+    })
+  }
 
   return (
     <div>
@@ -113,10 +127,10 @@ export const TMDetailpage = () => {
         <Card className='team-member__card'>
           <CardContent className='team-member__content'>
             <div className='team-member__content--photo'>
-                {TMData.tm_photo? (
+                {tmData.tm_photo? (
                   <div style={{ height: '180px', width: '180px', overflow:'hidden', borderRadius:'90px', display:'flex', justifyContent:'center', alignItems:'center',}}>
                     <img 
-                      src={TMData.tm_photo}
+                      src={tmData.tm_photo}
                       alt="Team member photo"
                       style={{ minWidth: '180px', minHeight: '180px', objectFit:'cover', objectPosition:'center' }}
                     />
@@ -130,31 +144,31 @@ export const TMDetailpage = () => {
             </div>
             <div>
               <div className='team-member__content--name'>
-                <h2>{TMData.tm_name} {TMData.tm_lname} </h2>
+                <h2>{tmData.tm_name} {tmData.tm_lname} </h2>
               </div>
               <div className='team-member__content--details'>
                 <div>
                   <h4>Role</h4>
-                  <p>{getRoleLabel(TMData.tm_position)}</p>
+                  <p>{getRoleLabel(tmData.tm_position)}</p>
                 </div>
                 <div>
                   <h4>Seniority</h4>
-                  <p>{getSeniorityLabel(TMData.tm_seniority)}</p>
+                  <p>{getSeniorityLabel(tmData.tm_seniority)}</p>
                 </div>
                 <div>
                   <h4>Joined</h4>
-                  <p>{TMData.tm_joined} </p>
+                  <p>{tmData.tm_joined} </p>
                 </div>
                 <div>
                   <h4>Summary</h4>
-                  <p>{TMData.tm_summary}</p>
+                  <p>{tmData.tm_summary}</p>
                 </div>  
               </div>
               <div className="team-member__content--actions">
                 <Button variant="outlined" startIcon={<EditIcon />}>
                   Edit details
                 </Button>
-                <Button variant="outlined" startIcon={<DeleteIcon />}>
+                <Button variant="outlined" onClick={handleConfirmDeleteTM} startIcon={<DeleteIcon />}>
                   Delete member
                 </Button>
               </div>
@@ -162,6 +176,29 @@ export const TMDetailpage = () => {
             </CardContent>
         </Card>
       </div>}
+
+      <MyModal
+        open={deleteModalOpen}
+        handleClose={() => setDeleteModalOpen(false)}
+        title="Confirm Deletion"
+        content={
+          <span>
+            Are you sure you want to delete team member{' '}
+            {tmData ? (
+              <>
+                <strong>{tmData.tm_name}</strong> <strong>{tmData.tm_lname}</strong>
+              </>
+            ) : (
+              ''
+            )}
+            ?
+          </span>
+        }
+        actions={[
+          { label: 'Yes', onClick: handleDeleteTM },
+          { label: 'No', onClick: () => setDeleteModalOpen(false) },
+        ]}
+      />
     </div>
   );
 };
