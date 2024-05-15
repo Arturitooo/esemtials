@@ -1,0 +1,21 @@
+.team-member__content {
+    display: grid;
+    grid-template-columns: 250px auto;
+    column-gap: 12px;
+}
+.team-member__content--photo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.team-member__content--details {
+    display: flex;
+    column-gap: 48px;
+}
+
+.team-member__content--actions Button{
+    margin-top: 32px;
+    margin-right: 12px;
+    
+}
