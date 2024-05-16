@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AxiosInstance from '../AxiosInstance'
 import { MyTextButton } from '../forms/MyTextButton';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,6 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 
 //icons
 import Face6Icon from '@mui/icons-material/Face6';
@@ -18,12 +19,14 @@ import NetworkWifi1BarIcon from '@mui/icons-material/NetworkWifi1Bar'
 import NetworkWifi3BarIcon from '@mui/icons-material/NetworkWifi3Bar';
 import NetworkWifiIcon from '@mui/icons-material/NetworkWifi';
 import SignalWifi4BarIcon from '@mui/icons-material/SignalWifi4Bar';
+import AddIcon from '@mui/icons-material/Add';
 
 
 
 export const Team = () => {
   const [teamData, setTeamData] = useState()
   const [loading, setLoading] = useState(true)
+  const location = useLocation();
 
   const getRoleLabel = (roleCode) => {
     switch (roleCode) {
@@ -95,9 +98,26 @@ export const Team = () => {
     GetData();
   },[])
 
+  useEffect(() => {
+    if (location.state?.refetch) {
+      GetData();
+    }
+  }, [location.state]);
+
   return (
     <div>
-      <h1>Team</h1>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <>
+          <h1>Team</h1>
+        </>
+        <>
+        <Link to="/team/member/create">
+          <Button variant="outlined" startIcon={<AddIcon />} sx={{height:'50%'}}>
+            New member
+          </Button>
+        </Link>
+        </>      
+      </div>
       { loading ? <p>loading data...</p> : <div>
       <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Team members">
@@ -133,7 +153,7 @@ export const Team = () => {
                       </div>
                       )
                     }
-                    {item.tm_name} {item.tm_lname}
+                    {item.tm_lname} {item.tm_name} 
                   </div>
                 </TableCell>
                 <TableCell>{getRoleLabel(item.tm_position)}</TableCell>

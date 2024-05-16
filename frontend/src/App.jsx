@@ -11,6 +11,7 @@ import { Dashboard } from './components/dashboard/Dashboard'
 import { NotesFullScreen } from './components/dashboard/dashboard/NotesFullScreen'
 import { Team } from './components/dashboard/Team'
 import { TMDetailpage } from './components/dashboard/team/TMDetailpage'
+import { TMCreate } from './components/dashboard/team/TMCreate'
 import { PasswordReset } from './components/PasswordReset'
 import { ConfirmPasswordReset } from './components/ConfirmPasswordReset'
 
@@ -39,6 +40,7 @@ function App() {
           <Route path='/dashboard/notes' element = { <NotesFullScreen/> } />
           <Route path='/team' element = { <Team/> } />   
           <Route path='/team/member/:id' element = { <TMDetailpage/> } />   
+          <Route path='/team/member/create' element = { <TMCreate/> } />   
         </Route>
         <Route path='/' element = { <Home/> } />  
       </Routes>}

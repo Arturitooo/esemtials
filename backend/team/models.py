@@ -34,7 +34,7 @@ class Teammember(models.Model):
     tm_position = models.CharField(
         max_length=64, choices=TM_POSITION, blank=False, null=False
     )
-    tm_stack = models.TextField(max_length=32, null=True, blank=True)
+    tm_stack = models.TextField(max_length=256, null=True, blank=True)
     tm_joined = models.DateField(null=False)
     tm_summary = models.TextField(max_length=250, null=True, blank=True)
     tm_photo = models.ImageField(

@@ -124,7 +124,7 @@ export function Navbar(props) {
   const [open, setOpen] = React.useState(false);
   const [authenticated, setAuthenticated] = React.useState(false);
 
-  const isTeamSelected = path === "/team/" || /^\/team\/member\/\d+$/.test(path);
+  const isTeamSelected = path === "/team/" || path === "/team/member/create" || /^\/team\/member\/\d+$/.test(path);
   
   const checkAuthenticationStatus = () => {
     const token = localStorage.getItem('Token');
