@@ -11,7 +11,7 @@ class TeammemberViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Filter queryset to only include team members created by the authenticated user
         user = self.request.user
-        return Teammember.objects.filter(created_by=user).order_by("-id")
+        return Teammember.objects.filter(created_by=user).order_by("tm_lname")
 
     def list(self, request, *args, **kwargs):
         # List all team members for the authenticated user

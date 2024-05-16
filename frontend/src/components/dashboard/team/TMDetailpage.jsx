@@ -106,17 +106,19 @@ export const TMDetailpage = () => {
   useEffect(() => {
     GetData(id);
   },[id])
-  const handleDeleteTM = () => {
-    DeleteTM();
+
+  const handleDeleteTM = async () => {
+    await DeleteTM();
     setDeleteModalOpen(false);
-    navigate('/team/');
+    navigate('/team/', { state: { refetch: true } });
   }
+  
 
   const DeleteTM = () => {
     const url = `team/teammember/${id}`;
     AxiosInstance.delete(url)
     .then(() => {
-      console.log("you've successfully deleted the team member")
+      console.log("you've successfully deleted the the team member")
     })
   }
 
@@ -183,7 +185,7 @@ export const TMDetailpage = () => {
         title="Confirm Deletion"
         content={
           <span>
-            Are you sure you want to delete team member{' '}
+            Are you sure you want to delete the team member{' '}
             {tmData ? (
               <>
                 <strong>{tmData.tm_name}</strong> <strong>{tmData.tm_lname}</strong>
