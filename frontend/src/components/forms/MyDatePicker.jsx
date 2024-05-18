@@ -1,18 +1,39 @@
 import * as React from 'react';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { Controller } from 'react-hook-form';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { TextField } from '@mui/material'; 
+import PropTypes from 'prop-types';
 
-export function MyDatePicker({ label }) {
+export function MyDatePicker({ label, name, control }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={['DatePicker']}>
-        <DatePicker
-          label={label}
-          format="YYYY-MM-DD"
-        />
-      </DemoContainer>
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <DatePicker
+            label={label}
+            value={value || null}
+            onChange={onChange}
+          >
+            {({ inputRef, inputProps, openPicker }) => (
+              <TextField 
+                {...inputProps}
+                error={!!error}
+                helperText={error ? error.message : null}
+                onClick={openPicker}
+              />
+            )}
+          </DatePicker>
+        )}
+      />
     </LocalizationProvider>
   );
 }
+
+MyDatePicker.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  control: PropTypes.object.isRequired,
+};

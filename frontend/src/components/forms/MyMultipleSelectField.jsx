@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
+import { Controller } from 'react-hook-form';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -28,48 +29,51 @@ function getStyles(name, selectedValues, theme) {
   };
 }
 
-export function MyMultipleSelectField({ options, label }) {
+export function MyMultipleSelectField({ options, label, name, control }) {
   const theme = useTheme();
-  const [selectedValues, setSelectedValues] = React.useState([]);
-
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedValues(
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
 
   return (
-    <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
-        <InputLabel id="multiple-select-label">{label}</InputLabel>
-        <Select
-          labelId="multiple-select-label"
-          id="multiple-select"
-          multiple
-          value={selectedValues}
-          onChange={handleChange}
-          input={<OutlinedInput label={label} />}
-          MenuProps={MenuProps}
-        >
-          {options.map((option, index) => (
-            <MenuItem
-              key={index}
-              value={option}
-              style={getStyles(option, selectedValues, theme)}
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth error={!!error}>
+            <InputLabel id={`${name}-label`}>{label}</InputLabel>
+            <Select
+              labelId={`${name}-label`}
+              id={`${name}-select`}
+              multiple
+              value={value || []}
+              onChange={(event) => {
+                const {
+                  target: { value },
+                } = event;
+                onChange(typeof value === 'string' ? value.split(',') : value);
+              }}
+              input={<OutlinedInput label={label} />}
+              MenuProps={MenuProps}
             >
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+              {options.map((option, index) => (
+                <MenuItem
+                  key={index}
+                  value={option}
+                  style={getStyles(option, value, theme)}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      )}
+    />
   );
 }
 
 MyMultipleSelectField.propTypes = {
   options: PropTypes.arrayOf(PropTypes.string).isRequired,
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  control: PropTypes.object.isRequired,
 };
