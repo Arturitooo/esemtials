@@ -1,35 +1,76 @@
-import React from 'react'
-import { useForm } from 'react-hook-form'
-import { UserInfo } from '../../UserInfo'
-import { MyTextField } from '../../forms/MyTextField'
-import { MySelectField } from '../../forms/MySelectField'
-import { MyMultipleSelectField } from '../../forms/MyMultipleSelectField'
-import { MyDatePicker } from '../../forms/MyDatePicker'
-import { MyMultilineTextField } from '../../forms/MyMultilineTextField'
+    import React, { useState } from 'react'
+    import { useForm } from 'react-hook-form'
+    import { UserInfo } from '../../UserInfo'
+    import AxiosInstance from '../../AxiosInstance'
+    import { useNavigate } from 'react-router-dom'
 
-import { Box } from '@mui/material'
+    import { MyTextField } from '../../forms/MyTextField'
+    import { MySelectField } from '../../forms/MySelectField'
+    import { MyMultipleSelectField } from '../../forms/MyMultipleSelectField'
+    import { MyDatePicker } from '../../forms/MyDatePicker'
+    import { MyMultilineTextField } from '../../forms/MyMultilineTextField'
+    import { MyContainedButton } from '../../forms/MyContainedButton'
+
+    import { Box } from '@mui/material'
 
 
-export const TMCreate = () => {
-    const { userData } = UserInfo();
-    const { handleSubmit, control} = useForm()
+    export const TMCreate = () => {
+        const { userData } = UserInfo();
+        const navigate = useNavigate();
+        const [ image, setImage ] = useState(null)
+        const {handleSubmit, control} = useForm({
+            defaultValues: {
+                name: '',         
+                lname: '',
+                position: '',
+                seniority: '',
+                stack: [],
+                joining_date: null,
+                summary: '',
+            }
+        })
+
+    const submission = async (data) => {
+        try {
+            const formattedJoiningDate = data.joining_date ? data.joining_date.toISOString().substring(0, 10) : null;   
+            const newTM = {
+                tm_name: data.name,
+                tm_lname: data.lname,
+                tm_seniority: data.seniority,
+                tm_position: data.position,
+                tm_stack: JSON.stringify(data.stack),
+                tm_joined: formattedJoiningDate,
+                tm_summary: data.summary,
+                tm_photo: image,
+                created_by: userData.id,
+            }
+            const res = await AxiosInstance.post('team/teammember/', newTM);
+            navigate(`/team/member/${res.data.id}`);
+        } 
+        catch (error) {
+            console.error("Can't create new team member", error);
+        }
+    };
+
     const optionsPosition = [
-        { label: 'Scrum Master', value: 'Scrum Master' },
-        { label: 'Frontend Developer', value: 'Frontend Developer' },
-        { label: 'Backend Developer', value: 'Backend Developer' },
-        { label: 'DevOps', value: 'DevOps' },
-        { label: 'Designer', value: 'Designer' },
-        { label: 'Quality Engineer', value: 'Quality Engineer' },
-        { label: 'Business Analyst', value: 'Business Analyst' },
-        { label: 'Solution Architect', value: 'Solution Architect' }
-      ];  
+        { label: 'Scrum Master', value: 'sm' },
+        { label: 'Frontend Developer', value: 'fe_dev' },
+        { label: 'Backend Developer', value: 'be_dev' },
+        { label: 'Fullstack Developer', value: 'fs_dev' },
+        { label: 'DevOps', value: 'devops' },
+        { label: 'Designer', value: 'des' },
+        { label: 'Quality Engineer', value: 'qa' },
+        { label: 'Business Analyst', value: 'ba' },
+        { label: 'Solution Architect', value: 'sa' }
+    ];  
+    
     const optionsSeniority = [
-        { label: 'Internship', value: 'Internship' },
-        { label: 'Junior', value: 'Junior' },
-        { label: 'Medium', value: 'Medium' },
-        { label: 'Senior', value: 'Senior' },
-        { label: 'Expert', value: 'Expert' },
-      ];
+        { label: 'Internship', value: 'intern' },
+        { label: 'Junior', value: 'junior' },
+        { label: 'Medium', value: 'regular' },
+        { label: 'Senior', value: 'senior' },
+        { label: 'Expert', value: 'expert' },
+    ];
 
     const optionsStack = [
         'Jira', 'Trello', 'Monday', 'Business Analytics', 'Fullstack',
@@ -40,49 +81,65 @@ export const TMCreate = () => {
         'Kubernetes','Docker',
         'Figma', 'Adobe XD', 'Python Selenium', 'Cypress', 
         'AI', 'Machine Learning', 
-      ];
+    ];
 
-    
+    function handleImage(e) {
+        console.log(e.target.files)
+        setImage(e.target.files[0])
+    }
 
-  return (
-    <Box>
+        
+
+    return (
+        <Box>
         <h2>Create team member</h2>
-        <Box sx={{padding:'10px',backgroundColor:'white'}}>
-            <MyTextField 
+        <Box sx={{ padding: '10px', backgroundColor: 'white' }}>
+        <form onSubmit={handleSubmit(submission)} encType="multipart/form-data">
+            <MyTextField
                 label={"Name"}
-                name = {"name"}
-                control = {control}
+                name={"name"}
+                control={control}
             />
-            <MyTextField 
+            <MyTextField
                 label={"Last name"}
-                name = {"lname"}
-                control = {control}
+                name={"lname"}
+                control={control}
             />
             <MySelectField
-                options = {optionsPosition}
+                options={optionsPosition}
                 label={"Position"}
-                name='position'
+                name={'position'}
+                control={control}
             />
             <MySelectField
-                options = {optionsSeniority}
+                options={optionsSeniority}
                 label={"Seniority"}
-                name='seniority'
+                name={'seniority'}
+                control={control}
             />
             <MyMultipleSelectField
-                options = {optionsStack}
+                options={optionsStack}
                 label={"Stack"}
-                name='stack'
+                name={'stack'}
+                control={control}
             />
             <MyDatePicker
                 label="Joining date"
-                name='joining_date'
+                name={'joining_date'}
+                control={control}
             />
-            <MyMultilineTextField 
+            <MyMultilineTextField
                 label={"Summary"}
-                name = {"summary"}
+                name={"summary"}
+                control={control}
             />
-            {/* TO DO - adding photo and react hook */}
+            <div>
+                <input type='file' accept="image/png, image/jpeg" name={'photo'} onChange={handleImage} />
+                {/* https://stackoverflow.com/questions/61783511/django-rest-frameworkreact-js-unable-to-implement-form-parser-error-the-subm */}
+            </div>
+            <MyContainedButton label='Submit' type='submit' />
+            </form>
         </Box>
     </Box>
-  )
+    );
 }
