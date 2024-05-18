@@ -33,18 +33,23 @@
     const submission = async (data) => {
         try {
             const formattedJoiningDate = data.joining_date ? data.joining_date.toISOString().substring(0, 10) : null;   
-            const newTM = {
-                tm_name: data.name,
-                tm_lname: data.lname,
-                tm_seniority: data.seniority,
-                tm_position: data.position,
-                tm_stack: JSON.stringify(data.stack),
-                tm_joined: formattedJoiningDate,
-                tm_summary: data.summary,
-                tm_photo: image,
-                created_by: userData.id,
-            }
-            const res = await AxiosInstance.post('team/teammember/', newTM);
+            const formData = new FormData();
+            formData.append('tm_name', data.name);
+            formData.append('tm_lname', data.lname);
+            formData.append('tm_seniority', data.seniority);
+            formData.append('tm_position', data.position);
+            formData.append('tm_stack', JSON.stringify(data.stack));
+            formData.append('tm_joined', formattedJoiningDate);
+            formData.append('tm_summary', data.summary);
+            formData.append('tm_photo', image);  // Append the file
+            formData.append('created_by', userData.id);
+
+            const res = await AxiosInstance.post('team/teammember/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
             navigate(`/team/member/${res.data.id}`);
         } 
         catch (error) {
@@ -122,6 +127,7 @@
                 label={"Stack"}
                 name={'stack'}
                 control={control}
+                
             />
             <MyDatePicker
                 label="Joining date"
