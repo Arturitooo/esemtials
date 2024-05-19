@@ -50,3 +50,10 @@ class Teammember(models.Model):
 def delete_photo_on_delete(sender, instance, **kwargs):
     if instance.tm_photo:
         instance.tm_photo.delete(False)
+
+
+class TeamMemberComment(models.Model):
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
+    teammember = models.ForeignKey(Teammember, on_delete=models.CASCADE, default=None)
+    isPositive = models.BooleanField(null=False, blank=False)
+    commentContent = models.TextField(max_length=1024, null=False, blank=False)
