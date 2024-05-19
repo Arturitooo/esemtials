@@ -1,11 +1,11 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import PropTypes from 'prop-types';
-import { Controller } from 'react-hook-form';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import PropTypes from "prop-types";
+import { Controller } from "react-hook-form";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -29,7 +29,7 @@ export function MySelectField({ options, label, name, control }) {
             <Select
               labelId={`${name}-label`}
               id={`${name}-select`}
-              value={value || ''}
+              value={value || ""}
               label={label}
               onChange={onChange}
               MenuProps={MenuProps}
