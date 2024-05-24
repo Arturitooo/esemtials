@@ -4,8 +4,7 @@ import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
 import "./TMDetailpage.css";
 import { MyModal } from "../../forms/MyModal";
-import { TMCommentsList } from "./TMComments";
-import { TMAddComment } from "./TMAddComment";
+import { TMComments } from "./TMComments";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -60,75 +59,15 @@ export const TMDetailpage = () => {
   const getSeniorityLabel = (seniorityCode) => {
     switch (seniorityCode) {
       case "intern":
-        return (
-          <>
-            <SignalWifi0BarIcon
-              sx={{
-                fontSize: "medium",
-                position: "relative",
-                top: "2px",
-                marginRight: "4px",
-              }}
-            />
-            {"Internship"}
-          </>
-        );
+        return <>{"Internship"}</>;
       case "junior":
-        return (
-          <>
-            <NetworkWifi1BarIcon
-              sx={{
-                fontSize: "small",
-                position: "relative",
-                top: "2px",
-                marginRight: "4px",
-              }}
-            />
-            {"Junior"}
-          </>
-        );
+        return <>{"Junior"}</>;
       case "regular":
-        return (
-          <>
-            <NetworkWifi3BarIcon
-              sx={{
-                fontSize: "small",
-                position: "relative",
-                top: "2px",
-                marginRight: "4px",
-              }}
-            />
-            {"Medium"}
-          </>
-        );
+        return <>{"Medium"}</>;
       case "senior":
-        return (
-          <>
-            <NetworkWifiIcon
-              sx={{
-                fontSize: "small",
-                position: "relative",
-                top: "2px",
-                marginRight: "4px",
-              }}
-            />
-            {"Senior"}
-          </>
-        );
+        return <>{"Senior"}</>;
       case "expert":
-        return (
-          <>
-            <SignalWifi4BarIcon
-              sx={{
-                fontSize: "small",
-                position: "relative",
-                top: "2px",
-                marginRight: "4px",
-              }}
-            />
-            {"Expert"}
-          </>
-        );
+        return <>{"Expert"}</>;
       default:
         return seniorityCode;
     }
@@ -265,15 +204,12 @@ export const TMDetailpage = () => {
               </div>
             </CardContent>
           </Card>
-          <TMCommentsList
-            userData={userData.id}
-            tm_id={id}
-            key={commentsRefreshKey}
-          />
-          <TMAddComment
+
+          <TMComments
             userData={userData.id}
             tm_id={id}
             onCommentAdded={handleCommentAdded}
+            key={commentsRefreshKey}
           />
         </div>
       )}

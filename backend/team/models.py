@@ -57,3 +57,4 @@ class TeamMemberComment(models.Model):
     teammember = models.ForeignKey(Teammember, on_delete=models.CASCADE, default=None)
     isPositive = models.BooleanField(null=False, blank=False)
     commentContent = models.TextField(max_length=1024, null=False, blank=False)
+    updateDate = models.DateTimeField(null=False)
