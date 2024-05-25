@@ -74,7 +74,7 @@ def password_reset_token_created(reset_password_token, *args, **kwargs):
 
     context = {"full_link": full_link, "email_adress": reset_password_token.user.email}
 
-    html_message = render_to_string("backend/resetpw_email.html", context=context)
+    html_message = render_to_string("emails/resetpw_email.html", context=context)
     plain_message = strip_tags(html_message)
 
     msg = EmailMultiAlternatives(
