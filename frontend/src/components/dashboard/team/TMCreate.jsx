@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import { MyTextField } from "../../forms/MyTextField";
 import { MySelectField } from "../../forms/MySelectField";
@@ -17,6 +19,14 @@ export const TMCreate = () => {
   const { userData } = UserInfo();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
+  const schema = yup.object({
+    name: yup.string().required("Name is a required field"),
+    lname: yup.string().required("Last name is a required field"),
+    position: yup.string().required("Position is a required field"),
+    seniority: yup.string(),
+    joining_date: yup.date(),
+    summary: yup.string(),
+  });
   const { handleSubmit, control } = useForm({
     defaultValues: {
       name: "",
@@ -27,6 +37,7 @@ export const TMCreate = () => {
       joining_date: null,
       summary: "",
     },
+    resolver: yupResolver(schema),
   });
 
   const submission = async (data) => {
@@ -130,11 +141,11 @@ export const TMCreate = () => {
       <h2>Create team member</h2>
       <Box sx={{ padding: "10px", backgroundColor: "white" }}>
         <form onSubmit={handleSubmit(submission)} encType="multipart/form-data">
-          <MyTextField label={"Name"} name={"name"} control={control} />
-          <MyTextField label={"Last name"} name={"lname"} control={control} />
+          <MyTextField label={"Name*"} name={"name"} control={control} />
+          <MyTextField label={"Last name*"} name={"lname"} control={control} />
           <MySelectField
             options={optionsPosition}
-            label={"Position"}
+            label={"Position*"}
             name={"position"}
             control={control}
           />

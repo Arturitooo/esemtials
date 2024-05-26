@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import AxiosInstance from "../../AxiosInstance";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import { MyMultilineTextField } from "../../forms/MyMultilineTextField";
 import { MySelectField } from "../../forms/MySelectField";
@@ -20,7 +22,17 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [commentToDeleteId, setCommentToDeleteId] = useState(null);
-  const { handleSubmit, control, reset } = useForm();
+  const schema = yup.object({
+    comment: yup
+      .string()
+      .required("You need to provide comment content to submit"),
+    positive: yup
+      .string()
+      .required("You need to choose if it's positive or negative comment"),
+  });
+  const { handleSubmit, control, reset } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const GetComments = (id) => {
     const url = `team/teammember-comment/?id=${id}`;

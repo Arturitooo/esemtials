@@ -6,14 +6,23 @@ import { MyContainedButton } from "./forms/MyContainedButton";
 import { MyTextButton } from "./forms/MyTextButton";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import React, { useState } from "react";
 import AxiosInstance from "./AxiosInstance";
 import { MyMessage } from "./forms/MyMessage";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { handleSubmit, control } = useForm();
   const [showMessage, setShowMessage] = useState(false);
+  const schema = yup.object({
+    email: yup
+      .string()
+      .email("Provide correct email address")
+      .required("Email is a required field"),
+    password: yup.string().required("Password is a required field"),
+  });
+  const { handleSubmit, control } = useForm({ resolver: yupResolver(schema) });
 
   const submission = (data) => {
     AxiosInstance.post("login/", {
