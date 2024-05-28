@@ -107,6 +107,10 @@ export const TMDetailpage = () => {
     setCommentsRefreshKey((prevKey) => prevKey + 1);
   };
 
+  const handleEditClick = () => {
+    navigate(`/team/member/update/${id}`, { state: { tmData } });
+  };
+
   return (
     <div>
       {loading ? (
@@ -190,7 +194,11 @@ export const TMDetailpage = () => {
                   </div>
                 </div>
                 <div className="team-member__content--actions">
-                  <Button variant="outlined" startIcon={<EditIcon />}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<EditIcon />}
+                    onClick={handleEditClick}
+                  >
                     Edit details
                   </Button>
                   <Button
