@@ -25,7 +25,12 @@ TM_SENIORITY = [
 
 
 class Teammember(models.Model):
-    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
+    created_by = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, blank=False, null=False
+    )
+    project = models.ForeignKey(
+        "dashboard.Project", on_delete=models.CASCADE, blank=False, null=False
+    )
     tm_name = models.CharField(max_length=64, blank=False, null=False)
     tm_lname = models.CharField(max_length=128, blank=False, null=False)
     tm_seniority = models.CharField(
