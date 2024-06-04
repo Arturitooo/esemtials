@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { AccountMenuNavbar } from "./AccountMenuNavbar";
+import "./Navbar.css";
+import logo from "../../assets/smtials_logo.png";
+import { ProjectSelectField } from "./ProjectSelectField";
+
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -19,11 +25,6 @@ import GroupIcon from "@mui/icons-material/Group";
 import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-
-import { useNavigate, Link, useLocation } from "react-router-dom";
-import { AccountMenuNavbar } from "./AccountMenuNavbar";
-import "./Navbar.css";
-import logo from "../../assets/smtials_logo.png";
 
 const drawerWidth = 240;
 
@@ -192,6 +193,12 @@ export function Navbar(props) {
               )}
             </IconButton>
           </DrawerHeader>
+          <Divider />
+          <Box
+            sx={{ display: "flex", marginLeft: "10px", marginRight: "10px" }}
+          >
+            <ProjectSelectField />
+          </Box>
           <Divider />
           <List className="main-navbar__list">
             {/* <ListItem key={1} disablePadding>

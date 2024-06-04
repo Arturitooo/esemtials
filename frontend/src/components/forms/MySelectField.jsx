@@ -17,12 +17,15 @@ const MenuProps = {
   },
 };
 
-export function MySelectField({ options, label, name, control }) {
+export function MySelectField({ options, label, name, control, onChange }) {
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
+      render={({
+        field: { onChange: controllerOnChange, value },
+        fieldState: { error },
+      }) => (
         <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth error={!!error}>
             <InputLabel id={`${name}-label`}>{label}</InputLabel>
@@ -31,7 +34,12 @@ export function MySelectField({ options, label, name, control }) {
               id={`${name}-select`}
               value={value || ""}
               label={label}
-              onChange={onChange}
+              onChange={(event) => {
+                controllerOnChange(event);
+                if (onChange) {
+                  onChange(event);
+                }
+              }}
               MenuProps={MenuProps}
             >
               {options.map((option, index) => (
@@ -57,4 +65,5 @@ MySelectField.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   control: PropTypes.object.isRequired,
+  onChange: PropTypes.func,
 };
