@@ -195,7 +195,12 @@ export function Navbar(props) {
           </DrawerHeader>
           <Divider />
           <Box
-            sx={{ display: "flex", marginLeft: "10px", marginRight: "10px" }}
+            sx={{
+              display: "flex",
+              marginTop: "10px",
+              marginLeft: "10px",
+              marginRight: "10px",
+            }}
           >
             <ProjectSelectField />
           </Box>
