@@ -1,25 +1,42 @@
 import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import AxiosInstance from "../AxiosInstance";
 import { MyModal } from "../forms/MyModal";
-import { FormControl, Select, MenuItem } from "@mui/material";
+import { UserInfo } from "../UserInfo";
+import { FormControl, Select, MenuItem, Box, Button } from "@mui/material";
+import { MyTextField } from "../forms/MyTextField";
+import { MyMultilineTextField } from "../forms/MyMultilineTextField";
+import { MyToastMessage } from "../forms/MyToastMessage";
+
+const schema = yup.object({
+  projectName: yup.string().required("Project name is required"),
+  projectDescription: yup.string(),
+});
 
 export const ProjectSelectField = () => {
   const [loading, setLoading] = useState(true);
+  const { userData } = UserInfo();
   const [projectList, setProjectList] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const { handleSubmit, control, reset } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const [toast, setToast] = useState({ open: false, type: "", content: "" });
 
   const GetProjectsList = async () => {
     try {
       const res = await AxiosInstance.get("dashboard/project/list/");
       const data = res.data;
       setProjectList(data);
-      const savedProject = localStorage.getItem("project_id");
+      const savedProject = localStorage.getItem("selectedProjectId");
       if (
         savedProject &&
         data.some((project) => project.id === Number(savedProject))
       ) {
-        setSelectedProject(Number(savedProject)); // convert savedProject to a number
+        setSelectedProject(Number(savedProject));
       }
     } catch (error) {
       console.error("Error fetching project list:", error);
@@ -33,16 +50,50 @@ export const ProjectSelectField = () => {
   }, []);
 
   const handleChange = (event) => {
-    if (event.target.value === "new") {
-      setOpenModal(true); // open the modal if "+ New Project" is selected
+    const value = event.target.value;
+    if (value === "new") {
+      setOpenModal(true);
     } else {
-      setSelectedProject(Number(event.target.value));
-      localStorage.setItem("project_id", event.target.value);
+      setSelectedProject(value === "" ? null : value);
+      if (value !== "") {
+        localStorage.setItem("selectedProjectId", value);
+      } else {
+        localStorage.removeItem("selectedProjectId");
+      }
     }
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false); // function to close the modal
+    setOpenModal(false);
+    reset();
+  };
+
+  const handleCreateProject = async (data) => {
+    try {
+      const response = await AxiosInstance.post("dashboard/project/create/", {
+        project_owner: userData.id,
+        project_name: data.projectName,
+        project_description: data.projectDescription,
+        project_created: new Date().toISOString(),
+        project_updated: new Date().toISOString(),
+      });
+      const newProject = response.data;
+      setProjectList([...projectList, newProject]);
+      setSelectedProject(newProject.id);
+      localStorage.setItem("selectedProjectId", newProject.id);
+      handleCloseModal();
+      setToast({
+        open: true,
+        type: "success",
+        content: `You've created a new project named ${data.projectName}`,
+      });
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
+  };
+
+  const handleToastClose = () => {
+    setToast({ ...toast, open: false });
   };
 
   if (loading) {
@@ -50,38 +101,101 @@ export const ProjectSelectField = () => {
   }
 
   return (
-    <FormControl fullWidth size="small">
-      <Select
-        value={selectedProject}
-        onChange={handleChange}
-        displayEmpty
-        inputProps={{ "aria-label": "Without label" }}
-        sx={{
-          ".MuiOutlinedInput-notchedOutline": { borderColor: "#F5F7F9" },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F5F7F9",
-          },
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F5F7F9",
-          },
-          ".MuiSvgIcon-root": { color: "#F5F7F9" },
-          color: "#F5F7F9",
-          opacity: 0.9,
-        }}
-      >
-        <MenuItem value="">
-          <em>Choose a project</em>
-        </MenuItem>
-        {projectList.length > 0 &&
-          projectList.map((project) => (
-            <MenuItem key={project.id} value={project.id}>
-              {project.project_name}
-            </MenuItem>
-          ))}
-        <MenuItem value="new">+ New Project</MenuItem>
-      </Select>
-    </FormControl>
+    <>
+      <FormControl fullWidth size="small">
+        <Select
+          value={selectedProject || ""}
+          onChange={handleChange}
+          displayEmpty
+          inputProps={{ "aria-label": "Without label" }}
+          renderValue={(selected) => {
+            if (selected === "") {
+              return (
+                <span style={{ color: "#F5F7F9", opacity: 0.7 }}>
+                  Choose a project
+                </span>
+              );
+            }
+            const selectedProject = projectList.find(
+              (project) => project.id === selected
+            );
+            return selectedProject ? selectedProject.project_name : "";
+          }}
+          sx={{
+            ".MuiOutlinedInput-notchedOutline": { borderColor: "#F5F7F9" },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#F5F7F9",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#F5F7F9",
+            },
+            ".MuiSvgIcon-root": { color: "#F5F7F9" },
+            color: "#F5F7F9",
+            opacity: 0.9,
+            width: "100%",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {projectList &&
+            projectList.length > 0 &&
+            projectList.map((project) => (
+              <MenuItem
+                key={project.id}
+                value={project.id}
+                sx={{ fontFamily: "Arial", fontSize: "16px" }}
+              >
+                {project.project_name}
+              </MenuItem>
+            ))}
+          <MenuItem value="new">+ New Project</MenuItem>
+        </Select>
+      </FormControl>
 
-    // Modal to create a new project TBD
+      <MyModal
+        open={openModal}
+        handleClose={handleCloseModal}
+        title="Create New Project"
+        content={
+          <Box sx={{ padding: "10px", backgroundColor: "white" }}>
+            <form onSubmit={handleSubmit(handleCreateProject)}>
+              <MyTextField
+                label="Project Name*"
+                name="projectName"
+                control={control}
+              />
+              <MyMultilineTextField
+                label="Project Description"
+                name="projectDescription"
+                control={control}
+              />
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 2,
+                  mt: 2,
+                }}
+              >
+                <Button variant="contained" color="primary" type="submit">
+                  Create
+                </Button>
+                <Button variant="outlined" onClick={handleCloseModal}>
+                  Back
+                </Button>
+              </Box>
+            </form>
+          </Box>
+        }
+        actions={[]}
+      />
+
+      <MyToastMessage
+        type={toast.type}
+        content={toast.content}
+        open={toast.open}
+        handleClose={handleToastClose}
+      />
+    </>
   );
 };

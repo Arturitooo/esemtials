@@ -62,6 +62,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         # Automatically set project_owner to current user
         validated_data["project_owner"] = self.context["request"].user
         validated_data["project_created"] = timezone.now()
+        project = Project.objects.create(**validated_data)
+        return project
 
     def update(self, instance, validated_data):
         # Update project_updated date to now
