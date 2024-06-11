@@ -28,6 +28,21 @@ export const Team = () => {
   const [emptyState, setEmptyState] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+
+  useEffect(() => {
+    const storedProjectId = localStorage.getItem("selectedProjectId");
+    if (storedProjectId) {
+      setSelectedProjectId(storedProjectId);
+      GetData(storedProjectId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedProjectId) {
+      GetData(selectedProjectId);
+    }
+  }, [selectedProjectId, location.state]);
 
   const getRoleLabel = (roleCode) => {
     switch (roleCode) {
@@ -37,6 +52,8 @@ export const Team = () => {
         return "Frontend Developer";
       case "be_dev":
         return "Backend Developer";
+      case "fs_dev":
+        return "Fullstack Developer";
       case "devops":
         return "DevOps";
       case "des":
@@ -128,25 +145,21 @@ export const Team = () => {
     }
   };
 
-  const GetData = () => {
-    AxiosInstance.get("team/teammember/").then((res) => {
-      setTeamData(res.data);
-      {
-        res.data.length == 0 ? setEmptyState(true) : null;
-      }
-      setLoading(false);
-    });
+  const GetData = (projectId) => {
+    AxiosInstance.get("team/teammember/")
+      .then((res) => {
+        const filteredTeamMembers = res.data.filter(
+          (member) => member.project === Number(projectId)
+        );
+        setTeamData(filteredTeamMembers);
+        setEmptyState(filteredTeamMembers.length === 0);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching team members:", error);
+        setLoading(false);
+      });
   };
-
-  useEffect(() => {
-    GetData();
-  }, []);
-
-  useEffect(() => {
-    if (location.state?.refetch) {
-      GetData();
-    }
-  }, [location.state]);
 
   return (
     <div>

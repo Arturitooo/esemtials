@@ -12,11 +12,6 @@ import Button from "@mui/material/Button";
 
 //icons
 import Face6Icon from "@mui/icons-material/Face6";
-import SignalWifi0BarIcon from "@mui/icons-material/SignalWifi0Bar";
-import NetworkWifi1BarIcon from "@mui/icons-material/NetworkWifi1Bar";
-import NetworkWifi3BarIcon from "@mui/icons-material/NetworkWifi3Bar";
-import NetworkWifiIcon from "@mui/icons-material/NetworkWifi";
-import SignalWifi4BarIcon from "@mui/icons-material/SignalWifi4Bar";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -41,6 +36,8 @@ export const TMDetailpage = () => {
         return "Frontend Developer";
       case "be_dev":
         return "Backend Developer";
+      case "fs_dev":
+        return "Fullstack Developer";
       case "devops":
         return "DevOps";
       case "des":
@@ -105,6 +102,10 @@ export const TMDetailpage = () => {
 
   const handleCommentAdded = () => {
     setCommentsRefreshKey((prevKey) => prevKey + 1);
+  };
+
+  const handleEditClick = () => {
+    navigate(`/team/member/update/${id}`, { state: { tmData } });
   };
 
   return (
@@ -190,7 +191,11 @@ export const TMDetailpage = () => {
                   </div>
                 </div>
                 <div className="team-member__content--actions">
-                  <Button variant="outlined" startIcon={<EditIcon />}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<EditIcon />}
+                    onClick={handleEditClick}
+                  >
                     Edit details
                   </Button>
                   <Button

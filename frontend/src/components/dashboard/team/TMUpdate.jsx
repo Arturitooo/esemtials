@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import dayjs from "dayjs";
@@ -17,22 +17,23 @@ import { MyContainedButton } from "../../forms/MyContainedButton";
 
 import { Box } from "@mui/material";
 
-export const TMCreate = () => {
+export const TMUpdate = () => {
   const { userData } = UserInfo();
+  const location = useLocation();
+  const { tmData } = location.state || {};
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
-  const schema = yup.object().shape({
+
+  const schema = yup.object({
     name: yup.string().required("Name is a required field"),
     lname: yup.string().required("Last name is a required field"),
     position: yup.string().required("Position is a required field"),
     seniority: yup.string(),
-    joining_date: yup
-      .date()
-      .nullable()
-      .required("You need to provide the joining date"),
+    joining_date: yup.date(),
     summary: yup.string(),
   });
-  const { handleSubmit, control } = useForm({
+
+  const { handleSubmit, control, reset } = useForm({
     defaultValues: {
       name: "",
       lname: "",
@@ -41,17 +42,28 @@ export const TMCreate = () => {
       stack: [],
       joining_date: null,
       summary: "",
-      project: "",
     },
     resolver: yupResolver(schema),
   });
 
   dayjs.extend(utc);
 
+  useEffect(() => {
+    reset({
+      name: tmData.tm_name,
+      lname: tmData.tm_lname,
+      position: tmData.tm_position,
+      seniority: tmData.tm_seniority,
+      stack: tmData.tm_stack,
+      joining_date: dayjs.utc(tmData.tm_joined),
+      summary: tmData.tm_summary,
+    });
+  }, [tmData, reset]);
+
   const submission = async (data) => {
     try {
       const formattedJoiningDate = data.joining_date
-        ? dayjs(data.joining_date).format("YYYY-MM-DD")
+        ? data.joining_date.toISOString().substring(0, 10)
         : null;
       const savedProject = localStorage.getItem("selectedProjectId");
       const formData = new FormData();
@@ -68,14 +80,18 @@ export const TMCreate = () => {
       }
       formData.append("created_by", userData.id);
 
-      const res = await AxiosInstance.post("team/teammember/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await AxiosInstance.put(
+        `team/teammember/${tmData.id}/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       navigate(`/team/member/${res.data.id}`);
     } catch (error) {
-      console.error("Can't create new team member", error);
+      console.error("Can't update the team member data", error);
     }
   };
 
@@ -150,7 +166,13 @@ export const TMCreate = () => {
 
   return (
     <Box>
-      <h2>Create team member</h2>
+      <h2>
+        Update{" "}
+        <b>
+          {tmData.tm_name} {tmData.tm_lname}
+        </b>{" "}
+        profile
+      </h2>
       <Box sx={{ padding: "10px", backgroundColor: "white" }}>
         <form onSubmit={handleSubmit(submission)} encType="multipart/form-data">
           <MyTextField label={"Name*"} name={"name"} control={control} />
@@ -174,7 +196,7 @@ export const TMCreate = () => {
             control={control}
           />
           <MyDatePicker
-            label="Joining date*"
+            label="Joining date"
             name={"joining_date"}
             control={control}
           />

@@ -9,10 +9,54 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import permissions
 
-from .models import Note
-from .serializers import NoteSerializer
+from .models import Project, Note
+from .serializers import ProjectSerializer, NoteSerializer
 
 # Create your views here.
+
+# Project APIs
+
+
+class ProjectCreateAPIView(CreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save()  # Automatically sets project_owner, project_name, and project_updated
+
+
+class ProjectListAPIView(ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Project.objects.filter(project_owner=user).order_by("-project_updated")
+
+
+class ProjectDetailAPIView(RetrieveAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class ProjectUpdateAPIView(UpdateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_update(self, serializer):
+        serializer.save()  # Automatically updates project_updated
+
+
+class ProjectDeleteAPIView(DestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# NoteAPIs
 
 
 class IsNoteOwner(permissions.BasePermission):

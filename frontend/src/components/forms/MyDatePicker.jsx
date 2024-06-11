@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Controller } from 'react-hook-form';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { TextField } from '@mui/material'; 
-import PropTypes from 'prop-types';
+import * as React from "react";
+import { Controller } from "react-hook-form";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { TextField } from "@mui/material";
+import PropTypes from "prop-types";
 
 export function MyDatePicker({ label, name, control }) {
   return (
@@ -12,13 +12,9 @@ export function MyDatePicker({ label, name, control }) {
         name={name}
         control={control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <DatePicker
-            label={label}
-            value={value || null}
-            onChange={onChange}
-          >
+          <DatePicker label={label} value={value || null} onChange={onChange}>
             {({ inputRef, inputProps, openPicker }) => (
-              <TextField 
+              <TextField
                 {...inputProps}
                 error={!!error}
                 helperText={error ? error.message : null}

@@ -31,6 +31,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 
 const NotesRTE = ({ limitHeight }) => {
   const [loading, setLoading] = useState(true);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [myNotesList, setMyNotesList] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -42,17 +43,33 @@ const NotesRTE = ({ limitHeight }) => {
   const editorRef = React.createRef();
 
   useEffect(() => {
-    GetNotesList();
+    const storedProjectId = localStorage.getItem("selectedProjectId");
+    if (storedProjectId) {
+      setSelectedProjectId(storedProjectId);
+      GetNotesList(storedProjectId);
+    }
   }, []);
 
-  const GetNotesList = () => {
+  useEffect(() => {
+    if (selectedProjectId) {
+      GetNotesList(selectedProjectId);
+    }
+  }, [selectedProjectId]);
+
+  const GetNotesList = (projectId) => {
     AxiosInstance.get("dashboard/note/list/")
       .then((res) => {
-        setMyNotesList(res.data);
+        const filteredNotes = res.data.filter(
+          (note) => note.project === Number(projectId)
+        );
+        setMyNotesList(filteredNotes);
         setLoading(false);
-        if (res.data.length > 0) {
-          setSelectedNote(res.data[0]);
-          fetchNoteContent(res.data[0]);
+        if (filteredNotes.length > 0) {
+          setSelectedNote(filteredNotes[0]);
+          fetchNoteContent(filteredNotes[0]);
+        } else {
+          setSelectedNote(null);
+          setEditorState(EditorState.createEmpty());
         }
       })
       .catch((error) => {
@@ -153,12 +170,13 @@ const NotesRTE = ({ limitHeight }) => {
     const newNote = {
       note_updated: new Date().toISOString(),
       note_owner: userData.id,
+      project: Number(selectedProjectId),
     };
 
     AxiosInstance.post("dashboard/note/create/", newNote)
       .then((res) => {
         console.log("New note created successfully:", res.data.note_name);
-        GetNotesList();
+        GetNotesList(selectedProjectId);
         handleEditNoteName();
       })
       .catch((error) => {
@@ -181,7 +199,7 @@ const NotesRTE = ({ limitHeight }) => {
       .then((res) => {
         console.log("Note name updated successfully:", res.data.note_name);
         setEditingNoteName(false); // Disable editing mode
-        GetNotesList();
+        GetNotesList(selectedProjectId);
         fetchNoteContent(updatedNote);
       })
       .catch((error) => {
@@ -205,11 +223,20 @@ const NotesRTE = ({ limitHeight }) => {
       .then((res) => {
         console.log("Note deleted successfully");
         setDeleteModalOpen(false);
-        GetNotesList();
+        GetNotesList(selectedProjectId);
       })
       .catch((error) => {
         console.error("Error while deleting note", error);
       });
+  };
+
+  const handleProjectChange = (projectId) => {
+    setSelectedProjectId(projectId);
+    localStorage.setItem("selectedProjectId", projectId);
+    setMyNotesList(null);
+    setSelectedNote(null);
+    setEditorState(EditorState.createEmpty());
+    GetNotesList(projectId);
   };
 
   let className = "RichEditor-editor";
