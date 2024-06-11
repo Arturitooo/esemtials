@@ -65,6 +65,7 @@ export const TMUpdate = () => {
       const formattedJoiningDate = data.joining_date
         ? data.joining_date.toISOString().substring(0, 10)
         : null;
+      const savedProject = localStorage.getItem("selectedProjectId");
       const formData = new FormData();
       formData.append("tm_name", data.name);
       formData.append("tm_lname", data.lname);
@@ -73,6 +74,7 @@ export const TMUpdate = () => {
       formData.append("tm_stack", JSON.stringify(data.stack));
       formData.append("tm_joined", formattedJoiningDate);
       formData.append("tm_summary", data.summary);
+      formData.append("project", savedProject);
       if (image) {
         formData.append("tm_photo", image);
       }

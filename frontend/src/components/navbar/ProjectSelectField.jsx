@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import AxiosInstance from "../AxiosInstance";
+import { Link } from "react-router-dom";
 import { MyModal } from "../forms/MyModal";
 import { UserInfo } from "../UserInfo";
 import { FormControl, Select, MenuItem, Box, Button } from "@mui/material";
@@ -49,6 +50,14 @@ export const ProjectSelectField = () => {
     GetProjectsList();
   }, []);
 
+  useEffect(() => {
+    const savedToast = localStorage.getItem("toastMessage");
+    if (savedToast) {
+      setToast(JSON.parse(savedToast));
+      localStorage.removeItem("toastMessage"); // Clear the toast message from localStorage
+    }
+  }, []);
+
   const handleChange = (event) => {
     const value = event.target.value;
     if (value === "new") {
@@ -57,6 +66,15 @@ export const ProjectSelectField = () => {
       setSelectedProject(value === "" ? null : value);
       if (value !== "") {
         localStorage.setItem("selectedProjectId", value);
+        localStorage.setItem(
+          "toastMessage",
+          JSON.stringify({
+            open: true,
+            type: "informative",
+            content: `You've changed the project`,
+          })
+        );
+        window.location.reload();
       } else {
         localStorage.removeItem("selectedProjectId");
       }
@@ -82,11 +100,15 @@ export const ProjectSelectField = () => {
       setSelectedProject(newProject.id);
       localStorage.setItem("selectedProjectId", newProject.id);
       handleCloseModal();
-      setToast({
-        open: true,
-        type: "success",
-        content: `You've created a new project named ${data.projectName}`,
-      });
+      localStorage.setItem(
+        "toastMessage",
+        JSON.stringify({
+          open: true,
+          type: "success",
+          content: `You've created a new project named ${data.projectName}`,
+        })
+      );
+      window.location.reload();
     } catch (error) {
       console.error("Error creating project:", error);
     }

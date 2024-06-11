@@ -21,12 +21,15 @@ export const TMCreate = () => {
   const { userData } = UserInfo();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
-  const schema = yup.object({
+  const schema = yup.object().shape({
     name: yup.string().required("Name is a required field"),
     lname: yup.string().required("Last name is a required field"),
     position: yup.string().required("Position is a required field"),
     seniority: yup.string(),
-    joining_date: yup.date().required("You need to provide the joining date"),
+    joining_date: yup
+      .date()
+      .nullable()
+      .required("You need to provide the joining date"),
     summary: yup.string(),
   });
   const { handleSubmit, control } = useForm({
@@ -38,6 +41,7 @@ export const TMCreate = () => {
       stack: [],
       joining_date: null,
       summary: "",
+      project: "",
     },
     resolver: yupResolver(schema),
   });
@@ -49,6 +53,7 @@ export const TMCreate = () => {
       const formattedJoiningDate = data.joining_date
         ? dayjs(data.joining_date).format("YYYY-MM-DD")
         : null;
+      const savedProject = localStorage.getItem("selectedProjectId");
       const formData = new FormData();
       formData.append("tm_name", data.name);
       formData.append("tm_lname", data.lname);
@@ -57,6 +62,7 @@ export const TMCreate = () => {
       formData.append("tm_stack", JSON.stringify(data.stack));
       formData.append("tm_joined", formattedJoiningDate);
       formData.append("tm_summary", data.summary);
+      formData.append("project", savedProject);
       if (image) {
         formData.append("tm_photo", image);
       }
@@ -168,7 +174,7 @@ export const TMCreate = () => {
             control={control}
           />
           <MyDatePicker
-            label="Joining date"
+            label="Joining date*"
             name={"joining_date"}
             control={control}
           />

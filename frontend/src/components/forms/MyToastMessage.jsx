@@ -31,6 +31,9 @@ export function MyToastMessage({ type, content, open, handleClose }) {
         ContentProps={{
           sx: {
             backgroundColor: toastBackground[type],
+            alignContent: "center",
+            justifyContent: "center",
+            display: "flex",
           },
         }}
       />

@@ -12,11 +12,6 @@ import Button from "@mui/material/Button";
 
 //icons
 import Face6Icon from "@mui/icons-material/Face6";
-import SignalWifi0BarIcon from "@mui/icons-material/SignalWifi0Bar";
-import NetworkWifi1BarIcon from "@mui/icons-material/NetworkWifi1Bar";
-import NetworkWifi3BarIcon from "@mui/icons-material/NetworkWifi3Bar";
-import NetworkWifiIcon from "@mui/icons-material/NetworkWifi";
-import SignalWifi4BarIcon from "@mui/icons-material/SignalWifi4Bar";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -41,6 +36,8 @@ export const TMDetailpage = () => {
         return "Frontend Developer";
       case "be_dev":
         return "Backend Developer";
+      case "fs_dev":
+        return "Fullstack Developer";
       case "devops":
         return "DevOps";
       case "des":
