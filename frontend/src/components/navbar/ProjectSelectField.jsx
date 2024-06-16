@@ -170,7 +170,14 @@ export const ProjectSelectField = () => {
                 {project.project_name}
               </MenuItem>
             ))}
-          <MenuItem value="new">+ New Project</MenuItem>
+          <MenuItem sx={{ borderTop: "1px dashed black" }} value="">
+            <a
+              href="/manage-projects/"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              Manage Projects
+            </a>
+          </MenuItem>
         </Select>
       </FormControl>
 
