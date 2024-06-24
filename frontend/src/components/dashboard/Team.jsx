@@ -215,7 +215,7 @@ export const Team = () => {
               <Table sx={{ minWidth: 650 }} aria-label="Team members">
                 <TableHead>
                   <TableRow>
-                    <TableCell>ID</TableCell>
+                    <TableCell>Nr.</TableCell>
                     <TableCell>Team Member</TableCell>
                     <TableCell>Role</TableCell>
                     <TableCell>Seniority</TableCell>
