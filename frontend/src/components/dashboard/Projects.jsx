@@ -61,14 +61,18 @@ export const Projects = () => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
+    const toastMessage = JSON.parse(localStorage.getItem("toastMessage"));
     GetProjectsList();
-  }, []);
-
-  useEffect(() => {
-    const savedToast = localStorage.getItem("toastMessage");
-    if (savedToast) {
-      localStorage.removeItem("toastMessage"); // Clear the toast message from localStorage
+    if (toastMessage) {
+      // Show the toast message
+      setToast({
+        open: true,
+        type: toastMessage.type,
+        content: toastMessage.content,
+      });
+      // Remove the message from localStorage to avoid showing it again on next load
+      localStorage.removeItem("toastMessage");
     }
   }, []);
 
@@ -95,17 +99,17 @@ export const Projects = () => {
       setToast({
         open: true,
         type: "success",
-        content: `You've created a new project named ${data.projectName}`,
+        content: `Project created successfully!`,
       });
       handleCloseCreationModal();
       localStorage.setItem(
         "toastMessage",
         JSON.stringify({
-          open: true,
           type: "success",
-          content: `You've created a new project named ${data.projectName}`,
+          content: "Project created successfully!",
         })
       );
+      window.location.reload();
       setProjectData((prevProjects) => [...prevProjects, newProject]);
       setEmptyState(false);
     } catch (error) {
@@ -127,6 +131,14 @@ export const Projects = () => {
         prevProjects.filter((project) => project.id !== selectedProjectId)
       );
       setConfirmProjectDelete(false);
+      localStorage.setItem(
+        "toastMessage",
+        JSON.stringify({
+          type: "success",
+          content: "Project deleted successfully!",
+        })
+      );
+      window.location.reload();
     } catch (error) {
       console.error("Error while deleting project", error);
     }
