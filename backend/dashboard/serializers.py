@@ -68,3 +68,4 @@ class ProjectSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # Update project_updated date to now
         validated_data["project_updated"] = timezone.now()
+        return super().update(instance, validated_data)

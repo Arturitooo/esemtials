@@ -26,6 +26,7 @@ import Paper from "@mui/material/Paper";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 dayjs.extend(localizedFormat);
 
@@ -37,14 +38,26 @@ const schema = yup.object({
 export const Projects = () => {
   const [emptyState, setEmptyState] = useState(false);
   const { userData } = UserInfo();
-  const { handleSubmit, control, reset } = useForm({
-    resolver: yupResolver(schema),
-  });
   const [projectData, setProjectData] = useState([]);
   const [openCreationModal, setOpenCreationModal] = useState(false);
+  const [openEditionModal, setOpenEditionModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [confirmProjectDelete, setConfirmProjectDelete] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedProjectData, setSelectedProjectData] = useState(null);
   const [toast, setToast] = useState({ open: false, type: "", content: "" });
+  const modalTitle = isEditMode ? "Update Project" : "Create New Project";
+  const submitButtonContent = isEditMode ? "Update" : "Create";
+
+  const { handleSubmit, control, reset } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      projectName: isEditMode ? selectedProjectData?.project_name : "",
+      projectDescription: isEditMode
+        ? selectedProjectData?.project_description
+        : "",
+    },
+  });
 
   const GetProjectsList = async () => {
     try {
@@ -65,13 +78,11 @@ export const Projects = () => {
     const toastMessage = JSON.parse(localStorage.getItem("toastMessage"));
     GetProjectsList();
     if (toastMessage) {
-      // Show the toast message
       setToast({
         open: true,
         type: toastMessage.type,
         content: toastMessage.content,
       });
-      // Remove the message from localStorage to avoid showing it again on next load
       localStorage.removeItem("toastMessage");
     }
   }, []);
@@ -117,6 +128,56 @@ export const Projects = () => {
     }
   };
 
+  const handleOpenEditionModal = (project) => {
+    setIsEditMode(true);
+    setSelectedProjectData(project);
+    setSelectedProjectId(project.id);
+    setOpenEditionModal(true);
+    reset({
+      projectName: project.project_name,
+      projectDescription: project.project_description,
+    });
+  };
+
+  const handleCloseEditionModal = () => {
+    setOpenEditionModal(false);
+    setIsEditMode(false);
+    reset();
+  };
+
+  const handleUpdateProject = async (data) => {
+    try {
+      const response = await AxiosInstance.put(
+        `dashboard/project/${selectedProjectId}/update/`,
+        {
+          project_owner: userData.id,
+          project_name: data.projectName,
+          project_description: data.projectDescription,
+          project_created: selectedProjectData.project_created,
+          project_updated: new Date().toISOString(),
+        }
+      );
+      const updatedProject = response.data;
+      localStorage.setItem("selectedProjectId", updatedProject.id);
+      setToast({
+        open: true,
+        type: "success",
+        content: `Project updated successfully!`,
+      });
+      handleCloseEditionModal();
+      localStorage.setItem(
+        "toastMessage",
+        JSON.stringify({
+          type: "success",
+          content: "Project updated successfully!",
+        })
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
+  };
+
   const handleConfirmDeleteProject = (projectId) => {
     setSelectedProjectId(projectId);
     setConfirmProjectDelete(true);
@@ -138,6 +199,7 @@ export const Projects = () => {
           content: "Project deleted successfully!",
         })
       );
+      localStorage.removeItem("selectedProjectId");
       window.location.reload();
     } catch (error) {
       console.error("Error while deleting project", error);
@@ -220,6 +282,22 @@ export const Projects = () => {
                       <TableCell>{formatDate(item.project_created)}</TableCell>
                       <TableCell>{item.project_description}</TableCell>
                       <TableCell>
+                        <EditIcon
+                          style={{
+                            position: "relative",
+                            fontSize: "medium",
+                            marginLeft: "0px",
+                            color: "#1D212F66",
+                            top: "2px",
+                            cursor: "pointer",
+                          }}
+                          onMouseEnter={(e) => (e.target.style.color = "black")}
+                          onMouseLeave={(e) =>
+                            (e.target.style.color = "#1D212F66")
+                          }
+                          onClick={() => handleOpenEditionModal(item)}
+                        />
+
                         <DeleteIcon
                           style={{
                             position: "relative",
@@ -245,12 +323,15 @@ export const Projects = () => {
         )}
       </div>
       <MyModal
-        open={openCreationModal}
-        handleClose={handleCloseCreationModal}
-        title="Create New Project"
+        open={openEditionModal || openCreationModal}
+        title={modalTitle}
         content={
           <Box sx={{ padding: "10px", backgroundColor: "white" }}>
-            <form onSubmit={handleSubmit(handleCreateProject)}>
+            <form
+              onSubmit={handleSubmit(
+                isEditMode ? handleUpdateProject : handleCreateProject
+              )}
+            >
               <MyTextField
                 label="Project Name*"
                 name="projectName"
@@ -270,9 +351,16 @@ export const Projects = () => {
                 }}
               >
                 <Button variant="contained" color="primary" type="submit">
-                  Create
+                  {submitButtonContent}
                 </Button>
-                <Button variant="outlined" onClick={handleCloseCreationModal}>
+                <Button
+                  variant="outlined"
+                  onClick={
+                    isEditMode
+                      ? handleCloseEditionModal
+                      : handleCloseCreationModal
+                  }
+                >
                   Back
                 </Button>
               </Box>
