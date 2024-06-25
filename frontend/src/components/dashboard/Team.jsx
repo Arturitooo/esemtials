@@ -161,6 +161,21 @@ export const Team = () => {
       });
   };
 
+  if (!selectedProjectId) {
+    return (
+      <div>
+        <h1>Team</h1>
+        <Card sx={{ borderRadius: "15px" }}>
+          <CardContent>
+            <p>
+              To use the <b>Team</b> card, please select a project first.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div
@@ -192,15 +207,15 @@ export const Team = () => {
           {emptyState ? (
             <Card>
               <CardContent>
-                <p>You didn't create a team member yet...</p>
+                <p>You didn&apos;t create a team member yet...</p>
               </CardContent>
             </Card>
           ) : (
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} sx={{ borderRadius: "15px" }}>
               <Table sx={{ minWidth: 650 }} aria-label="Team members">
                 <TableHead>
                   <TableRow>
-                    <TableCell>ID</TableCell>
+                    <TableCell>Nr.</TableCell>
                     <TableCell>Team Member</TableCell>
                     <TableCell>Role</TableCell>
                     <TableCell>Seniority</TableCell>

@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import AxiosInstance from "../AxiosInstance";
-import { Link } from "react-router-dom";
 import { MyModal } from "../forms/MyModal";
 import { UserInfo } from "../UserInfo";
 import { FormControl, Select, MenuItem, Box, Button } from "@mui/material";
@@ -170,7 +169,14 @@ export const ProjectSelectField = () => {
                 {project.project_name}
               </MenuItem>
             ))}
-          <MenuItem value="new">+ New Project</MenuItem>
+          <MenuItem sx={{ borderTop: "1px dashed black" }} value="">
+            <a
+              href="/projects/"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              Manage Projects
+            </a>
+          </MenuItem>
         </Select>
       </FormControl>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Home } from "./components/Home";
@@ -15,7 +15,7 @@ import { TMCreate } from "./components/dashboard/team/TMCreate";
 import { TMUpdate } from "./components/dashboard/team/TMUpdate";
 import { PasswordReset } from "./components/PasswordReset";
 import { ConfirmPasswordReset } from "./components/ConfirmPasswordReset";
-import { ManageProjects } from "./components/dashboard/ManageProjects";
+import { Projects } from "./components/dashboard/Projects";
 
 function App() {
   const location = useLocation();
@@ -43,7 +43,7 @@ function App() {
             <Routes>
               <Route element={<ProtectedRoute />}>
                 {/* THESE ARE LINKS UNAVAILABLE WITHOUT LOGGING IN - it redirects now to login - TO DO - CHANGE IT LATER */}
-                <Route path="/manage-projects" element={<ManageProjects />} />
+                <Route path="/projects" element={<Projects />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/notes" element={<NotesFullScreen />} />
                 <Route path="/team" element={<Team />} />

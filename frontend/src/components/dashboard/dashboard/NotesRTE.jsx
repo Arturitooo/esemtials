@@ -16,6 +16,9 @@ import Button from "@mui/material/Button";
 import { UserInfo } from "../../UserInfo";
 import { MyModal } from "../../forms/MyModal";
 
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
 // Import icons
 import FormatBoldIcon from "@mui/icons-material/FormatBold";
 import FormatItalicIcon from "@mui/icons-material/FormatItalic";
@@ -245,6 +248,21 @@ const NotesRTE = ({ limitHeight }) => {
     if (contentState.getBlockMap().first().getType() !== "unstyled") {
       className += " RichEditor-hidePlaceholder";
     }
+  }
+
+  if (!selectedProjectId) {
+    return (
+      <div>
+        <h1>Notes</h1>
+        <Card sx={{ borderRadius: "15px" }}>
+          <CardContent>
+            <p>
+              To create or review <b>Notes</b>, please select a project first.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
