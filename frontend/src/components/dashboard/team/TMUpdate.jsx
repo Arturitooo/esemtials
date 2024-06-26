@@ -23,6 +23,7 @@ export const TMUpdate = () => {
   const { tmData } = location.state || {};
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null); // State to hold image preview URL
 
   const schema = yup.object({
     name: yup.string().required("Name is a required field"),
@@ -58,6 +59,11 @@ export const TMUpdate = () => {
       joining_date: dayjs.utc(tmData.tm_joined),
       summary: tmData.tm_summary,
     });
+
+    // Set image preview if there's an existing image
+    if (tmData.tm_photo) {
+      setImagePreview(tmData.tm_photo);
+    }
   }, [tmData, reset]);
 
   const submission = async (data) => {
@@ -160,8 +166,11 @@ export const TMUpdate = () => {
   ];
 
   function handleImage(e) {
-    console.log(e.target.files);
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file)); // Set the image preview URL
+    }
   }
 
   return (
@@ -205,13 +214,33 @@ export const TMUpdate = () => {
             name={"summary"}
             control={control}
           />
-          <div>
+          <div style={{ marginTop: "10px" }}>
             <input
               type="file"
               accept="image/png, image/jpeg"
               name={"photo"}
               onChange={handleImage}
             />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "10px",
+              justifyContent: "center",
+            }}
+          >
+            {imagePreview && ( // Display the image preview if available
+              <Box
+                component="img"
+                sx={{
+                  width: "50%",
+                  height: "auto",
+                  mt: 2,
+                }}
+                alt="Preview"
+                src={imagePreview}
+              />
+            )}
           </div>
           <MyContainedButton label="Submit" type="submit" />
         </form>

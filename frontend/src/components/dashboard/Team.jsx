@@ -178,120 +178,147 @@ export const Team = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <>
-          <h1>Team</h1>
-        </>
-        <>
-          <Link to="/team/member/create">
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              sx={{ height: "50%" }}
-            >
-              New member
-            </Button>
-          </Link>
-        </>
-      </div>
       {loading ? (
         <p>loading data...</p>
       ) : (
         <div>
           {emptyState ? (
-            <Card>
-              <CardContent>
-                <p>You didn&apos;t create a team member yet...</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <TableContainer component={Paper} sx={{ borderRadius: "15px" }}>
-              <Table sx={{ minWidth: 650 }} aria-label="Team members">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Nr.</TableCell>
-                    <TableCell>Team Member</TableCell>
-                    <TableCell>Role</TableCell>
-                    <TableCell>Seniority</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {teamData.map((item, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <>
+                  <h1>Team</h1>
+                </>
+              </div>
+              <Card sx={{ borderRadius: "15px" }}>
+                <CardContent>
+                  <p>You didn&apos;t create a team member yet...</p>
+                  <Link to="/team/member/create">
+                    <Button
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      sx={{ height: "50%" }}
                     >
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            columnGap: "12px",
-                          }}
-                        >
-                          {item.tm_photo ? (
-                            <div
-                              style={{
-                                height: "50px",
-                                width: "50px",
-                                overflow: "hidden",
-                                borderRadius: "30px",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <img
-                                src={`http://127.0.0.1:8000${item.tm_photo}`}
-                                alt="Team member photo"
-                                style={{
-                                  minWidth: "50px",
-                                  minHeight: "50px",
-                                  objectFit: "cover",
-                                  objectPosition: "center",
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                height: "50px",
-                                width: "50px",
-                                border: "solid rgba(29, 33, 47, 0.1) 2px",
-                                borderRadius: "30px",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Face6Icon style={{ opacity: "40%" }} />
-                            </div>
-                          )}
-                          {item.tm_lname} {item.tm_name}
-                        </div>
-                      </TableCell>
-                      <TableCell>{getRoleLabel(item.tm_position)}</TableCell>
-                      <TableCell>
-                        {getSeniorityLabel(item.tm_seniority)}
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/team/member/${item.id}`}>
-                          <MyTextButton label="Details" />
-                        </Link>
-                      </TableCell>
+                      New member
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <>
+                  <h1>Team</h1>
+                </>
+                <>
+                  <Link to="/team/member/create">
+                    <Button
+                      variant="outlined"
+                      startIcon={<AddIcon />}
+                      sx={{ height: "50%" }}
+                    >
+                      New member
+                    </Button>
+                  </Link>
+                </>
+              </div>
+
+              <TableContainer component={Paper} sx={{ borderRadius: "15px" }}>
+                <Table sx={{ minWidth: 650 }} aria-label="Team members">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nr.</TableCell>
+                      <TableCell>Team Member</TableCell>
+                      <TableCell>Role</TableCell>
+                      <TableCell>Seniority</TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {teamData.map((item, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              columnGap: "12px",
+                            }}
+                          >
+                            {item.tm_photo ? (
+                              <div
+                                style={{
+                                  height: "50px",
+                                  width: "50px",
+                                  overflow: "hidden",
+                                  borderRadius: "30px",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <img
+                                  src={`http://127.0.0.1:8000${item.tm_photo}`}
+                                  alt="Team member photo"
+                                  style={{
+                                    minWidth: "50px",
+                                    minHeight: "50px",
+                                    objectFit: "cover",
+                                    objectPosition: "center",
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div
+                                style={{
+                                  height: "50px",
+                                  width: "50px",
+                                  border: "solid rgba(29, 33, 47, 0.1) 2px",
+                                  borderRadius: "30px",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Face6Icon style={{ opacity: "40%" }} />
+                              </div>
+                            )}
+                            {item.tm_lname} {item.tm_name}
+                          </div>
+                        </TableCell>
+                        <TableCell>{getRoleLabel(item.tm_position)}</TableCell>
+                        <TableCell>
+                          {getSeniorityLabel(item.tm_seniority)}
+                        </TableCell>
+                        <TableCell>
+                          <Link to={`/team/member/${item.id}`}>
+                            <MyTextButton label="Details" />
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           )}
         </div>
       )}

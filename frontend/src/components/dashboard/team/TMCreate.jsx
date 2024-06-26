@@ -21,6 +21,8 @@ export const TMCreate = () => {
   const { userData } = UserInfo();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null); // State to hold image preview URL
+
   const schema = yup.object().shape({
     name: yup.string().required("Name is a required field"),
     lname: yup.string().required("Last name is a required field"),
@@ -32,6 +34,7 @@ export const TMCreate = () => {
       .required("You need to provide the joining date"),
     summary: yup.string(),
   });
+
   const { handleSubmit, control } = useForm({
     defaultValues: {
       name: "",
@@ -144,8 +147,11 @@ export const TMCreate = () => {
   ];
 
   function handleImage(e) {
-    console.log(e.target.files);
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file)); // Set the image preview URL
+    }
   }
 
   return (
@@ -183,13 +189,33 @@ export const TMCreate = () => {
             name={"summary"}
             control={control}
           />
-          <div>
+          <div style={{ marginTop: "10px" }}>
             <input
               type="file"
               accept="image/png, image/jpeg"
               name={"photo"}
               onChange={handleImage}
             />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginBottom: "10px",
+              justifyContent: "center",
+            }}
+          >
+            {imagePreview && ( // Display the image preview if available
+              <Box
+                component="img"
+                sx={{
+                  width: "50%",
+                  height: "auto",
+                  mt: 2,
+                }}
+                alt="Preview"
+                src={imagePreview}
+              />
+            )}
           </div>
           <MyContainedButton label="Submit" type="submit" />
         </form>
