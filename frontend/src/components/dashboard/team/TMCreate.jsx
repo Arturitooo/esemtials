@@ -26,10 +26,7 @@ export const TMCreate = () => {
     lname: yup.string().required("Last name is a required field"),
     position: yup.string().required("Position is a required field"),
     seniority: yup.string(),
-    joining_date: yup
-      .date()
-      .nullable()
-      .required("You need to provide the joining date"),
+    joining_date: yup.date().nullable(),
     summary: yup.string(),
   });
   const { handleSubmit, control } = useForm({
@@ -60,7 +57,9 @@ export const TMCreate = () => {
       formData.append("tm_seniority", data.seniority);
       formData.append("tm_position", data.position);
       formData.append("tm_stack", JSON.stringify(data.stack));
-      formData.append("tm_joined", formattedJoiningDate);
+      if (data.joining_date) {
+        formData.append("tm_joined", formattedJoiningDate);
+      }
       formData.append("tm_summary", data.summary);
       formData.append("project", savedProject);
       if (image) {
