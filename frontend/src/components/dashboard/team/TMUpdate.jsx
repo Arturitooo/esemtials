@@ -78,7 +78,9 @@ export const TMUpdate = () => {
       formData.append("tm_seniority", data.seniority);
       formData.append("tm_position", data.position);
       formData.append("tm_stack", JSON.stringify(data.stack));
-      formData.append("tm_joined", formattedJoiningDate);
+      if (data.joining_date) {
+        formData.append("tm_joined", formattedJoiningDate);
+      }
       formData.append("tm_summary", data.summary);
       formData.append("project", savedProject);
       if (image) {
