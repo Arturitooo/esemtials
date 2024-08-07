@@ -9,6 +9,10 @@ import { FormControl, Select, MenuItem, Box, Button } from "@mui/material";
 import { MyTextField } from "../forms/MyTextField";
 import { MyMultilineTextField } from "../forms/MyMultilineTextField";
 import { MyToastMessage } from "../forms/MyToastMessage";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
+
+
 
 const schema = yup.object({
   projectName: yup.string().required("Project name is required"),
@@ -169,12 +173,14 @@ export const ProjectSelectField = () => {
                 {project.project_name}
               </MenuItem>
             ))}
-          <MenuItem sx={{ borderTop: "1px dashed black" }} value="">
-            <a
-              href="/projects/"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              Manage Projects
+            <hr/>
+          <MenuItem value="">
+            <a href="/projects/">
+              <Button 
+                startIcon={<WorkHistoryOutlinedIcon className="icon-M"/>}
+              >
+                Manage Projects
+              </Button>
             </a>
           </MenuItem>
         </Select>

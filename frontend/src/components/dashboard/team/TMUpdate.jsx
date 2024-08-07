@@ -184,8 +184,28 @@ export const TMUpdate = () => {
         </b>{" "}
         profile
       </h2>
-      <Box sx={{ padding: "10px", backgroundColor: "white" }}>
+      <Box className="form-container" sx={{ backgroundColor: "white" }}>
         <form onSubmit={handleSubmit(submission)} encType="multipart/form-data">
+          <div className="photo-upload">
+            <div>
+              {imagePreview && ( // Display the image preview if available
+                <Box
+                  component="img"
+                  alt="Preview"
+                  src={imagePreview}
+                  class="photo-upload__photo"
+                />
+              )}
+            </div>
+            <div>
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                name={"photo"}
+                onChange={handleImage}
+              />
+            </div>
+          </div>
           <MyTextField label={"Name*"} name={"name"} control={control} />
           <MyTextField label={"Last name*"} name={"lname"} control={control} />
           <MySelectField
@@ -216,34 +236,7 @@ export const TMUpdate = () => {
             name={"summary"}
             control={control}
           />
-          <div style={{ marginTop: "10px" }}>
-            <input
-              type="file"
-              accept="image/png, image/jpeg"
-              name={"photo"}
-              onChange={handleImage}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              marginBottom: "10px",
-              justifyContent: "center",
-            }}
-          >
-            {imagePreview && ( // Display the image preview if available
-              <Box
-                component="img"
-                sx={{
-                  width: "50%",
-                  height: "auto",
-                  mt: 2,
-                }}
-                alt="Preview"
-                src={imagePreview}
-              />
-            )}
-          </div>
+          
           <MyContainedButton label="Submit" type="submit" />
         </form>
       </Box>

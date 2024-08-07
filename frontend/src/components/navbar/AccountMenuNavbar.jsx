@@ -142,7 +142,7 @@ export function AccountMenuNavbar() {
                 }}
               >
                 <ListItemIcon>
-                  <WorkHistoryOutlinedIcon />
+                  <WorkHistoryOutlinedIcon className="icon-S inline-icon"/>
                 </ListItemIcon>
                 Manage Projects
               </Link>
@@ -150,7 +150,7 @@ export function AccountMenuNavbar() {
 
             <MenuItem onClick={handleLogoutAndClose}>
               <ListItemIcon>
-                <Logout fontSize="small" />
+                <Logout className="icon-S inline-icon"/>
               </ListItemIcon>
               Logout
             </MenuItem>

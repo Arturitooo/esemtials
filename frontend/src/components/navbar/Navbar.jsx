@@ -119,7 +119,7 @@ export function Navbar(props) {
   const path = location.pathname;
   const navigate = useNavigate();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [authenticated, setAuthenticated] = React.useState(false);
 
   const isTeamSelected =
@@ -170,7 +170,7 @@ export function Navbar(props) {
                 ...(open && { display: "none" }),
               }}
             >
-              {open ? <ChevronLeftIcon /> : <MenuIcon />}
+              {/* {open ? <ChevronLeftIcon /> : <MenuIcon />} */}
             </IconButton>
           ) : null}
           <Typography variant="h6" noWrap component="div"></Typography>
@@ -185,13 +185,13 @@ export function Navbar(props) {
                 <img src={logo} alt="SMtials logo" width={"60%"} />
               </a>
             </Box>
-            <IconButton onClick={handleDrawerClose}>
+            {/* <IconButton onClick={handleDrawerClose}>
               {theme.direction === "rtl" ? (
                 <ChevronRightIcon sx={{ color: "white" }} />
               ) : (
                 <ChevronLeftIcon sx={{ color: "white" }} />
               )}
-            </IconButton>
+            </IconButton> */}
           </DrawerHeader>
           <Divider />
           <Box

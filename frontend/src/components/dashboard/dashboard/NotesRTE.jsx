@@ -15,6 +15,8 @@ import AxiosInstance from "../../AxiosInstance";
 import Button from "@mui/material/Button";
 import { UserInfo } from "../../UserInfo";
 import { MyModal } from "../../forms/MyModal";
+import chooseProjectImage from "../../../assets/illustrations/pick-a-project.svg";
+
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -254,11 +256,11 @@ const NotesRTE = ({ limitHeight }) => {
     return (
       <div>
         <h1>Notes</h1>
-        <Card sx={{ borderRadius: "15px" }}>
+        <Card className="card empty-state-card">
           <CardContent>
-            <p>
-              To create or review <b>Notes</b>, please select a project first.
-            </p>
+            <img src={chooseProjectImage} alt="choose-project"/>
+            <h2>Choose a project, duh</h2>
+            <p>To create or review <b>Notes</b>, please select a project on the left.</p>
           </CardContent>
         </Card>
       </div>

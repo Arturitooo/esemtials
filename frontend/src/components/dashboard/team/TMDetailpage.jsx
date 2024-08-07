@@ -118,26 +118,10 @@ export const TMDetailpage = () => {
             <CardContent className="team-member__content">
               <div className="team-member__content--photo">
                 {tmData.tm_photo ? (
-                  <div
-                    style={{
-                      height: "180px",
-                      width: "180px",
-                      overflow: "hidden",
-                      borderRadius: "90px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
+                  <div>
                     <img
                       src={tmData.tm_photo}
                       alt="Team member photo"
-                      style={{
-                        minWidth: "180px",
-                        minHeight: "180px",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                      }}
                     />
                   </div>
                 ) : (

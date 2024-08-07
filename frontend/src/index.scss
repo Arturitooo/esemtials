@@ -58,6 +58,9 @@ body {
 
 
 /* Styling global customs */ 
+div.card {
+  border-radius: 15px;
+}
 
 .card-section {
   margin-bottom: 20px;
@@ -75,10 +78,15 @@ body {
   flex-direction: column;
   row-gap: 12px;
   margin-bottom: 20px;
+  padding: 12px;
 
   Button {
     width: max-content;
   }
+}
+
+.action-column {
+  display: flex;
 }
 
 .MuiRadio-root ~ .MuiFormControlLabel-label {
@@ -118,6 +126,23 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  div {
+    height: 180px;
+    width: 180px;
+    overflow: hidden;
+    border-radius: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  img {
+    min-width: 180px;
+    min-height: 180px;
+    object-fit: cover;
+    object-position: center;
+  }
 }
 
 .team-member__content--details {
@@ -135,6 +160,26 @@ body {
   margin-right: 12px;
 }
 
+/* Styling Team Update page */
+
+.photo-upload {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+
+  &__photo {
+    height: 100px;
+    width: 100px;
+    overflow: hidden;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
 
 /* Styling comments */ 
 
@@ -145,4 +190,35 @@ body {
   align-items: center;
   column-gap: 20px;
   padding: 12px;
+}
+
+
+/* Styling empty states */
+
+div.empty-state-card {
+  min-height: 400px;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+
+
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  p {
+    margin-top: 8px;
+  }
+
+  Button {
+    margin-top: 24px;
+  }
+
+  img {
+    width: 150px;
+  }
+
 }
