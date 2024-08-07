@@ -11,6 +11,7 @@ import { MyModal } from "../../forms/MyModal";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -111,9 +112,9 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
     <Box>
       <h2>Comments</h2>
       <div>
-        <Card>
+        <Card className="card-section">
           <CardContent>
-            <div class="form-container">
+            <div className="form-container">
               <h3>Add new comment</h3>
               <form onSubmit={handleSubmit(submission)}>
                 <Box>
@@ -179,19 +180,18 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
                         <p>{commentItem.commentContent}</p>
                       </div>
                     </div>
-                    <Button
-                    variant="text"
-                    onClick={() => handleConfirmDeleteComment(commentItem.id)}
-                    startIcon={<DeleteIcon />}
-                    >
-                      Delete
-                    </Button>
+                    <IconButton 
+                      onClick={() => handleConfirmDeleteComment(commentItem.id)}
+                      color="primary"
+                      >
+                      <DeleteIcon className="icon-M" />
+                    </IconButton>
                   </div>
                  {index < comment.length - 1 && <Divider />}
                 </div>
               ))
             ) : (
-              <p>You didn&apos;t add any comments so far...</p>
+              <p className="no-data">You didn&apos;t add any comments so far...</p>
             )}
           </CardContent>
         </Card>

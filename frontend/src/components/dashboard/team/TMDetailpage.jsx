@@ -114,7 +114,7 @@ export const TMDetailpage = () => {
       ) : (
         <div>
           <h1>Team member</h1>
-          <Card className="team-member__card">
+          <Card className="card-section team-member__card">
             <CardContent className="team-member__content">
               <div className="team-member__content--photo">
                 {tmData.tm_photo ? (
@@ -165,31 +165,52 @@ export const TMDetailpage = () => {
                 <div className="team-member__content--details">
                   <div>
                     <h4>Role</h4>
-                    <p>{getRoleLabel(tmData.tm_position)}</p>
+                    {tmData.tm_position ? (
+                        <p>{getRoleLabel(tmData.tm_position)}</p>
+                      ) : (
+                        <p className="no-data">No data</p>
+                    )}  
                   </div>
                   <div>
                     <h4>Seniority</h4>
-                    <p>{getSeniorityLabel(tmData.tm_seniority)}</p>
-                  </div>
-                  <div>
-                    <h4>Stack</h4>
-                    <ul>
-                      {tmData.tm_stack &&
-                        tmData.tm_stack.map((tech, index) => (
-                          <li key={index}>{tech}</li>
-                        ))}
-                    </ul>
+                    {tmData.tm_seniority ? (
+                        <p>{getSeniorityLabel(tmData.tm_seniority)}</p>
+                      ) : (
+                        <p className="no-data">No data</p>
+                    )}  
                   </div>
                   <div>
                     <h4>Joined</h4>
-                    <p>{tmData.tm_joined}</p>
+                    {tmData.tm_joined ? (
+                      <p>{tmData.tm_joined}</p>
+                    ) : (
+                      <p className="no-data">No data</p>
+                    )}
                   </div>
                   <div>
+                    <h4>Stack</h4>
+                    {tmData.tm_stack.length > 0 ? (
+                        <ul>
+                        {tmData.tm_stack &&
+                          tmData.tm_stack.map((tech, index) => (
+                            <li key={index}>{tech}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="no-data">No data</p>
+                    )}
+                    </div>
+                  <div className="grid-2-columns">
                     <h4>Summary</h4>
-                    <p>{tmData.tm_summary}</p>
+                    {tmData.tm_summary ? (
+                      <p>{tmData.tm_summary}</p>
+                    ) : (
+                      <p className="no-data">No data</p>
+                    )}
                   </div>
                 </div>
-                <div className="team-member__content--actions">
+              </div>
+              <div className="team-member__content--actions">
                   <Button
                     variant="outlined"
                     startIcon={<EditIcon />}
@@ -202,13 +223,13 @@ export const TMDetailpage = () => {
                     onClick={handleConfirmDeleteTM}
                     startIcon={<DeleteIcon />}
                   >
-                    Delete member
+                    Delete
                   </Button>
                 </div>
-              </div>
             </CardContent>
           </Card>
 
+                          
           <TMComments
             userData={userData.id}
             tm_id={id}
@@ -233,12 +254,12 @@ export const TMDetailpage = () => {
             ) : (
               ""
             )}
-            ?
+            ? All details and comments will be deleted.
           </span>
         }
         actions={[
-          { label: "Yes", onClick: handleDeleteTM },
-          { label: "No", onClick: () => setDeleteModalOpen(false) },
+          { label: "Yes, delete", onClick: handleDeleteTM },
+          { label: "Cancel", onClick: () => setDeleteModalOpen(false) },
         ]}
       />
     </div>
