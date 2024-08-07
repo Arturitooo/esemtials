@@ -5,7 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { MyMultilineTextField } from "../../forms/MyMultilineTextField";
-import { MySelectField } from "../../forms/MySelectField";
 import { Box } from "@mui/material";
 import { MyModal } from "../../forms/MyModal";
 import Card from "@mui/material/Card";
@@ -13,13 +12,12 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import { Controller } from "react-hook-form";
+import FormControl from "@mui/material/FormControl";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -118,29 +116,40 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
               <h3>Add new comment</h3>
               <form onSubmit={handleSubmit(submission)}>
                 <Box>
-                  <FormControl>
-                    <RadioGroup
-                      row
-                      aria-labelledby="demo-radio-buttons-group-label"
-                      defaultValue="Positive"
-                      name="positive"
-                    >
-                      <FormControlLabel
-                        value="Positive"
-                        control={<Radio />}
-                        label={
-                          <span> <ThumbUpIcon className="inline-icon icon-S icon-green"/> Positive </span> 
-                        } 
-                      />
-                      <FormControlLabel
-                        value="Negative"
-                        control={<Radio />}
-                        label={
-                          <span> <ThumbDownIcon className="inline-icon icon-S icon-red"/> Negative </span> 
-                        } 
-                      />
-                    </RadioGroup>
-                  </FormControl>
+                  <Controller
+                    name="positive"
+                    control={control}
+                    defaultValue="Positive"
+                    render={({ field }) => (
+                      <RadioGroup
+                        {...field}
+                        row
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        name="positive"
+                      >
+                        <FormControlLabel
+                          value="Positive"
+                          control={<Radio />}
+                          label={
+                            <span>
+                              <ThumbUpIcon className="inline-icon icon-S icon-green" />{" "}
+                              Positive
+                            </span>
+                          }
+                        />
+                        <FormControlLabel
+                          value="Negative"
+                          control={<Radio />}
+                          label={
+                            <span>
+                              <ThumbDownIcon className="inline-icon icon-S icon-red" />{" "}
+                              Negative
+                            </span>
+                          }
+                        />
+                      </RadioGroup>
+                    )}
+                  />
                   <MyMultilineTextField
                     label={"Comment"}
                     name={"comment"}
@@ -165,33 +174,37 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
                 <div key={commentItem.id}>
                   <div className="comment-row">
                     {commentItem.isPositive ? (
-                        <div>
-                        <ThumbUpIcon className="inline-icon icon-M icon-green"/>
-                        </div>
-                      ) : (
-                        <div>
-                          <ThumbDownIcon className="inline-icon icon-M icon-red"/>
-                        </div>
-                    )}  
+                      <div>
+                        <ThumbUpIcon className="inline-icon icon-M icon-green" />
+                      </div>
+                    ) : (
+                      <div>
+                        <ThumbDownIcon className="inline-icon icon-M icon-red" />
+                      </div>
+                    )}
                     <div>
-                      <p className="date-label">{commentItem.updateDate.slice(0, 10)}</p>
-                      
+                      <p className="date-label">
+                        {commentItem.updateDate.slice(0, 10)}
+                      </p>
+
                       <div>
                         <p>{commentItem.commentContent}</p>
                       </div>
                     </div>
-                    <IconButton 
+                    <IconButton
                       onClick={() => handleConfirmDeleteComment(commentItem.id)}
                       color="primary"
-                      >
+                    >
                       <DeleteIcon className="icon-M" />
                     </IconButton>
                   </div>
-                 {index < comment.length - 1 && <Divider />}
+                  {index < comment.length - 1 && <Divider />}
                 </div>
               ))
             ) : (
-              <p className="no-data">You didn&apos;t add any comments so far...</p>
+              <p className="no-data">
+                You didn&apos;t add any comments so far...
+              </p>
             )}
           </CardContent>
         </Card>

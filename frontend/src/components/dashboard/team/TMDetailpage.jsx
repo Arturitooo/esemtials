@@ -119,10 +119,7 @@ export const TMDetailpage = () => {
               <div className="team-member__content--photo">
                 {tmData.tm_photo ? (
                   <div>
-                    <img
-                      src={tmData.tm_photo}
-                      alt="Team member photo"
-                    />
+                    <img src={tmData.tm_photo} alt="Team member photo" />
                   </div>
                 ) : (
                   <div
@@ -150,18 +147,18 @@ export const TMDetailpage = () => {
                   <div>
                     <h4>Role</h4>
                     {tmData.tm_position ? (
-                        <p>{getRoleLabel(tmData.tm_position)}</p>
-                      ) : (
-                        <p className="no-data">No data</p>
-                    )}  
+                      <p>{getRoleLabel(tmData.tm_position)}</p>
+                    ) : (
+                      <p className="no-data">No data</p>
+                    )}
                   </div>
                   <div>
                     <h4>Seniority</h4>
                     {tmData.tm_seniority ? (
-                        <p>{getSeniorityLabel(tmData.tm_seniority)}</p>
-                      ) : (
-                        <p className="no-data">No data</p>
-                    )}  
+                      <p>{getSeniorityLabel(tmData.tm_seniority)}</p>
+                    ) : (
+                      <p className="no-data">No data</p>
+                    )}
                   </div>
                   <div>
                     <h4>Joined</h4>
@@ -174,16 +171,18 @@ export const TMDetailpage = () => {
                   <div>
                     <h4>Stack</h4>
                     {tmData.tm_stack.length > 0 ? (
-                        <ul>
+                      <ul style={{ paddingLeft: "20px" }}>
                         {tmData.tm_stack &&
                           tmData.tm_stack.map((tech, index) => (
-                            <li key={index}>{tech}</li>
+                            <li key={index}>
+                              <p>{tech}</p>
+                            </li>
                           ))}
-                        </ul>
-                      ) : (
-                        <p className="no-data">No data</p>
+                      </ul>
+                    ) : (
+                      <p className="no-data">No data</p>
                     )}
-                    </div>
+                  </div>
                   <div className="grid-2-columns">
                     <h4>Summary</h4>
                     {tmData.tm_summary ? (
@@ -195,25 +194,24 @@ export const TMDetailpage = () => {
                 </div>
               </div>
               <div className="team-member__content--actions">
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    onClick={handleEditClick}
-                  >
-                    Edit details
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleConfirmDeleteTM}
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                </div>
+                <Button
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  onClick={handleEditClick}
+                >
+                  Edit details
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={handleConfirmDeleteTM}
+                  startIcon={<DeleteIcon />}
+                >
+                  Delete
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
-                          
           <TMComments
             userData={userData.id}
             tm_id={id}
