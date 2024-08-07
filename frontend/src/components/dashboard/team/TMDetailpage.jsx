@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
-import "./TMDetailpage.css";
 import { MyModal } from "../../forms/MyModal";
 import { TMComments } from "./TMComments";
 

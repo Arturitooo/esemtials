@@ -1,0 +1,21 @@
+.inline-icon {
+    position: relative;
+    vertical-align: middle;
+    top: -2px;
+}
+
+.icon-M {
+    max-width: 20px;
+}
+
+.icon-S {
+    max-width: 16px;
+}
+
+.icon-green {
+    color: $color-success;
+}
+
+.icon-red {
+    color: $color-error;
+}

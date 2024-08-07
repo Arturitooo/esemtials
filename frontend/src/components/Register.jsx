@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import "../App.css";
+import "../App.scss";
 import { MyTextField } from "./forms/MyTextField";
 import { MyPassField } from "./forms/MyPassField";
 import { MyContainedButton } from "./forms/MyContainedButton";

@@ -12,6 +12,13 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import DeleteIcon from "@mui/icons-material/Delete";
+
 
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -106,22 +113,36 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
       <div>
         <Card>
           <CardContent>
-            <div style={{ marginBottom: "20px" }}>
+            <div class="form-container">
               <h3>Add new comment</h3>
               <form onSubmit={handleSubmit(submission)}>
                 <Box>
+                  <FormControl>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-radio-buttons-group-label"
+                      defaultValue="Positive"
+                      name="positive"
+                    >
+                      <FormControlLabel
+                        value="Positive"
+                        control={<Radio />}
+                        label={
+                          <span> <ThumbUpIcon className="inline-icon icon-S icon-green"/> Positive </span> 
+                        } 
+                      />
+                      <FormControlLabel
+                        value="Negative"
+                        control={<Radio />}
+                        label={
+                          <span> <ThumbDownIcon className="inline-icon icon-S icon-red"/> Negative </span> 
+                        } 
+                      />
+                    </RadioGroup>
+                  </FormControl>
                   <MyMultilineTextField
                     label={"Comment"}
                     name={"comment"}
-                    control={control}
-                  />
-                  <MySelectField
-                    options={[
-                      { label: "Positive", value: "Positive" },
-                      { label: "Negative", value: "Negative" },
-                    ]}
-                    label={"Positive or Negative?"}
-                    name={"positive"}
                     control={control}
                   />
                 </Box>
@@ -129,9 +150,8 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
                   type="submit"
                   variant="outlined"
                   startIcon={<AddIcon />}
-                  sx={{ height: "50%" }}
                 >
-                  New comment
+                  Add comment
                 </Button>
               </form>
             </div>
@@ -142,41 +162,32 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
             ) : comment.length > 0 ? (
               comment.map((commentItem, index) => (
                 <div key={commentItem.id}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ width: "90%" }}>
-                      <p>{commentItem.commentContent}</p>
+                  <div className="comment-row">
+                    {commentItem.isPositive ? (
+                        <div>
+                        <ThumbUpIcon className="inline-icon icon-M icon-green"/>
+                        </div>
+                      ) : (
+                        <div>
+                          <ThumbDownIcon className="inline-icon icon-M icon-red"/>
+                        </div>
+                    )}  
+                    <div>
+                      <p className="date-label">{commentItem.updateDate.slice(0, 10)}</p>
+                      
+                      <div>
+                        <p>{commentItem.commentContent}</p>
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        position: "relative",
-                        color: "rgba(29, 33, 47, 0.4)",
-                        width: "auto",
-                      }}
-                    >
-                      <p>{commentItem.updateDate.slice(0, 10)}</p>
-                    </div>
-                  </div>
-                  {commentItem.isPositive ? (
-                    <div style={{ color: "green" }}>
-                      <ThumbUpIcon />
-                    </div>
-                  ) : (
-                    <div style={{ color: "red" }}>
-                      <ThumbDownIcon />
-                    </div>
-                  )}
-                  <Button
+                    <Button
                     variant="text"
                     onClick={() => handleConfirmDeleteComment(commentItem.id)}
-                  >
-                    Delete
-                  </Button>
-                  {index < comment.length - 1 && <Divider />}
+                    startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                 {index < comment.length - 1 && <Divider />}
                 </div>
               ))
             ) : (
