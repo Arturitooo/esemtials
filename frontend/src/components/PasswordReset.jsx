@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import { useState } from 'react'
-import '../App.css'
+import '../App.scss'
 import { MyTextField } from './forms/MyTextField'
 import { MyContainedButton } from './forms/MyContainedButton'
 import { MyTextButton } from './forms/MyTextButton'

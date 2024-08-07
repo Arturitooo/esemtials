@@ -1,5 +1,5 @@
 import React from "react";
-import "./App.css";
+import "./App.scss";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Home } from "./components/Home";
 import { Login } from "./components/Login";

@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import AxiosInstance from "../AxiosInstance";
 import { MyTextButton } from "../forms/MyTextButton";
 import { Link, useLocation } from "react-router-dom";
+import emptyStateImage from "../../assets/illustrations/no-friends-cat.svg";
+import chooseProjectImage from "../../assets/illustrations/pick-a-project.svg";
+
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -164,14 +167,14 @@ export const Team = () => {
   if (!selectedProjectId) {
     return (
       <div>
-        <h1>Team</h1>
-        <Card sx={{ borderRadius: "15px" }}>
-          <CardContent>
-            <p>
-              To use the <b>Team</b> card, please select a project first.
-            </p>
-          </CardContent>
-        </Card>
+      <h1>Team</h1>
+      <Card className="card empty-state-card">
+        <CardContent>
+          <img src={chooseProjectImage} alt="choose-project"/>
+          <h2>Choose a project, duh</h2>
+          <p> To use the <b>Team</b> card, please select a project first.</p>
+        </CardContent>
+      </Card>
       </div>
     );
   }
@@ -184,25 +187,16 @@ export const Team = () => {
         <div>
           {emptyState ? (
             <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <>
-                  <h1>Team</h1>
-                </>
-              </div>
-              <Card sx={{ borderRadius: "15px" }}>
+              <h1>Team</h1>
+              <Card className="card empty-state-card">
                 <CardContent>
-                  <p>You didn&apos;t create a team member yet...</p>
+                  <img src={emptyStateImage} alt="no-members"/>
+                  <h2>You have no team members</h2>
+                  <p>Add team members to track their progress, put notes, and more.</p>
                   <Link to="/team/member/create">
                     <Button
                       variant="contained"
                       startIcon={<AddIcon />}
-                      sx={{ height: "50%" }}
                     >
                       New member
                     </Button>

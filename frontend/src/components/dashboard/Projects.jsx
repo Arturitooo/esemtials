@@ -10,6 +10,7 @@ import { MyTextField } from "../forms/MyTextField";
 import { MyMultilineTextField } from "../forms/MyMultilineTextField";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import emptyStateImage from "../../assets/illustrations/no-projects.svg";
 
 import { Box } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -24,9 +25,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
+import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import Edit from "@mui/icons-material/Edit";
 
 dayjs.extend(localizedFormat);
 
@@ -220,16 +223,14 @@ export const Projects = () => {
         {emptyState ? (
           <div>
             <h1>Projects</h1>
-
-            <Card>
+            <Card className="card empty-state-card">
               <CardContent>
-                <p>
-                  You have no projects created yet. You can create one below😁
-                </p>
+                <img src={emptyStateImage} alt="no-projects"/>
+                <h2>Build future with your projects</h2>
+                <p>Create a project to manage and monitor performance of your teams, create TODO lists, and more.</p>
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
-                  sx={{ height: "50%" }}
                   onClick={handleOpenCreationModal}
                 >
                   New project
@@ -262,7 +263,7 @@ export const Projects = () => {
                   <TableRow>
                     <TableCell>Nr.</TableCell>
                     <TableCell>Name</TableCell>
-                    <TableCell>Creation date</TableCell>
+                    <TableCell>Created on</TableCell>
                     <TableCell>Description</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
@@ -282,37 +283,18 @@ export const Projects = () => {
                       <TableCell>{formatDate(item.project_created)}</TableCell>
                       <TableCell>{item.project_description}</TableCell>
                       <TableCell>
-                        <EditIcon
-                          style={{
-                            position: "relative",
-                            fontSize: "medium",
-                            marginLeft: "0px",
-                            color: "#1D212F66",
-                            top: "2px",
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={(e) => (e.target.style.color = "black")}
-                          onMouseLeave={(e) =>
-                            (e.target.style.color = "#1D212F66")
-                          }
-                          onClick={() => handleOpenEditionModal(item)}
-                        />
-
-                        <DeleteIcon
-                          style={{
-                            position: "relative",
-                            fontSize: "medium",
-                            marginLeft: "0px",
-                            color: "#1D212F66",
-                            top: "2px",
-                            cursor: "pointer",
-                          }}
-                          onMouseEnter={(e) => (e.target.style.color = "black")}
-                          onMouseLeave={(e) =>
-                            (e.target.style.color = "#1D212F66")
-                          }
-                          onClick={() => handleConfirmDeleteProject(item.id)}
-                        />
+                        <div className="action-column">
+                          <IconButton
+                            onClick={() => handleOpenEditionModal(item)}
+                            color="primary">
+                            <EditIcon className="icon-S inline-icon"/>
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleConfirmDeleteProject(item.id)}
+                            color="primary"> 
+                            <DeleteIcon className="icon-S inline-icon"/>
+                          </IconButton>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
