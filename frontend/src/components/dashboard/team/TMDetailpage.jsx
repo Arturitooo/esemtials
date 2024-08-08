@@ -225,7 +225,7 @@ export const TMDetailpage = () => {
         open={deleteModalOpen}
         handleClose={() => setDeleteModalOpen(false)}
         content={
-          <span>
+          <>
             Are you sure you want to delete the team member{" "}
             {tmData ? (
               <>
@@ -236,7 +236,7 @@ export const TMDetailpage = () => {
               ""
             )}
             ? All details and comments will be permanently deleted.
-          </span>
+          </>
         }
         actions={[
           { label: "Cancel", onClick: () => setDeleteModalOpen(false), className: "modal-action-cancel"},
