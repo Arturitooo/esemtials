@@ -113,6 +113,31 @@ div.card {
   }
 }
 
+/* Styling modal */
+
+.modal-container .modal-modal {
+  border: none;
+  border-radius: 10px;
+
+  * {
+    font-family: 'Ubuntu';
+    text-align: center;
+  }
+
+  .modal-modal-actions {
+    display: flex;
+    justify-content: center;
+    column-gap: 12px;
+  }
+
+  .modal-action-cancel {
+    color: $color-disabled-text;
+  }
+  .modal-action-red {
+    color: $color-error;
+  }
+}
+
 
 /* Styling Team Detail page */ 
 

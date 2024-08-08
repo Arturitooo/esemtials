@@ -355,11 +355,15 @@ export const Projects = () => {
       <MyModal
         open={confirmProjectDelete}
         handleClose={() => setConfirmProjectDelete(false)}
-        title="Confirm Deletion"
-        content="Are you sure you want to delete this project?"
+        title="Are you sure?"
+        content={
+          <>
+          <b>Deleting a project cannot be reverted.</b> You will permanently delete teams members, notes and related data. Do you still want to delete the project?
+          </>
+        }
         actions={[
-          { label: "Yes", onClick: handleDeleteProject },
-          { label: "No", onClick: () => setConfirmProjectDelete(false) },
+          { label: "No, cancel", onClick: () => setConfirmProjectDelete(false), className:"modal-action-cancel"},
+          { label: "Yes, delete", onClick: handleDeleteProject, className:"modal-action-red"},
         ]}
       />
 

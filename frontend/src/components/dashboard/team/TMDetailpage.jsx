@@ -224,9 +224,8 @@ export const TMDetailpage = () => {
       <MyModal
         open={deleteModalOpen}
         handleClose={() => setDeleteModalOpen(false)}
-        title="Confirm Deletion"
         content={
-          <span>
+          <>
             Are you sure you want to delete the team member{" "}
             {tmData ? (
               <>
@@ -236,12 +235,12 @@ export const TMDetailpage = () => {
             ) : (
               ""
             )}
-            ? All details and comments will be deleted.
-          </span>
+            ? All details and comments will be permanently deleted.
+          </>
         }
         actions={[
+          { label: "Cancel", onClick: () => setDeleteModalOpen(false), className: "modal-action-cancel"},
           { label: "Yes, delete", onClick: handleDeleteTM },
-          { label: "Cancel", onClick: () => setDeleteModalOpen(false) },
         ]}
       />
     </div>

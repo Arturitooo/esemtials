@@ -274,11 +274,10 @@ const NotesRTE = ({ limitHeight }) => {
         <MyModal
           open={deleteModalOpen}
           handleClose={() => setDeleteModalOpen(false)}
-          title="Confirm Deletion"
           content="Are you sure you want to delete this note?"
           actions={[
-            { label: "Yes", onClick: handleDeleteNote },
-            { label: "No", onClick: () => setDeleteModalOpen(false) },
+            { label: "Cancel", onClick: () => setDeleteModalOpen(false), className:"modal-action-cancel"},
+            { label: "Yes, delete", onClick: handleDeleteNote },
           ]}
         />
 
