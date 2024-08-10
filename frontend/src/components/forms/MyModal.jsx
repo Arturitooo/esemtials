@@ -29,17 +29,18 @@ export const MyModal = ({
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      className="modal-container"
     >
-      <Box sx={style}>
+      <Box sx={style} className="modal-modal">
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}
         </Typography>
         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           {content}
         </Typography>
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }} className="modal-modal-actions">
           {actions.map((action, index) => (
-            <Button key={index} onClick={action.onClick}>
+            <Button key={index} onClick={action.onClick} className={action.className}>
               {action.label}
             </Button>
           ))}

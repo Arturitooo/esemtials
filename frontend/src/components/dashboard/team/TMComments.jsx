@@ -212,11 +212,10 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
         <MyModal
           open={deleteModalOpen}
           handleClose={() => setDeleteModalOpen(false)}
-          title="Confirm Deletion"
           content={"Are you sure you want to delete the comment?"}
           actions={[
-            { label: "Yes", onClick: handleDeleteComment },
-            { label: "No", onClick: () => setDeleteModalOpen(false) },
+            { label: "Cancel", onClick: () => setDeleteModalOpen(false), className:"modal-action-cancel"},
+            { label: "Yes, delete", onClick: handleDeleteComment },
           ]}
         />
       </div>
