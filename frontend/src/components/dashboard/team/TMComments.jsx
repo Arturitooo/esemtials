@@ -80,7 +80,7 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
   };
 
   const DeleteComment = (id) => {
-    const url = `team/teammember-comment/${id}`;
+    const url = `team/teammember-comment/${id}/`;
     AxiosInstance.delete(url).then(() => {
       console.log("you've successfully deleted the comment");
       GetComments(tm_id);
@@ -214,7 +214,11 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
           handleClose={() => setDeleteModalOpen(false)}
           content={"Are you sure you want to delete the comment?"}
           actions={[
-            { label: "Cancel", onClick: () => setDeleteModalOpen(false), className:"modal-action-cancel"},
+            {
+              label: "Cancel",
+              onClick: () => setDeleteModalOpen(false),
+              className: "modal-action-cancel",
+            },
             { label: "Yes, delete", onClick: handleDeleteComment },
           ]}
         />
