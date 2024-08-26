@@ -120,7 +120,9 @@ export function Navbar(props) {
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
-  const [authenticated, setAuthenticated] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(
+    Boolean(localStorage.getItem("Token"))
+  );
 
   const isTeamSelected =
     path === "/team/" ||
@@ -156,6 +158,7 @@ export function Navbar(props) {
           backgroundColor: "#fff",
           boxShadow:
             "0px 1px 0px 0px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(0,0,0,0.1)",
+          width: authenticated ? `calc(100% - ${drawerWidth}px)` : "100%", // Adjust width
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
