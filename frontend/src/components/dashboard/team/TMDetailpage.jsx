@@ -8,11 +8,13 @@ import { TMComments } from "./TMComments";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
 
 //icons
 import Face6Icon from "@mui/icons-material/Face6";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import IntegrationInstructionsIcon from "@mui/icons-material/IntegrationInstructions";
 
 export const TMDetailpage = () => {
   const { id } = useParams();
@@ -208,6 +210,171 @@ export const TMDetailpage = () => {
                 >
                   Delete
                 </Button>
+                <div>
+                  <h4>Integrations</h4>
+                  <p>
+                    Git repository:{" "}
+                    {tmData.teammember_hasGitIntegration == true ? (
+                      <span
+                        style={{
+                          color: "#42BC09",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        Integrated
+                        <Tooltip title="Edit integration details">
+                          <EditIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.87)",
+                              marginLeft: "5px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip title="Remove integration">
+                          <DeleteIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.5)",
+                              marginLeft: "4px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "#d10000",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        To be integrated
+                        <Tooltip title="Integrate">
+                          <IntegrationInstructionsIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.5)",
+                              marginLeft: "5px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    )}
+                  </p>
+                  {/* <p>
+                    Board:{" "}
+                    {tmData.teammember_hasBoardIntegration == true ? (
+                      <span
+                        style={{
+                          color: "#42BC09",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        Integrated
+                        <Tooltip title="Edit integration details">
+                          <EditIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.87)",
+                              marginLeft: "5px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip title="Remove integration">
+                          <DeleteIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.5)",
+                              marginLeft: "4px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "#d10000",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        To be integrated
+                        <Tooltip title="The feature is not supported yet.">
+                          <IntegrationInstructionsIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.2)",
+                              marginLeft: "5px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    )}{" "}
+                  </p>
+                  <p>
+                    Calendar:{" "}
+                    {tmData.teammember_hasCalendarIntegration == true ? (
+                      <span
+                        style={{
+                          color: "#42BC09",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        Integrated
+                        <Tooltip title="Edit integration details">
+                          <EditIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.87)",
+                              marginLeft: "5px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip title="Remove integration">
+                          <DeleteIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.5)",
+                              marginLeft: "4px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "#d10000",
+                          display: "inline-flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        To be integrated
+                        <Tooltip title="The feature is not supported yet.">
+                          <IntegrationInstructionsIcon
+                            style={{
+                              color: "rgba(0, 0, 0, 0.2)",
+                              marginLeft: "5px",
+                              cursor: "pointer",
+                              fontSize: "medium",
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    )}{" "}
+                  </p> */}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -239,7 +406,11 @@ export const TMDetailpage = () => {
           </>
         }
         actions={[
-          { label: "Cancel", onClick: () => setDeleteModalOpen(false), className: "modal-action-cancel"},
+          {
+            label: "Cancel",
+            onClick: () => setDeleteModalOpen(false),
+            className: "modal-action-cancel",
+          },
           { label: "Yes, delete", onClick: handleDeleteTM },
         ]}
       />

@@ -54,6 +54,12 @@ class Teammember(models.Model):
     teammember_hasGitIntegration = models.BooleanField(
         default=False, null=False, blank=False
     )
+    teammember_hasBoardIntegration = models.BooleanField(
+        default=False, null=False, blank=False
+    )
+    teammember_hasCalendarIntegration = models.BooleanField(
+        default=False, null=False, blank=False
+    )
 
     def __str__(self):
         return f"{self.tm_name} {self.tm_lname}"
