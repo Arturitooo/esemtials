@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from users.models import CustomUser
 
@@ -21,6 +21,12 @@ TM_SENIORITY = [
     ("regular", "Medium"),
     ("senior", "Senior"),
     ("expert", "Expert"),
+]
+
+TM_GIT_HOSTINGS = [
+    ("BitBucket", "BitBucket"),
+    ("GitLab", "GitLab"),
+    ("GitHub", "GitHub"),
 ]
 
 
@@ -45,6 +51,9 @@ class Teammember(models.Model):
     tm_photo = models.ImageField(
         upload_to="teammembers_profile_pictures/", null=True, blank=True
     )
+    teammember_hasGitIntegration = models.BooleanField(
+        default=False, null=False, blank=False
+    )
 
     def __str__(self):
         return f"{self.tm_name} {self.tm_lname}"
@@ -63,3 +72,36 @@ class TeamMemberComment(models.Model):
     isPositive = models.BooleanField(null=False, blank=False)
     commentContent = models.TextField(max_length=1024, null=False, blank=False)
     updateDate = models.DateTimeField(null=False)
+
+
+class TeamMemberGitData(models.Model):
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
+    teammember = models.OneToOneField(
+        Teammember, on_delete=models.CASCADE, default=None, unique=True
+    )
+    teammemberGitHosting = models.CharField(
+        max_length=64, choices=TM_GIT_HOSTINGS, blank=False, null=False
+    )
+    teammemberGitProjectID = models.TextField(max_length=64, null=True, blank=True)
+    teammemberGitUserID = models.TextField(max_length=64, null=True, blank=True)
+    teammemberGitPersonalAccessToken = models.TextField(
+        max_length=64, null=True, blank=True
+    )
+
+
+# Signal to set `teammember_hasGitIntegration` to True when TeamMemberGitData is created
+@receiver(post_save, sender=TeamMemberGitData)
+def set_git_integration_true(sender, instance, **kwargs):
+    teammember = instance.teammember
+    if not teammember.teammember_hasGitIntegration:
+        teammember.teammember_hasGitIntegration = True
+        teammember.save()
+
+
+# Signal to set `teammember_hasGitIntegration` to False when TeamMemberGitData is deleted
+@receiver(post_delete, sender=TeamMemberGitData)
+def set_git_integration_false(sender, instance, **kwargs):
+    teammember = instance.teammember
+    if not TeamMemberGitData.objects.filter(teammember=teammember).exists():
+        teammember.teammember_hasGitIntegration = False
+        teammember.save()
