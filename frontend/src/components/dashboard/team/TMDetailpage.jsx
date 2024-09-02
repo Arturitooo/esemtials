@@ -4,6 +4,7 @@ import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
 import { MyModal } from "../../forms/MyModal";
 import { TMComments } from "./TMComments";
+import { MyToastMessage } from "../../forms/MyToastMessage";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -22,6 +23,7 @@ export const TMDetailpage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [tmData, setTMData] = useState(null);
+  const [toast, setToast] = useState({ open: false, type: "", content: "" });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [commentsRefreshKey, setCommentsRefreshKey] = useState(0);
 
@@ -85,8 +87,20 @@ export const TMDetailpage = () => {
   };
 
   useEffect(() => {
+    // fetch user data
     GetData(id);
+    // show integration form toast
+    const toastMessage = localStorage.getItem("toastMessage");
+    if (toastMessage) {
+      const { type, content } = JSON.parse(toastMessage);
+      setToast({ open: true, type, content });
+      localStorage.removeItem("toastMessage"); // Clear the toast message after showing it
+    }
   }, [id]);
+
+  const handleToastClose = () => {
+    setToast({ ...toast, open: false });
+  };
 
   const handleDeleteTM = async () => {
     await DeleteTM();
@@ -107,6 +121,16 @@ export const TMDetailpage = () => {
 
   const handleEditClick = () => {
     navigate(`/team/member/update/${id}`, { state: { tmData } });
+  };
+
+  const handleAddGitIntegrationClick = () => {
+    navigate(`/team/member/${id}/add-git-integration`, { state: { tmData } });
+  };
+
+  const handleUpdateGitIntegrationClick = () => {
+    navigate(`/team/member/${id}/update-git-integration`, {
+      state: { tmData },
+    });
   };
 
   return (
@@ -231,16 +255,7 @@ export const TMDetailpage = () => {
                               cursor: "pointer",
                               fontSize: "medium",
                             }}
-                          />
-                        </Tooltip>
-                        <Tooltip title="Remove integration">
-                          <DeleteIcon
-                            style={{
-                              color: "rgba(0, 0, 0, 0.5)",
-                              marginLeft: "4px",
-                              cursor: "pointer",
-                              fontSize: "medium",
-                            }}
+                            onClick={handleUpdateGitIntegrationClick}
                           />
                         </Tooltip>
                       </span>
@@ -261,6 +276,7 @@ export const TMDetailpage = () => {
                               cursor: "pointer",
                               fontSize: "medium",
                             }}
+                            onClick={handleAddGitIntegrationClick}
                           />
                         </Tooltip>
                       </span>
@@ -282,16 +298,6 @@ export const TMDetailpage = () => {
                             style={{
                               color: "rgba(0, 0, 0, 0.87)",
                               marginLeft: "5px",
-                              cursor: "pointer",
-                              fontSize: "medium",
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip title="Remove integration">
-                          <DeleteIcon
-                            style={{
-                              color: "rgba(0, 0, 0, 0.5)",
-                              marginLeft: "4px",
                               cursor: "pointer",
                               fontSize: "medium",
                             }}
@@ -341,16 +347,6 @@ export const TMDetailpage = () => {
                             }}
                           />
                         </Tooltip>
-                        <Tooltip title="Remove integration">
-                          <DeleteIcon
-                            style={{
-                              color: "rgba(0, 0, 0, 0.5)",
-                              marginLeft: "4px",
-                              cursor: "pointer",
-                              fontSize: "medium",
-                            }}
-                          />
-                        </Tooltip>
                       </span>
                     ) : (
                       <span
@@ -387,6 +383,13 @@ export const TMDetailpage = () => {
           />
         </div>
       )}
+
+      <MyToastMessage
+        type={toast.type}
+        content={toast.content}
+        open={toast.open}
+        handleClose={handleToastClose}
+      />
 
       <MyModal
         open={deleteModalOpen}

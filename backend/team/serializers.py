@@ -18,6 +18,7 @@ class TeamMemberGitDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMemberGitData
         fields = [
+            "id",
             "created_by",
             "teammember",
             "teammemberGitHosting",
