@@ -1,7 +1,22 @@
 from rest_framework import viewsets, permissions, response, status
-from rest_framework.exceptions import NotFound
-from .models import Teammember, TeamMemberComment
-from .serializers import TeammemberSerializer, TeamMemberCommentSerializer
+from rest_framework.exceptions import NotFound, ValidationError
+from .models import Teammember, TeamMemberComment, TeamMemberGitData
+from django.db import IntegrityError
+from .serializers import (
+    TeammemberSerializer,
+    TeamMemberCommentSerializer,
+    TeamMemberGitDataSerializer,
+)
+
+from rest_framework.generics import (
+    CreateAPIView,
+    UpdateAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    DestroyAPIView,
+)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 
 
 class TeammemberViewSet(viewsets.ModelViewSet):
@@ -124,3 +139,47 @@ class TeammemberCommentViewSet(viewsets.ModelViewSet):
             return response.Response(status=status.HTTP_403_FORBIDDEN)
         self.perform_destroy(instance)
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TeammemberGitDataCreateAPIView(CreateAPIView):
+    queryset = TeamMemberGitData.objects.all()
+    serializer_class = TeamMemberGitDataSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        try:
+            serializer.save()
+        except IntegrityError:
+            raise ValidationError(
+                "This team member already has Git data associated with them."
+            )
+
+
+class TeammemberGitDataDetailAPIView(RetrieveAPIView):
+    queryset = TeamMemberGitData.objects.all()
+    serializer_class = TeamMemberGitDataSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class TeammemberGitDataListAPIView(ListAPIView):
+    serializer_class = TeamMemberGitDataSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return TeamMemberGitData.objects.filter(created_by=user).order_by("-pk")
+
+
+class TeammemberGitDataUpdateAPIView(UpdateAPIView):
+    queryset = TeamMemberGitData.objects.all()
+    serializer_class = TeamMemberGitDataSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
+class TeammemberGitDataDeleteAPIView(DestroyAPIView):
+    queryset = TeamMemberGitData.objects.all()
+    serializer_class = TeamMemberGitDataSerializer
+    permission_classes = [IsAuthenticated]
