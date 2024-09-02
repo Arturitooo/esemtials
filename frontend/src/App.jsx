@@ -13,6 +13,8 @@ import { Team } from "./components/dashboard/Team";
 import { TMDetailpage } from "./components/dashboard/team/TMDetailpage";
 import { TMCreate } from "./components/dashboard/team/TMCreate";
 import { TMUpdate } from "./components/dashboard/team/TMUpdate";
+import { TeammemberGitInfoCreate } from "./components/dashboard/team/TeammemberGitInfoCreate";
+import { TeammemberGitInfoUpdate } from "./components/dashboard/team/TeammemberGitInfoUpdate";
 import { PasswordReset } from "./components/PasswordReset";
 import { ConfirmPasswordReset } from "./components/ConfirmPasswordReset";
 import { Projects } from "./components/dashboard/Projects";
@@ -49,6 +51,14 @@ function App() {
                 <Route path="/team" element={<Team />} />
                 <Route path="/team/member/:id" element={<TMDetailpage />} />
                 <Route path="/team/member/create" element={<TMCreate />} />
+                <Route
+                  path="/team/member/:id/add-git-integration"
+                  element={<TeammemberGitInfoCreate />}
+                />
+                <Route
+                  path="/team/member/:id/update-git-integration"
+                  element={<TeammemberGitInfoUpdate />}
+                />
                 <Route path="/team/member/update/:id" element={<TMUpdate />} />
               </Route>
               <Route path="/" element={<Home />} />
