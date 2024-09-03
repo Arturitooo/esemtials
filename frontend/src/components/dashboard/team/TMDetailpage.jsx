@@ -133,6 +133,79 @@ export const TMDetailpage = () => {
     });
   };
 
+  const renderGitIntegrationStatus = () => {
+    if (tmData.teammember_hasGitIntegration === null) {
+      return (
+        <span
+          style={{
+            color: "#d10000",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          To be integrated
+          <Tooltip title="Integrate">
+            <IntegrationInstructionsIcon
+              style={{
+                color: "rgba(0, 0, 0, 0.5)",
+                marginLeft: "5px",
+                cursor: "pointer",
+                fontSize: "medium",
+              }}
+              onClick={handleAddGitIntegrationClick}
+            />
+          </Tooltip>
+        </span>
+      );
+    } else if (tmData.teammember_hasGitIntegration === true) {
+      return (
+        <span
+          style={{
+            color: "#42BC09",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          Integrated
+          <Tooltip title="Edit integration details">
+            <EditIcon
+              style={{
+                color: "rgba(0, 0, 0, 0.87)",
+                marginLeft: "5px",
+                cursor: "pointer",
+                fontSize: "medium",
+              }}
+              onClick={handleUpdateGitIntegrationClick}
+            />
+          </Tooltip>
+        </span>
+      );
+    } else if (tmData.teammember_hasGitIntegration === false) {
+      return (
+        <span
+          style={{
+            color: "#E8A702",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          Integration broken
+          <Tooltip title="Edit integration details">
+            <EditIcon
+              style={{
+                color: "rgba(0, 0, 0, 0.5)",
+                marginLeft: "5px",
+                cursor: "pointer",
+                fontSize: "medium",
+              }}
+              onClick={handleUpdateGitIntegrationClick}
+            />
+          </Tooltip>
+        </span>
+      );
+    }
+  };
+
   return (
     <div>
       {loading ? (
@@ -236,52 +309,7 @@ export const TMDetailpage = () => {
                 </Button>
                 <div>
                   <h4>Integrations</h4>
-                  <p>
-                    Git repository:{" "}
-                    {tmData.teammember_hasGitIntegration == true ? (
-                      <span
-                        style={{
-                          color: "#42BC09",
-                          display: "inline-flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        Integrated
-                        <Tooltip title="Edit integration details">
-                          <EditIcon
-                            style={{
-                              color: "rgba(0, 0, 0, 0.87)",
-                              marginLeft: "5px",
-                              cursor: "pointer",
-                              fontSize: "medium",
-                            }}
-                            onClick={handleUpdateGitIntegrationClick}
-                          />
-                        </Tooltip>
-                      </span>
-                    ) : (
-                      <span
-                        style={{
-                          color: "#d10000",
-                          display: "inline-flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        To be integrated
-                        <Tooltip title="Integrate">
-                          <IntegrationInstructionsIcon
-                            style={{
-                              color: "rgba(0, 0, 0, 0.5)",
-                              marginLeft: "5px",
-                              cursor: "pointer",
-                              fontSize: "medium",
-                            }}
-                            onClick={handleAddGitIntegrationClick}
-                          />
-                        </Tooltip>
-                      </span>
-                    )}
-                  </p>
+                  <p>Git repository: {renderGitIntegrationStatus()}</p>
                   {/* <p>
                     Board:{" "}
                     {tmData.teammember_hasBoardIntegration == true ? (

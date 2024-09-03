@@ -1,12 +1,14 @@
-from rest_framework import viewsets, permissions, response, status
-from rest_framework.exceptions import NotFound, ValidationError
-from .models import Teammember, TeamMemberComment, TeamMemberGitData
+import requests
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
+from .models import Teammember, TeamMemberComment, TeamMemberGitData
 from .serializers import (
     TeammemberSerializer,
     TeamMemberCommentSerializer,
     TeamMemberGitDataSerializer,
 )
+from rest_framework import viewsets, permissions, response, status
+from rest_framework.exceptions import NotFound, ValidationError
 
 from rest_framework.generics import (
     CreateAPIView,
@@ -147,12 +149,48 @@ class TeammemberGitDataCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        validated_data = serializer.validated_data
+        # get related teammember instance
+        teammember = get_object_or_404(Teammember, pk=validated_data["teammember"].pk)
+
+        # perform testing API call and based on result change the Teammember
+        integration_status = self.gitlab_verification_api_call(validated_data)
+        if integration_status:
+            teammember.teammember_hasGitIntegration = True
+        else:
+            teammember.teammember_hasGitIntegration = False
+
+        teammember.save()
+
         try:
-            serializer.save()
+            serializer.save(created_by=self.request.user)
         except IntegrityError:
             raise ValidationError(
                 "This team member already has Git data associated with them."
             )
+
+    def gitlab_verification_api_call(self, data):
+        # get needed data to the variables
+        projectID = data.get("teammemberGitProjectID")
+        userID = data.get("teammemberGitUserID")
+        acccessToken = data.get("teammemberGitPersonalAccessToken")
+
+        # provide api needed info
+        url = f"https://gitlab.com/api/v4/projects/{projectID}/members"
+        headers = {"PRIVATE-TOKEN": acccessToken, "Content-Type": "application/json"}
+
+        # make API call
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code >= 200 and response.status_code < 300:
+                members = response.json()
+                member_ids = [member["id"] for member in members]
+                return str(userID) in map(str, member_ids)
+            else:
+                return False
+        except requests.exceptions.RequestException as e:
+            # Handle any errors that occur during the request
+            return {"success": False, "message": str(e)}
 
 
 class TeammemberGitDataDetailAPIView(RetrieveAPIView):
@@ -176,7 +214,42 @@ class TeammemberGitDataUpdateAPIView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_update(self, serializer):
-        serializer.save()
+        instance = serializer.save()
+
+        # Get the related Teammember instance
+        teammember = get_object_or_404(Teammember, pk=instance.teammember.pk)
+
+        # Perform GitLab verification and update team member integration status
+        integration_status = self.gitlab_verification_api_call(
+            serializer.validated_data
+        )
+
+        if integration_status:
+            teammember.teammember_hasGitIntegration = True
+        else:
+            teammember.teammember_hasGitIntegration = False
+
+        teammember.save()
+
+    def gitlab_verification_api_call(self, data):
+        projectID = data.get("teammemberGitProjectID")
+        userID = data.get("teammemberGitUserID")
+        accessToken = data.get("teammemberGitPersonalAccessToken")
+
+        url = f"https://gitlab.com/api/v4/projects/{projectID}/members"
+        headers = {"PRIVATE-TOKEN": accessToken, "Content-Type": "application/json"}
+
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code >= 200 and response.status_code < 300:
+                members = response.json()
+                member_ids = [member["id"] for member in members]
+                return str(userID) in map(str, member_ids)
+            else:
+                return False
+        except requests.exceptions.RequestException as error:
+            # Handle any errors that occur during the request
+            return error
 
 
 class TeammemberGitDataDeleteAPIView(DestroyAPIView):
