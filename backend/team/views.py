@@ -171,12 +171,12 @@ class TeammemberGitDataCreateAPIView(CreateAPIView):
 
     def gitlab_verification_api_call(self, data):
         # get needed data to the variables
-        projectID = data.get("teammemberGitProjectID")
+        groupID = data.get("teammemberGitGroupID")
         userID = data.get("teammemberGitUserID")
         acccessToken = data.get("teammemberGitPersonalAccessToken")
 
         # provide api needed info
-        url = f"https://gitlab.com/api/v4/projects/{projectID}/members"
+        url = f"https://gitlab.com/api/v4/groups/{groupID}/members"
         headers = {"PRIVATE-TOKEN": acccessToken, "Content-Type": "application/json"}
 
         # make API call
@@ -232,11 +232,11 @@ class TeammemberGitDataUpdateAPIView(UpdateAPIView):
         teammember.save()
 
     def gitlab_verification_api_call(self, data):
-        projectID = data.get("teammemberGitProjectID")
+        groupID = data.get("teammemberGitGroupID")
         userID = data.get("teammemberGitUserID")
         accessToken = data.get("teammemberGitPersonalAccessToken")
 
-        url = f"https://gitlab.com/api/v4/projects/{projectID}/members"
+        url = f"https://gitlab.com/api/v4/groups/{groupID}/members"
         headers = {"PRIVATE-TOKEN": accessToken, "Content-Type": "application/json"}
 
         try:

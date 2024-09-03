@@ -88,7 +88,7 @@ class TeamMemberGitData(models.Model):
     teammemberGitHosting = models.CharField(
         max_length=64, choices=TM_GIT_HOSTINGS, blank=False, null=False
     )
-    teammemberGitProjectID = models.TextField(max_length=64, null=True, blank=True)
+    teammemberGitGroupID = models.TextField(max_length=64, null=True, blank=True)
     teammemberGitUserID = models.TextField(max_length=64, null=True, blank=True)
     teammemberGitPersonalAccessToken = models.TextField(
         max_length=64, null=True, blank=True

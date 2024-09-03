@@ -22,7 +22,7 @@ class TeamMemberGitDataSerializer(serializers.ModelSerializer):
             "created_by",
             "teammember",
             "teammemberGitHosting",
-            "teammemberGitProjectID",
+            "teammemberGitGroupID",
             "teammemberGitUserID",
             "teammemberGitPersonalAccessToken",
         ]

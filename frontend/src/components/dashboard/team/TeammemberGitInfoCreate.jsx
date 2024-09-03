@@ -26,10 +26,10 @@ export const TeammemberGitInfoCreate = () => {
     teammemberGitHosting: yup
       .string()
       .required("You need to choose the hosting"),
-    teammemberGitProjectID: yup
+    teammemberGitGroupID: yup
       .number()
-      .typeError("The Project ID is a number")
-      .required("You need to provide the Project ID"),
+      .typeError("The Group ID is a number")
+      .required("You need to provide the Group ID"),
     teammemberGitUserID: yup
       .number()
       .typeError("The User ID is a number")
@@ -47,7 +47,7 @@ export const TeammemberGitInfoCreate = () => {
     AxiosInstance.post("team/teammember-gitdata/create/", {
       teammember: teammember,
       teammemberGitHosting: data.teammemberGitHosting,
-      teammemberGitProjectID: data.teammemberGitProjectID,
+      teammemberGitGroupID: data.teammemberGitGroupID,
       teammemberGitUserID: data.teammemberGitUserID,
       teammemberGitPersonalAccessToken: data.teammemberGitPersonalAccessToken,
     })
@@ -92,8 +92,8 @@ export const TeammemberGitInfoCreate = () => {
             control={control}
           />
           <MyTextField
-            label={"Git Project ID"}
-            name={"teammemberGitProjectID"}
+            label={"Git Group ID"}
+            name={"teammemberGitGroupID"}
             control={control}
           />
           <MyTextField
