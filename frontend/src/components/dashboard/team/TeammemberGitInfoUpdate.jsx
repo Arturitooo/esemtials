@@ -14,8 +14,8 @@ import { MySelectField } from "../../forms/MySelectField";
 
 const GitHostingOptions = [
   { label: "GitLab", value: "GitLab" },
-  { label: "GitHub", value: "GitHub" },
-  { label: "BitBucket", value: "BitBucket" },
+  // { label: "GitHub", value: "GitHub" },
+  // { label: "BitBucket", value: "BitBucket" },
 ];
 
 export const TeammemberGitInfoUpdate = () => {
@@ -23,6 +23,7 @@ export const TeammemberGitInfoUpdate = () => {
   const { tmData } = location.state || {};
   const navigate = useNavigate();
   const [gitInfoID, setGitInfoID] = useState(null);
+  const [gitData, setGitData] = useState(null);
 
   const schema = yup.object({
     teammemberGitHosting: yup
@@ -40,8 +41,9 @@ export const TeammemberGitInfoUpdate = () => {
       .string()
       .required("You need to provide the Token"),
   });
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, reset } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: gitData,
   });
 
   const GetGitInfoID = () => {
@@ -54,6 +56,13 @@ export const TeammemberGitInfoUpdate = () => {
         );
         if (matchingRecord) {
           setGitInfoID(matchingRecord.id);
+          setGitData({
+            teammemberGitHosting: matchingRecord.teammemberGitHosting,
+            teammemberGitProjectID: matchingRecord.teammemberGitProjectID,
+            teammemberGitUserID: matchingRecord.teammemberGitUserID,
+            teammemberGitPersonalAccessToken:
+              matchingRecord.teammemberGitPersonalAccessToken,
+          });
         } else {
           console.error("No matching record found");
         }
@@ -68,6 +77,12 @@ export const TeammemberGitInfoUpdate = () => {
       GetGitInfoID();
     }
   }, [gitInfoID]);
+
+  useEffect(() => {
+    if (gitData) {
+      reset(gitData); // Reset the form with fetched data
+    }
+  }, [gitData, reset]);
 
   const submission = (data) => {
     const teammember = tmData.id;

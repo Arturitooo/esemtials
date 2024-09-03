@@ -52,13 +52,13 @@ class Teammember(models.Model):
         upload_to="teammembers_profile_pictures/", null=True, blank=True
     )
     teammember_hasGitIntegration = models.BooleanField(
-        default=False, null=False, blank=False
+        default=None, null=True, blank=True
     )
     teammember_hasBoardIntegration = models.BooleanField(
-        default=False, null=False, blank=False
+        default=None, null=True, blank=True
     )
     teammember_hasCalendarIntegration = models.BooleanField(
-        default=False, null=False, blank=False
+        default=None, null=True, blank=True
     )
 
     def __str__(self):
@@ -104,10 +104,10 @@ def set_git_integration_true(sender, instance, **kwargs):
         teammember.save()
 
 
-# Signal to set `teammember_hasGitIntegration` to False when TeamMemberGitData is deleted
+# Signal to set `teammember_hasGitIntegration` to None when TeamMemberGitData is deleted
 @receiver(post_delete, sender=TeamMemberGitData)
 def set_git_integration_false(sender, instance, **kwargs):
     teammember = instance.teammember
     if not TeamMemberGitData.objects.filter(teammember=teammember).exists():
-        teammember.teammember_hasGitIntegration = False
+        teammember.teammember_hasGitIntegration = None
         teammember.save()
