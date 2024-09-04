@@ -4,6 +4,7 @@ import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
 import { MyModal } from "../../forms/MyModal";
 import { TMComments } from "./TMComments";
+import { TeammemberGitStats } from "./TeammemberGitStats";
 import { MyToastMessage } from "../../forms/MyToastMessage";
 
 import Card from "@mui/material/Card";
@@ -402,6 +403,8 @@ export const TMDetailpage = () => {
               </div>
             </CardContent>
           </Card>
+
+          <TeammemberGitStats />
 
           <TMComments
             userData={userData.id}
