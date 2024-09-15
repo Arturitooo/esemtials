@@ -3,11 +3,11 @@ from django.urls import path
 from .views import (
     TeammemberViewSet,
     TeammemberCommentViewSet,
-    TeammemberGitDataCreateAPIView,
-    TeammemberGitDataDetailAPIView,
-    TeammemberGitDataListAPIView,
-    TeammemberGitDataUpdateAPIView,
-    TeammemberGitDataDeleteAPIView,
+    TeamMemberGitIntegrationDataCreateAPIView,
+    TeamMemberGitIntegrationDataDetailAPIView,
+    TeamMemberGitIntegrationDataListAPIView,
+    TeamMemberGitIntegrationDataUpdateAPIView,
+    TeamMemberGitIntegrationDataDeleteAPIView,
 )
 
 router = DefaultRouter()
@@ -18,29 +18,29 @@ router.register(
 
 urlpatterns = [
     path(
-        "teammember-gitdata/create/",
-        TeammemberGitDataCreateAPIView.as_view(),
-        name="teammember-gitdata-create",
+        "teammember-gitintegration/create/",
+        TeamMemberGitIntegrationDataCreateAPIView.as_view(),
+        name="teammember-gitintegration-create",
     ),
     path(
-        "teammember-gitdata/<int:pk>/",
-        TeammemberGitDataDetailAPIView.as_view(),
-        name="teammember-gitdata-detail",
+        "teammember-gitintegration/<int:pk>/",
+        TeamMemberGitIntegrationDataDetailAPIView.as_view(),
+        name="teammember-gitintegration-detail",
     ),
     path(
-        "teammember-gitdata/list/",
-        TeammemberGitDataListAPIView.as_view(),
-        name="teammember-gitdata-list",
+        "teammember-gitintegration/list/",
+        TeamMemberGitIntegrationDataListAPIView.as_view(),
+        name="teammember-gitintegration-list",
     ),
     path(
-        "teammember-gitdata/<int:pk>/update/",
-        TeammemberGitDataUpdateAPIView.as_view(),
-        name="teammember-gitdata-update",
+        "teammember-gitintegration/<int:pk>/update/",
+        TeamMemberGitIntegrationDataUpdateAPIView.as_view(),
+        name="teammember-gitintegration-update",
     ),
     path(
-        "teammember-gitdata/<int:pk>/delete/",
-        TeammemberGitDataDeleteAPIView.as_view(),
-        name="teammember-gitdata-delete",
+        "teammember-gitintegration/<int:pk>/delete/",
+        TeamMemberGitIntegrationDataDeleteAPIView.as_view(),
+        name="teammember-gitintegration-delete",
     ),
 ]
 

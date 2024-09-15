@@ -1,11 +1,11 @@
 import requests
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from .models import Teammember, TeamMemberComment, TeamMemberGitData
+from .models import Teammember, TeamMemberComment, TeamMemberGitIntegrationData
 from .serializers import (
     TeammemberSerializer,
     TeamMemberCommentSerializer,
-    TeamMemberGitDataSerializer,
+    TeamMemberGitIntegrationDataSerializer,
 )
 from rest_framework import viewsets, permissions, response, status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -143,9 +143,9 @@ class TeammemberCommentViewSet(viewsets.ModelViewSet):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TeammemberGitDataCreateAPIView(CreateAPIView):
-    queryset = TeamMemberGitData.objects.all()
-    serializer_class = TeamMemberGitDataSerializer
+class TeamMemberGitIntegrationDataCreateAPIView(CreateAPIView):
+    queryset = TeamMemberGitIntegrationData.objects.all()
+    serializer_class = TeamMemberGitIntegrationDataSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -193,24 +193,26 @@ class TeammemberGitDataCreateAPIView(CreateAPIView):
             return {"success": False, "message": str(e)}
 
 
-class TeammemberGitDataDetailAPIView(RetrieveAPIView):
-    queryset = TeamMemberGitData.objects.all()
-    serializer_class = TeamMemberGitDataSerializer
+class TeamMemberGitIntegrationDataDetailAPIView(RetrieveAPIView):
+    queryset = TeamMemberGitIntegrationData.objects.all()
+    serializer_class = TeamMemberGitIntegrationDataSerializer
     permission_classes = [IsAuthenticated]
 
 
-class TeammemberGitDataListAPIView(ListAPIView):
-    serializer_class = TeamMemberGitDataSerializer
+class TeamMemberGitIntegrationDataListAPIView(ListAPIView):
+    serializer_class = TeamMemberGitIntegrationDataSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        return TeamMemberGitData.objects.filter(created_by=user).order_by("-pk")
+        return TeamMemberGitIntegrationData.objects.filter(created_by=user).order_by(
+            "-pk"
+        )
 
 
-class TeammemberGitDataUpdateAPIView(UpdateAPIView):
-    queryset = TeamMemberGitData.objects.all()
-    serializer_class = TeamMemberGitDataSerializer
+class TeamMemberGitIntegrationDataUpdateAPIView(UpdateAPIView):
+    queryset = TeamMemberGitIntegrationData.objects.all()
+    serializer_class = TeamMemberGitIntegrationDataSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_update(self, serializer):
@@ -252,7 +254,7 @@ class TeammemberGitDataUpdateAPIView(UpdateAPIView):
             return error
 
 
-class TeammemberGitDataDeleteAPIView(DestroyAPIView):
-    queryset = TeamMemberGitData.objects.all()
-    serializer_class = TeamMemberGitDataSerializer
+class TeamMemberGitIntegrationDataDeleteAPIView(DestroyAPIView):
+    queryset = TeamMemberGitIntegrationData.objects.all()
+    serializer_class = TeamMemberGitIntegrationDataSerializer
     permission_classes = [IsAuthenticated]

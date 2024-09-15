@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Teammember, TeamMemberComment, TeamMemberGitData
+from .models import Teammember, TeamMemberComment, TeamMemberGitIntegrationData
 
 
 class TeammemberSerializer(serializers.ModelSerializer):
@@ -14,9 +14,9 @@ class TeamMemberCommentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class TeamMemberGitDataSerializer(serializers.ModelSerializer):
+class TeamMemberGitIntegrationDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TeamMemberGitData
+        model = TeamMemberGitIntegrationData
         fields = [
             "id",
             "created_by",
@@ -31,4 +31,4 @@ class TeamMemberGitDataSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Automatically set project_owner to current user
         validated_data["created_by"] = self.context["request"].user
-        return TeamMemberGitData.objects.create(**validated_data)
+        return TeamMemberGitIntegrationData.objects.create(**validated_data)

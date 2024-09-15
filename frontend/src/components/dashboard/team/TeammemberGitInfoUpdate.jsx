@@ -23,7 +23,7 @@ export const TeammemberGitInfoUpdate = () => {
   const { tmData } = location.state || {};
   const navigate = useNavigate();
   const [gitInfoID, setGitInfoID] = useState(null);
-  const [gitData, setGitData] = useState(null);
+  const [gitIntegrationData, setGitIntegrationData] = useState(null);
 
   const schema = yup.object({
     teammemberGitHosting: yup
@@ -43,11 +43,11 @@ export const TeammemberGitInfoUpdate = () => {
   });
   const { handleSubmit, control, reset } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: gitData,
+    defaultValues: gitIntegrationData,
   });
 
   const GetGitInfoID = () => {
-    AxiosInstance.get(`/team/teammember-gitdata/list/`)
+    AxiosInstance.get(`/team/teammember-gitintegration/list/`)
       .then((res) => {
         const data = res.data;
         // Find the record where teammember matches tmData.id
@@ -56,7 +56,7 @@ export const TeammemberGitInfoUpdate = () => {
         );
         if (matchingRecord) {
           setGitInfoID(matchingRecord.id);
-          setGitData({
+          setGitIntegrationData({
             teammemberGitHosting: matchingRecord.teammemberGitHosting,
             teammemberGitGroupID: matchingRecord.teammemberGitGroupID,
             teammemberGitUserID: matchingRecord.teammemberGitUserID,
@@ -79,15 +79,15 @@ export const TeammemberGitInfoUpdate = () => {
   }, [gitInfoID]);
 
   useEffect(() => {
-    if (gitData) {
-      reset(gitData); // Reset the form with fetched data
+    if (gitIntegrationData) {
+      reset(gitIntegrationData); // Reset the form with fetched data
     }
-  }, [gitData, reset]);
+  }, [gitIntegrationData, reset]);
 
   const submission = (data) => {
     const teammember = tmData.id;
-    // need to provide GitData record id, not the Teammember
-    AxiosInstance.put(`team/teammember-gitdata/${gitInfoID}/update/`, {
+    // need to provide gitintegration record id, not the Teammember
+    AxiosInstance.put(`team/teammember-gitintegration/${gitInfoID}/update/`, {
       teammember: teammember,
       teammemberGitHosting: data.teammemberGitHosting,
       teammemberGitGroupID: data.teammemberGitGroupID,
@@ -120,8 +120,8 @@ export const TeammemberGitInfoUpdate = () => {
 
   const handleDeleteClick = () => {
     const teammember = tmData.id;
-    // need to provide GitData record id, not the Teammember
-    AxiosInstance.delete(`team/teammember-gitdata/${gitInfoID}/delete/`)
+    // need to provide gitintegration record id, not the Teammember
+    AxiosInstance.delete(`team/teammember-gitintegration/${gitInfoID}/delete/`)
       .then((response) => {
         // Check if the response status is in the 200 range
         if (response.status >= 200 && response.status < 300) {

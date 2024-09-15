@@ -80,7 +80,7 @@ class TeamMemberComment(models.Model):
     updateDate = models.DateTimeField(null=False)
 
 
-class TeamMemberGitData(models.Model):
+class TeamMemberGitIntegrationData(models.Model):
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     teammember = models.OneToOneField(
         Teammember, on_delete=models.CASCADE, default=None, unique=True
@@ -95,8 +95,8 @@ class TeamMemberGitData(models.Model):
     )
 
 
-# Signal to set `teammember_hasGitIntegration` to True when TeamMemberGitData is created
-@receiver(post_save, sender=TeamMemberGitData)
+# Signal to set `teammember_hasGitIntegration` to True when TeamMemberGitIntegrationData is created
+@receiver(post_save, sender=TeamMemberGitIntegrationData)
 def set_git_integration_true(sender, instance, **kwargs):
     teammember = instance.teammember
     if not teammember.teammember_hasGitIntegration:
@@ -104,10 +104,10 @@ def set_git_integration_true(sender, instance, **kwargs):
         teammember.save()
 
 
-# Signal to set `teammember_hasGitIntegration` to None when TeamMemberGitData is deleted
-@receiver(post_delete, sender=TeamMemberGitData)
+# Signal to set `teammember_hasGitIntegration` to None when TeamMemberGitIntegrationData is deleted
+@receiver(post_delete, sender=TeamMemberGitIntegrationData)
 def set_git_integration_false(sender, instance, **kwargs):
     teammember = instance.teammember
-    if not TeamMemberGitData.objects.filter(teammember=teammember).exists():
+    if not TeamMemberGitIntegrationData.objects.filter(teammember=teammember).exists():
         teammember.teammember_hasGitIntegration = None
         teammember.save()
