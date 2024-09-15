@@ -8,6 +8,11 @@ from .views import (
     TeamMemberGitIntegrationDataListAPIView,
     TeamMemberGitIntegrationDataUpdateAPIView,
     TeamMemberGitIntegrationDataDeleteAPIView,
+    TeammemberCodingStatsListAPIView,
+    TeammemberCodingStatsDetailAPIView,
+    TeammemberCodingStatsCreateAPIView,
+    TeammemberCodingStatsUpdateAPIView,
+    TeammemberCodingStatsDeleteAPIView,
 )
 
 router = DefaultRouter()
@@ -41,6 +46,32 @@ urlpatterns = [
         "teammember-gitintegration/<int:pk>/delete/",
         TeamMemberGitIntegrationDataDeleteAPIView.as_view(),
         name="teammember-gitintegration-delete",
+    ),
+    # TeammemberCodingStats URLs
+    path(
+        "teammember-coding-stats/",
+        TeammemberCodingStatsListAPIView.as_view(),
+        name="teammember-coding-stats-list",
+    ),
+    path(
+        "teammember-coding-stats/<int:pk>/",
+        TeammemberCodingStatsDetailAPIView.as_view(),
+        name="teammember-coding-stats-detail",
+    ),
+    path(
+        "teammember-coding-stats/create/",
+        TeammemberCodingStatsCreateAPIView.as_view(),
+        name="teammember-coding-stats-create",
+    ),
+    path(
+        "teammember-coding-stats/<int:pk>/update/",
+        TeammemberCodingStatsUpdateAPIView.as_view(),
+        name="teammember-coding-stats-update",
+    ),
+    path(
+        "teammember-coding-stats/<int:pk>/delete/",
+        TeammemberCodingStatsDeleteAPIView.as_view(),
+        name="teammember-coding-stats-delete",
     ),
 ]
 

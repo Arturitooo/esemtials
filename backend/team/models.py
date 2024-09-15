@@ -111,3 +111,11 @@ def set_git_integration_false(sender, instance, **kwargs):
     if not TeamMemberGitIntegrationData.objects.filter(teammember=teammember).exists():
         teammember.teammember_hasGitIntegration = None
         teammember.save()
+
+
+class TeammemberCodingStats(models.Model):
+    teammember = models.OneToOneField(
+        Teammember, on_delete=models.CASCADE, default=None, unique=True
+    )
+    latestUpdate = models.DateTimeField(auto_now=True)
+    body = models.JSONField(default=dict)

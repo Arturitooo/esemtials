@@ -1,11 +1,17 @@
 import requests
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from .models import Teammember, TeamMemberComment, TeamMemberGitIntegrationData
+from .models import (
+    Teammember,
+    TeamMemberComment,
+    TeamMemberGitIntegrationData,
+    TeammemberCodingStats,
+)
 from .serializers import (
     TeammemberSerializer,
     TeamMemberCommentSerializer,
     TeamMemberGitIntegrationDataSerializer,
+    TeammemberCodingStatsSerializer,
 )
 from rest_framework import viewsets, permissions, response, status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -258,3 +264,28 @@ class TeamMemberGitIntegrationDataDeleteAPIView(DestroyAPIView):
     queryset = TeamMemberGitIntegrationData.objects.all()
     serializer_class = TeamMemberGitIntegrationDataSerializer
     permission_classes = [IsAuthenticated]
+
+
+class TeammemberCodingStatsListAPIView(ListAPIView):
+    queryset = TeammemberCodingStats.objects.all()
+    serializer_class = TeammemberCodingStatsSerializer
+
+
+class TeammemberCodingStatsDetailAPIView(RetrieveAPIView):
+    queryset = TeammemberCodingStats.objects.all()
+    serializer_class = TeammemberCodingStatsSerializer
+
+
+class TeammemberCodingStatsCreateAPIView(CreateAPIView):
+    queryset = TeammemberCodingStats.objects.all()
+    serializer_class = TeammemberCodingStatsSerializer
+
+
+class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
+    queryset = TeammemberCodingStats.objects.all()
+    serializer_class = TeammemberCodingStatsSerializer
+
+
+class TeammemberCodingStatsDeleteAPIView(DestroyAPIView):
+    queryset = TeammemberCodingStats.objects.all()
+    serializer_class = TeammemberCodingStatsSerializer
