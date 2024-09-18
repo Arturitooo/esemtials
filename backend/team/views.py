@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime, timedelta
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from .models import (
@@ -279,6 +280,100 @@ class TeammemberCodingStatsDetailAPIView(RetrieveAPIView):
 class TeammemberCodingStatsCreateAPIView(CreateAPIView):
     queryset = TeammemberCodingStats.objects.all()
     serializer_class = TeammemberCodingStatsSerializer
+
+    def perform_create(self, serializer):
+        validated_data = serializer.validated_data
+        # get related teammember integration data and define what
+        teammember = get_object_or_404(Teammember, pk=validated_data["teammember"].pk)
+        gitIntegrationData = TeamMemberGitIntegrationData.objects.filter(
+            teammember=teammember
+        )
+        limesDate = str(datetime.today() - timedelta(days=30))
+        dt_object = datetime.strptime(limesDate, "%Y-%m-%d %H:%M:%S.%f")
+        # Convert to the desired ISO 8601 format (without microseconds and with UTC 'Z' suffix)
+        limesDate_iso_format = dt_object.strftime("%Y-%m-%dT%H:%M:%SZ")
+        apiCallsInput = gitIntegrationData
+        # Add the 'limesDate_iso_format' to the dictionary
+        apiCallsInput["limesDate"] = limesDate_iso_format
+
+        # TODO make created mrs api call
+        # apiCallsInput["requestType"] = "author_id"
+        # TODO make reviewed mrs api call
+        # apiCallsInput["requestType"] = "reviewer_id"
+        # TODO make projects api call
+        # apiCallsInput["projects_list"] = [...]
+
+    def gitlab_merge_requests_api_call(self, data):
+        # TODO to make the api call you need to provide if check author_id or reviewer_id
+        # get needed data to the variables
+        requestType = data.get("requestType")
+        userID = data.get("teammemberGitUserID")
+        acccessToken = data.get("teammemberGitPersonalAccessToken")
+        dataLimes = data.get("limesDate")
+
+        # provide api needed info
+        url = f"https://gitlab.com/api/v4/merge_requests?{requestType}={userID}&created_after={dataLimes}"
+        headers = {"PRIVATE-TOKEN": acccessToken, "Content-Type": "application/json"}
+
+        # make API call with basic error handling
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code >= 200 and response.status_code < 300:
+                data = response.json()
+                # Create a dictionary to store the MR data with MR ID as the key
+                mr_data_dict = {}
+                # Get the needed data
+                for record in data:
+                    mr_id = record["id"]
+                    mr_data_dict[mr_id] = {
+                        "project_id": record["project_id"],
+                        "created_at": record["created_at"],
+                        "merged_at": record["merged_at"],
+                    }
+
+                return mr_data_dict
+            else:
+                return False
+        except requests.exceptions.RequestException as e:
+            # Handle any errors that occur during the request
+            return {"success": False, "message": str(e)}
+
+    def gitlab_project_api_call(self, data):
+        # TODO to make the api call you need to provide projects_list
+        # get needed data to the variables
+        projects_list = data.get("projects_list")
+        acccessToken = data.get("teammemberGitPersonalAccessToken")
+
+        project_data_dict = {}
+
+        for project in projects_list:
+            # provide api needed info
+            url = f"https://gitlab.com/api/v4/projects/{project}"
+            headers = {
+                "PRIVATE-TOKEN": acccessToken,
+                "Content-Type": "application/json",
+            }
+
+            # make API call with basic error handling
+            try:
+                response = requests.get(url, headers=headers)
+                if response.status_code >= 200 and response.status_code < 300:
+                    data = response.json()
+                    # Create a dictionary to store the MR data with MR ID as the key
+                    mr_data_dict = {}
+                    # Get the needed data
+                    for record in data:
+                        project_id = project
+                        mr_data_dict[project_id] = {
+                            "project_name": record["name"],
+                            "project_url": record["web_url"],
+                        }
+                else:
+                    return False
+            except requests.exceptions.RequestException as e:
+                # Handle any errors that occur during the request
+                return {"success": False, "message": str(e)}
+        return project_data_dict
 
 
 class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
