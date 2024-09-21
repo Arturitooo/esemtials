@@ -293,20 +293,54 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         data_limitation = str(datetime.today() - timedelta(days=30))
         dt_object = datetime.strptime(data_limitation, "%Y-%m-%d %H:%M:%S.%f")
         data_limitation_iso_format = dt_object.strftime("%Y-%m-%dT%H:%M:%SZ")
-        apiCallsInput = gitIntegrationData
-        # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
-        apiCallsInput["data_limitation"] = data_limitation_iso_format
 
-        # TODO make created mrs api call with gitlab_merge_requests_api_call
-        # apiCallsInput["requestType"] = "author_id"
-        # TODO make reviewed mrs api call with gitlab_merge_requests_api_call
-        # apiCallsInput["requestType"] = "reviewer_id"
-        # TODO make projects api call with gitlab_project_api_call
+        # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
+        apiCallsInput = {
+            "teammemberGitUserID": gitIntegrationData.git_user_id,
+            "teammemberGitPersonalAccessToken": gitIntegrationData.git_personal_access_token,
+            "data_limitation": data_limitation_iso_format,
+        }
+
+        # Make created mrs api call with gitlab_merge_requests_api_call
+        apiCallsInput["requestType"] = "author_id"
+        created_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
+        print(created_mrs_data)
+
+        # Make reviewed mrs api call with gitlab_merge_requests_api_call
+        apiCallsInput["requestType"] = "reviewer_id"
+        reviewed_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
+        print(reviewed_mrs_data)
+        del apiCallsInput["requestType"]
+
+        # Make projects api call with gitlab_project_api_call
+        merged_project_ids = set()
+        for mr_id, mr_info in created_mrs_data.items():
+            project_id = mr_info.get("project_id")
+            if project_id:
+                merged_project_ids.add(project_id)  # Add to the set to avoid duplicates
+        for mr_id, mr_info in reviewed_mrs_data.items():
+            project_id = mr_info.get("project_id")
+            if project_id:
+                merged_project_ids.add(project_id)  # Add to the set to avoid duplicates
+
+        # Convert the set to a list
+        merged_project_ids_list = list(merged_project_ids)
+        apiCallsInput["projects_list"] = merged_project_ids_list
+        mrs_projects_data = self.gitlab_project_api_call(apiCallsInput)
+        print(mrs_projects_data)
+
+        # Make commits created api call with gitlab_commits_created_api_call
         # apiCallsInput["projects_list"] = [...]
-        # TODO make commits created api call with gitlab_commits_created_api_call
-        # apiCallsInput["projects_list"] = [...]
-        # TODO make commits difference api call with gitlab_commits_diff_api_call
+        commits_created_data = self.gitlab_commits_created_api_call(apiCallsInput)
+        print(commits_created_data)
+        del apiCallsInput["projects_list"]
+
+        # Make commits difference api call with gitlab_commits_diff_api_call
         # apiCallsInput["commits_list"] = created_commits_data_dict
+        apiCallsInput["commits_list"] = commits_created_data
+        commits_diffs_data = self.gitlab_commits_diff_api_call(apiCallsInput)
+        print(commits_diffs_data)
+
         # TODO make MRs comments api call with gitlab_commits_diff_api_call
         # apiCallsInput["mrs_list"] = mr_data_dict
 
@@ -328,17 +362,15 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             if response.status_code >= 200 and response.status_code < 300:
                 data = response.json()
                 # Create a dictionary to store the MR data with MR ID as the key
-                mr_data_dict = {}
-                # Get the needed data
-                for record in data:
-                    mr_id = record["id"]
-                    mr_data_dict[mr_id] = {
+                mr_data_dict = {
+                    record["id"]: {
                         "project_id": record["project_id"],
                         "iid": record["iid"],
                         "created_at": record["created_at"],
-                        "merged_at": record["merged_at"],
+                        "merged_at": record.get("merged_at"),
                     }
-
+                    for record in data
+                }
                 return mr_data_dict
             else:
                 return False
