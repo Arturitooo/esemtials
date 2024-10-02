@@ -39,7 +39,8 @@ class TeamMemberGitIntegrationDataSerializer(serializers.ModelSerializer):
         return TeamMemberGitIntegrationData.objects.create(**validated_data)
 
 
-class TeammemberCodingStatsSerializer(serializers.Serializer):
+class TeammemberCodingStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeammemberCodingStats
         fields = "__all__"
+        read_only_fields = ["latestUpdate"]

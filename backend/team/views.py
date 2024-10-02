@@ -162,10 +162,7 @@ class TeamMemberGitIntegrationDataCreateAPIView(CreateAPIView):
 
         # perform testing API call and based on result change the Teammember
         integration_status = self.gitlab_verification_api_call(validated_data)
-        if integration_status:
-            teammember.teammember_hasGitIntegration = True
-        else:
-            teammember.teammember_hasGitIntegration = False
+        teammember.teammember_hasGitIntegration = integration_status
 
         teammember.save()
 
@@ -194,7 +191,7 @@ class TeamMemberGitIntegrationDataCreateAPIView(CreateAPIView):
                 member_ids = [member["id"] for member in members]
                 return str(userID) in map(str, member_ids)
             else:
-                return False
+                return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
         except requests.exceptions.RequestException as e:
             # Handle any errors that occur during the request
             return {"success": False, "message": str(e)}
@@ -280,14 +277,17 @@ class TeammemberCodingStatsDetailAPIView(RetrieveAPIView):
 class TeammemberCodingStatsCreateAPIView(CreateAPIView):
     queryset = TeammemberCodingStats.objects.all()
     serializer_class = TeammemberCodingStatsSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        validated_data = serializer.validated_data
+        user = self.request.user
+        body = {}
+        teammember_id = self.request.data.get("teammember")
         # get related teammember integration data and define what
-        teammember = get_object_or_404(Teammember, pk=validated_data["teammember"].pk)
+        teammember = get_object_or_404(Teammember, pk=teammember_id, created_by=user)
         gitIntegrationData = TeamMemberGitIntegrationData.objects.filter(
             teammember=teammember
-        )
+        ).first()
 
         # set date limes to 30 days ago and convert to needed format
         data_limitation = str(datetime.today() - timedelta(days=30))
@@ -295,11 +295,14 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         data_limitation_iso_format = dt_object.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
-        apiCallsInput = {
-            "teammemberGitUserID": gitIntegrationData.git_user_id,
-            "teammemberGitPersonalAccessToken": gitIntegrationData.git_personal_access_token,
-            "data_limitation": data_limitation_iso_format,
-        }
+        if gitIntegrationData:
+            # Prepare the apiCallsInput
+            apiCallsInput = {
+                "groupID": gitIntegrationData.teammemberGitGroupID,
+                "userID": gitIntegrationData.teammemberGitUserID,
+                "accessToken": gitIntegrationData.teammemberGitPersonalAccessToken,
+                "data_limitation": data_limitation_iso_format,
+            }
 
         # Make created mrs api call with gitlab_merge_requests_api_call
         apiCallsInput["requestType"] = "author_id"
@@ -311,6 +314,16 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         reviewed_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
         print(reviewed_mrs_data)
         del apiCallsInput["requestType"]
+
+        # 3. Extract MR IDs and prepare the list for mrs_list
+        mrs_ids = set()  # Use a set to avoid duplicate IDs
+
+        # Add created MRs IDs to the set
+        for mr_id in created_mrs_data.keys():
+            mrs_ids.add(mr_id)
+
+        # Convert the set to a list and add to apiCallsInput
+        apiCallsInput["mrs_list"] = list(mrs_ids)
 
         # Make projects api call with gitlab_project_api_call
         merged_project_ids = set()
@@ -330,7 +343,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         print(mrs_projects_data)
 
         # Make commits created api call with gitlab_commits_created_api_call
-        # apiCallsInput["projects_list"] = [...]
         commits_created_data = self.gitlab_commits_created_api_call(apiCallsInput)
         print(commits_created_data)
         del apiCallsInput["projects_list"]
@@ -340,16 +352,19 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         apiCallsInput["commits_list"] = commits_created_data
         commits_diffs_data = self.gitlab_commits_diff_api_call(apiCallsInput)
         print(commits_diffs_data)
+        del apiCallsInput["commits_list"]
 
-        # TODO make MRs comments api call with gitlab_commits_diff_api_call
-        # apiCallsInput["mrs_list"] = mr_data_dict
+        # Fetch MRs comments api call with gitlab_commits_diff_api_call
+        # apiCallsInput["mrs_list"] provided earlier
+        mrs_comments_data = self.gitlab_mrs_comments_api_call(apiCallsInput)
+        print(mrs_comments_data)
 
     def gitlab_merge_requests_api_call(self, data):
         # To make the api call you need to provide if check author_id or reviewer_id
         # get needed data to the variables
         requestType = data.get("requestType")
-        userID = data.get("teammemberGitUserID")
-        accessToken = data.get("teammemberGitPersonalAccessToken")
+        userID = data.get("userID")
+        accessToken = data.get("accessToken")
         data_limitation = data.get("data_limitation")
 
         # provide api needed info
@@ -373,7 +388,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 }
                 return mr_data_dict
             else:
-                return False
+                return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
         except requests.exceptions.RequestException as e:
             # Handle any errors that occur during the request
             return {"success": False, "message": str(e)}
@@ -382,14 +397,13 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         # To make the api call you need to provide projects_list
         # get needed data to the variables
         projects_list = data.get("projects_list")
-        accessToken = data.get("teammemberGitPersonalAccessToken")
-        data_limitation = data.get("data_limitation")
+        accessToken = data.get("accessToken")
 
         project_data_dict = {}
 
         for project in projects_list:
             # provide api needed info
-            url = f"https://gitlab.com/api/v4/projects/{project}&created_after={data_limitation}"
+            url = f"https://gitlab.com/api/v4/projects/{project}"
             headers = {
                 "PRIVATE-TOKEN": accessToken,
                 "Content-Type": "application/json",
@@ -408,7 +422,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                             "project_url": record["web_url"],
                         }
                 else:
-                    return False
+                    return f"Project GitLab API call failed with status code: {response.status_code}, response: {response.text}"
             except requests.exceptions.RequestException as e:
                 # Handle any errors that occur during the request
                 return {"success": False, "message": str(e)}
@@ -419,7 +433,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         # get needed data to the variables
         projects_list = data.get("projects_list")
         userID = data.get("teammemberGitUserID")
-        accessToken = data.get("teammemberGitPersonalAccessToken")
+        accessToken = data.get("accessToken")
         data_limitation = data.get("data_limitation")
 
         created_commits_data_dict = {}
@@ -450,7 +464,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         # Append the commit data to the project's list of commits
                         created_commits_data_dict[project].append(commit_info)
                 else:
-                    return False
+                    return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
             except requests.exceptions.RequestException as e:
                 # Handle any errors that occur during the request
                 return {"success": False, "message": str(e)}
@@ -460,7 +474,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         # To make the api call you need to provide projects_list
         # get needed data to the variables
         created_commits_data_dict = data
-        accessToken = data.get("teammemberGitPersonalAccessToken")
+        accessToken = data.get("accessToken")
         data_limitation = data.get("data_limitation")
 
         commits_diff_data_dict = {}
@@ -528,7 +542,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         # To make the api call you need to provide mrs_list
         # get needed data to the variables
         mr_data_dict = data.get("mr_data_dict")
-        accessToken = data.get("teammemberGitPersonalAccessToken")
+        accessToken = data.get("accessToken")
         data_limitation = data.get("data_limitation")
         mrs_comments_data_dict = {}
 
@@ -555,7 +569,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                             "body": record["body"],
                         }
                 else:
-                    return False
+                    return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
             except requests.exceptions.RequestException as e:
                 # Handle any errors that occur during the rMRequest
                 return {"success": False, "message": str(e)}

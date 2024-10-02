@@ -8,6 +8,7 @@ from .views import (
     TeamMemberGitIntegrationDataListAPIView,
     TeamMemberGitIntegrationDataUpdateAPIView,
     TeamMemberGitIntegrationDataDeleteAPIView,
+    TeammemberCodingStatsCreateAPIView,
     TeammemberCodingStatsListAPIView,
     TeammemberCodingStatsDetailAPIView,
     TeammemberCodingStatsUpdateAPIView,
@@ -47,6 +48,11 @@ urlpatterns = [
         name="teammember-gitintegration-delete",
     ),
     # TeammemberCodingStats URLs
+    path(
+        "teammember-coding-stats/create/",
+        TeammemberCodingStatsCreateAPIView.as_view(),
+        name="teammember-coding-stats-create",
+    ),
     path(
         "teammember-coding-stats/",
         TeammemberCodingStatsListAPIView.as_view(),
