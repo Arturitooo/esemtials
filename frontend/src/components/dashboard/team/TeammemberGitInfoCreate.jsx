@@ -44,7 +44,7 @@ export const TeammemberGitInfoCreate = () => {
 
   const submission = (data) => {
     const teammember = tmData.id;
-    AxiosInstance.post("team/teammember-gitdata/create/", {
+    AxiosInstance.post("team/teammember-gitintegration/create/", {
       teammember: teammember,
       teammemberGitHosting: data.teammemberGitHosting,
       teammemberGitGroupID: data.teammemberGitGroupID,

@@ -3,11 +3,16 @@ from django.urls import path
 from .views import (
     TeammemberViewSet,
     TeammemberCommentViewSet,
-    TeammemberGitDataCreateAPIView,
-    TeammemberGitDataDetailAPIView,
-    TeammemberGitDataListAPIView,
-    TeammemberGitDataUpdateAPIView,
-    TeammemberGitDataDeleteAPIView,
+    TeamMemberGitIntegrationDataCreateAPIView,
+    TeamMemberGitIntegrationDataDetailAPIView,
+    TeamMemberGitIntegrationDataListAPIView,
+    TeamMemberGitIntegrationDataUpdateAPIView,
+    TeamMemberGitIntegrationDataDeleteAPIView,
+    TeammemberCodingStatsCreateAPIView,
+    TeammemberCodingStatsListAPIView,
+    TeammemberCodingStatsDetailAPIView,
+    TeammemberCodingStatsUpdateAPIView,
+    TeammemberCodingStatsDeleteAPIView,
 )
 
 router = DefaultRouter()
@@ -18,29 +23,55 @@ router.register(
 
 urlpatterns = [
     path(
-        "teammember-gitdata/create/",
-        TeammemberGitDataCreateAPIView.as_view(),
-        name="teammember-gitdata-create",
+        "teammember-gitintegration/create/",
+        TeamMemberGitIntegrationDataCreateAPIView.as_view(),
+        name="teammember-gitintegration-create",
     ),
     path(
-        "teammember-gitdata/<int:pk>/",
-        TeammemberGitDataDetailAPIView.as_view(),
-        name="teammember-gitdata-detail",
+        "teammember-gitintegration/<int:pk>/",
+        TeamMemberGitIntegrationDataDetailAPIView.as_view(),
+        name="teammember-gitintegration-detail",
     ),
     path(
-        "teammember-gitdata/list/",
-        TeammemberGitDataListAPIView.as_view(),
-        name="teammember-gitdata-list",
+        "teammember-gitintegration/list/",
+        TeamMemberGitIntegrationDataListAPIView.as_view(),
+        name="teammember-gitintegration-list",
     ),
     path(
-        "teammember-gitdata/<int:pk>/update/",
-        TeammemberGitDataUpdateAPIView.as_view(),
-        name="teammember-gitdata-update",
+        "teammember-gitintegration/<int:pk>/update/",
+        TeamMemberGitIntegrationDataUpdateAPIView.as_view(),
+        name="teammember-gitintegration-update",
     ),
     path(
-        "teammember-gitdata/<int:pk>/delete/",
-        TeammemberGitDataDeleteAPIView.as_view(),
-        name="teammember-gitdata-delete",
+        "teammember-gitintegration/<int:pk>/delete/",
+        TeamMemberGitIntegrationDataDeleteAPIView.as_view(),
+        name="teammember-gitintegration-delete",
+    ),
+    # TeammemberCodingStats URLs
+    path(
+        "teammember-coding-stats/create/",
+        TeammemberCodingStatsCreateAPIView.as_view(),
+        name="teammember-coding-stats-create",
+    ),
+    path(
+        "teammember-coding-stats/",
+        TeammemberCodingStatsListAPIView.as_view(),
+        name="teammember-coding-stats-list",
+    ),
+    path(
+        "teammember-coding-stats/<int:pk>/",
+        TeammemberCodingStatsDetailAPIView.as_view(),
+        name="teammember-coding-stats-detail",
+    ),
+    path(
+        "teammember-coding-stats/<int:pk>/update/",
+        TeammemberCodingStatsUpdateAPIView.as_view(),
+        name="teammember-coding-stats-update",
+    ),
+    path(
+        "teammember-coding-stats/<int:pk>/delete/",
+        TeammemberCodingStatsDeleteAPIView.as_view(),
+        name="teammember-coding-stats-delete",
     ),
 ]
 
