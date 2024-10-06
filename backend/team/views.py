@@ -307,12 +307,12 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         # Make created mrs api call with gitlab_merge_requests_api_call
         apiCallsInput["requestType"] = "author_id"
         created_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
-        print(created_mrs_data)
+        print(created_mrs_data)  # working fine
 
         # Make reviewed mrs api call with gitlab_merge_requests_api_call
         apiCallsInput["requestType"] = "reviewer_id"
         reviewed_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
-        print(reviewed_mrs_data)
+        print(reviewed_mrs_data)  # working fine
         del apiCallsInput["requestType"]
 
         # 3. Extract MR IDs and prepare the list for mrs_list
@@ -344,20 +344,20 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
         # Make commits created api call with gitlab_commits_created_api_call
         commits_created_data = self.gitlab_commits_created_api_call(apiCallsInput)
-        print(commits_created_data)
+        print(commits_created_data)  # working fine
         del apiCallsInput["projects_list"]
 
         # Make commits difference api call with gitlab_commits_diff_api_call
         # apiCallsInput["commits_list"] = created_commits_data_dict
         apiCallsInput["commits_list"] = commits_created_data
         commits_diffs_data = self.gitlab_commits_diff_api_call(apiCallsInput)
-        print(commits_diffs_data)
+        print("commits diffs ", commits_diffs_data)  # doesnt work
         del apiCallsInput["commits_list"]
 
         # Fetch MRs comments api call with gitlab_commits_diff_api_call
         # apiCallsInput["mrs_list"] provided earlier
-        mrs_comments_data = self.gitlab_mrs_comments_api_call(apiCallsInput)
-        print(mrs_comments_data)
+        # mrs_comments_data = self.gitlab_mrs_comments_api_call(apiCallsInput)
+        # print(mrs_comments_data)  # doesnt work
 
     def gitlab_merge_requests_api_call(self, data):
         # To make the api call you need to provide if check author_id or reviewer_id
@@ -415,12 +415,11 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 if response.status_code >= 200 and response.status_code < 300:
                     data = response.json()
                     # Get the needed data
-                    for record in data:
-                        project_id = project
-                        project_data_dict[project_id] = {
-                            "project_name": record["name"],
-                            "project_url": record["web_url"],
-                        }
+                    project_id = project
+                    project_data_dict[project_id] = {
+                        "project_name": data["name"],
+                        "project_url": data["web_url"],
+                    }
                 else:
                     return f"Project GitLab API call failed with status code: {response.status_code}, response: {response.text}"
             except requests.exceptions.RequestException as e:
@@ -450,18 +449,19 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             try:
                 response = requests.get(url, headers=headers)
                 if response.status_code >= 200 and response.status_code < 300:
-                    data = response.json()
+                    commits = response.json()
                     # Initialize the list of commits for the project if not already present
                     if project not in created_commits_data_dict:
                         created_commits_data_dict[project] = []
                     # Get the needed data for each commit
-                    for record in data:
+                    # Iterate over each commit and extract relevant details
+                    for commit in commits:
                         commit_info = {
-                            "commit_short_id": record["short_id"],
-                            "created_at": record["created_at"],
-                            "commit_web_url": record["web_url"],
+                            "commit_short_id": commit.get("short_id"),
+                            "created_at": commit.get("created_at"),
+                            "commit_web_url": commit.get("web_url"),
                         }
-                        # Append the commit data to the project's list of commits
+                        # Append each commit's data to the list for the respective project
                         created_commits_data_dict[project].append(commit_info)
                 else:
                     return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
@@ -480,10 +480,18 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         commits_diff_data_dict = {}
 
         for project_id, commits_list in created_commits_data_dict.items():
+            print(
+                f"Project ID: {project_id}, Commits List: {commits_list}"
+            )  # Log project and commits list
             for commit in commits_list:
-                commit_short_id = commit["commit_short_id"]
+                print(f"Commit: {commit}")  # Log each commit
+                if isinstance(commit, dict):
+                    commit_short_id = commit["commit_short_id"]
+                else:
+                    # Handle case where commit is a string
+                    commit_short_id = commit
                 # provide api needed info
-                url = f"https://gitlab.com/api/v4/projects/{project_id}/repository/{commit_short_id}/diff&created_after={data_limitation}"
+                url = f"https://gitlab.com/api/v4/projects/{project_id}/repository/commits/{commit_short_id}/diff&created_after={data_limitation}"  # TODO? remove the created after?
                 headers = {
                     "PRIVATE-TOKEN": accessToken,
                     "Content-Type": "application/json",
