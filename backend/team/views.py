@@ -341,10 +341,12 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         apiCallsInput["projects_list"] = merged_project_ids_list
         mrs_projects_data = self.gitlab_project_api_call(apiCallsInput)
         print(mrs_projects_data)
+        print("----------------")
 
         # Make commits created api call with gitlab_commits_created_api_call
         commits_created_data = self.gitlab_commits_created_api_call(apiCallsInput)
         print(commits_created_data)  # working fine
+        print("----------------")
         del apiCallsInput["projects_list"]
 
         # Make commits difference api call with gitlab_commits_diff_api_call
