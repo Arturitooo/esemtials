@@ -43,4 +43,3 @@ class TeammemberCodingStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeammemberCodingStats
         fields = "__all__"
-        read_only_fields = ["latestUpdate"]
