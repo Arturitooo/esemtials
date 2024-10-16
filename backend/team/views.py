@@ -307,16 +307,10 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         # Make created mrs api call with gitlab_merge_requests_api_call
         apiCallsInput["requestType"] = "author_id"
         created_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
-        print("created_mrs_data")  # working fine
-        print(created_mrs_data)  # working fine
-        print("----------")
 
         # Make reviewed mrs api call with gitlab_merge_requests_api_call
         apiCallsInput["requestType"] = "reviewer_id"
         reviewed_mrs_data = self.gitlab_merge_requests_api_call(apiCallsInput)
-        print("reviewed_mrs_data")  # working fine
-        print(reviewed_mrs_data)  # working fine
-        print("----------")
         del apiCallsInput["requestType"]
 
         # 3. Extract MR IDs and prepare the list for mrs_list
@@ -346,25 +340,16 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
         # Make Project api call
         mrs_projects_data = self.gitlab_project_api_call(apiCallsInput)
-        print("mrs_projects_data")
-        print(mrs_projects_data)
-        print("----------")
         del apiCallsInput["mrs_list"]
 
         # Make commits created api call with gitlab_commits_created_api_call
         commits_created_data = self.gitlab_commits_created_api_call(apiCallsInput)
-        print("commits_created_data")  # working fine
-        print(commits_created_data)  # working fine
-        print("----------------")
         del apiCallsInput["projects_list"]
 
         # Make commits difference api call with gitlab_commits_diff_api_call
         # apiCallsInput["commits_list"] = created_commits_data_dict
         apiCallsInput["commits_list"] = commits_created_data
         commits_diffs_data = self.gitlab_commits_diff_api_call(apiCallsInput)
-        print("commits diffs ")  # working fine
-        print(commits_diffs_data)  # working fine
-        print("----------")
         del apiCallsInput["commits_list"]
 
         # Fetch MRs comments api call with gitlab_commits_diff_api_call
@@ -373,9 +358,103 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         combined_mrs_data.update(reviewed_mrs_data)  # Merge in reviewed_mrs_data
         apiCallsInput["mrs_data"] = combined_mrs_data
         mrs_comments_data = self.gitlab_mrs_comments_api_call(apiCallsInput)
-        print("mrs_comments_data")  # doesnt work
-        print(mrs_comments_data)  # doesnt work
-        print("----------")
+
+        # Structure the data in a reasonable way
+        # Adding the project data to the body and initializing the groups of data to be provided later
+        for project_id, project_data in mrs_projects_data.items():
+            body[project_id] = {
+                "project_name": project_data["project_name"],
+                "project_url": project_data["project_url"],
+                "created_mrs_data": [],
+                "reviewed_mrs_data": [],
+                "created_commits_data": [],
+                "counters7": [],
+                "counters24": [],
+            }
+
+        # Merge comments with the MR data into one variable
+        for mr_id, comment_data in mrs_comments_data.items():
+            # Add comment data to the respective MR in created_mrs_data if it exists
+            if mr_id in created_mrs_data:
+                created_mrs_data[mr_id]["comment_id"] = comment_data["comment_id"]
+                created_mrs_data[mr_id]["comment_body"] = comment_data["comment_body"]
+
+            # Add comment data to the respective MR in reviewed_mrs_data if it exists and not in created_mrs_data
+            if mr_id in reviewed_mrs_data and mr_id not in created_mrs_data:
+                reviewed_mrs_data[mr_id]["comment_id"] = comment_data["comment_id"]
+                reviewed_mrs_data[mr_id]["comment_body"] = comment_data["comment_body"]
+
+        # Function to add MR data to the appropriate project section
+        def add_mr_data_to_project(project_id, mr_data_list, section_name):
+            for mr_id, mr_data in mr_data_list.items():
+                # Check for comments and assign False if missing
+                mr_data["comment_id"] = mr_data.get("comment_id", False)
+                mr_data["comment_body"] = mr_data.get("comment_body", False)
+
+                # Append MR data to the respective section in the project body
+                body[project_id][section_name].append(
+                    {
+                        "mr_id": mr_id,
+                        "iid": mr_data["iid"],
+                        "created_at": mr_data["created_at"],
+                        "merged_at": mr_data["merged_at"],
+                        "comment_id": mr_data["comment_id"],
+                        "comment_body": mr_data["comment_body"],
+                    }
+                )
+
+        # Add the MR data to the 'created_mrs_data' and 'reviewed_mrs_data' lists for each project
+        for project_id in body.keys():
+            if project_id in created_mrs_data:
+                add_mr_data_to_project(project_id, created_mrs_data, "created_mrs_data")
+            if project_id in reviewed_mrs_data:
+                add_mr_data_to_project(
+                    project_id, reviewed_mrs_data, "reviewed_mrs_data"
+                )
+
+        # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
+        for project_id, commit_data_list in commits_created_data.items():
+            # Ensure the project ID exists in the body
+            if project_id not in body:
+                body[project_id] = {"created_commits_data": []}
+
+            for commit_data in commit_data_list:
+                body[project_id]["created_commits_data"].append(
+                    {
+                        "commit_short_id": commit_data["commit_short_id"],
+                        "created_at": commit_data["created_at"],
+                        "commit_web_url": commit_data["commit_web_url"],
+                        "diff_data": [],  # Initialize as an empty list
+                    }
+                )
+
+        # Add the commit diff data
+        for project_id, commit_comments_data_list in commits_diffs_data.items():
+            for commit_comments_data in commit_comments_data_list:
+                # Find the correct commit in the body's created_commits_data list
+                for commit in body[project_id]["created_commits_data"]:
+                    if (
+                        commit["commit_short_id"]
+                        == commit_comments_data["commit_short_id"]
+                    ):
+                        # Access 'diff_data' from commit_comments_data
+                        diff_data = commit_comments_data["diff_data"]
+
+                        # Append diff data to the respective commit's diff_data list
+                        commit["diff_data"].append(
+                            {
+                                "lines_added": diff_data["lines_added"],
+                                "lines_removed": diff_data["lines_removed"],
+                                "added_lines_content": diff_data["added_lines_content"],
+                                "removed_lines_content": diff_data[
+                                    "removed_lines_content"
+                                ],
+                            }
+                        )
+        # TODO stats calculation
+
+        print("body")
+        print(body)
 
     def gitlab_merge_requests_api_call(self, data):
         # To make the api call you need to provide if check author_id or reviewer_id
@@ -589,8 +668,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     # Get the needed data for each commit
                     for record in data:
                         mrs_comments_data_dict[mr_id] = {
-                            "id": record["id"],
-                            "body": record["body"],
+                            "comment_id": record["id"],
+                            "comment_body": record["body"],
                         }
                 else:
                     return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
