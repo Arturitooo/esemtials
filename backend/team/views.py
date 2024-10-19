@@ -290,9 +290,14 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         ).first()
 
         # set date limes to 30 days ago and convert to needed format
-        data_limitation = str(datetime.today() - timedelta(days=30))
-        dt_object = datetime.strptime(data_limitation, "%Y-%m-%d %H:%M:%S.%f")
-        data_limitation_iso_format = dt_object.strftime("%Y-%m-%dT%H:%M:%SZ")
+        data_limitation30 = str(datetime.today() - timedelta(days=30))
+        dt_object30 = datetime.strptime(data_limitation30, "%Y-%m-%d %H:%M:%S.%f")
+        data_limitation_iso_format30 = dt_object30.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        # set date limes to 7 days ago and convert to needed format
+        data_limitation7 = str(datetime.today() - timedelta(days=7))
+        dt_object7 = datetime.strptime(data_limitation7, "%Y-%m-%d %H:%M:%S.%f")
+        data_limitation7_iso_format = dt_object7.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
         if gitIntegrationData:
@@ -301,7 +306,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "groupID": gitIntegrationData.teammemberGitGroupID,
                 "userID": gitIntegrationData.teammemberGitUserID,
                 "accessToken": gitIntegrationData.teammemberGitPersonalAccessToken,
-                "data_limitation": data_limitation_iso_format,
+                "data_limitation": data_limitation_iso_format30,
             }
 
         # Make created mrs api call with gitlab_merge_requests_api_call
@@ -368,49 +373,87 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "created_mrs_data": [],
                 "reviewed_mrs_data": [],
                 "created_commits_data": [],
-                "counters7": [],
-                "counters24": [],
+                "counters7": {
+                    "project_created_mrs_counter7": 0,
+                    "project_reviewed_mrs_counter7": 0,
+                    "project_comments_in_created_mrs7": 0,
+                    "project_created_commits7": 0,
+                    "project_lines_added7": 0,
+                    "project_lines_removed7": 0,
+                },
+                "counters30": {
+                    "project_active_projects30": 0,
+                    "project_created_mrs_counter30": 0,
+                    "project_reviewed_mrs_counter30": 0,
+                    "project_comments_in_created_mrs30": 0,
+                    "project_created_commits30": 0,
+                    "project_lines_added30": 0,
+                    "project_lines_removed30": 0,
+                },
             }
 
-        # Merge comments with the MR data into one variable
+        # Before adding MRs data - merge the comments and the MRs info into one variable
         for mr_id, comment_data in mrs_comments_data.items():
-            # Add comment data to the respective MR in created_mrs_data if it exists
+            # Check if the MR ID exists in the created_mrs_data
             if mr_id in created_mrs_data:
-                created_mrs_data[mr_id]["comment_id"] = comment_data["comment_id"]
-                created_mrs_data[mr_id]["comment_body"] = comment_data["comment_body"]
+                # Add the comment data to the respective MR in created_mrs_data
+                created_mrs_data[mr_id]["comment_ids"] = comment_data["comment_ids"]
+                created_mrs_data[mr_id]["comment_bodies"] = comment_data[
+                    "comment_bodies"
+                ]
 
-            # Add comment data to the respective MR in reviewed_mrs_data if it exists and not in created_mrs_data
+        for mr_id, comment_data in mrs_comments_data.items():
+            # Check if the MR ID exists in the reviewed_mrs_data
             if mr_id in reviewed_mrs_data and mr_id not in created_mrs_data:
-                reviewed_mrs_data[mr_id]["comment_id"] = comment_data["comment_id"]
-                reviewed_mrs_data[mr_id]["comment_body"] = comment_data["comment_body"]
+                # Add the comment data to the respective MR in reviewed_mrs_data
+                reviewed_mrs_data[mr_id]["comment_ids"] = comment_data["comment_ids"]
+                reviewed_mrs_data[mr_id]["comment_bodies"] = comment_data[
+                    "comment_bodies"
+                ]
 
-        # Function to add MR data to the appropriate project section
-        def add_mr_data_to_project(project_id, mr_data_list, section_name):
-            for mr_id, mr_data in mr_data_list.items():
-                # Check for comments and assign False if missing
-                mr_data["comment_id"] = mr_data.get("comment_id", False)
-                mr_data["comment_body"] = mr_data.get("comment_body", False)
+        # Add the MR data to the 'created_mrs_data' list for that project
+        for mr_id, mr_data in created_mrs_data.items():
+            project_id = mr_data["project_id"]
 
-                # Append MR data to the respective section in the project body
-                body[project_id][section_name].append(
-                    {
-                        "mr_id": mr_id,
-                        "iid": mr_data["iid"],
-                        "created_at": mr_data["created_at"],
-                        "merged_at": mr_data["merged_at"],
-                        "comment_id": mr_data["comment_id"],
-                        "comment_body": mr_data["comment_body"],
-                    }
-                )
+            # check if there are comments for the mr
+            if not mr_data.get("comment_ids"):
+                mr_data["comment_ids"] = False
+            if not mr_data.get("comment_bodies"):
+                mr_data["comment_bodies"] = False
 
-        # Add the MR data to the 'created_mrs_data' and 'reviewed_mrs_data' lists for each project
-        for project_id in body.keys():
-            if project_id in created_mrs_data:
-                add_mr_data_to_project(project_id, created_mrs_data, "created_mrs_data")
-            if project_id in reviewed_mrs_data:
-                add_mr_data_to_project(
-                    project_id, reviewed_mrs_data, "reviewed_mrs_data"
-                )
+            # Check if the project_id exists in the body
+            body[project_id]["created_mrs_data"].append(
+                {
+                    "mr_id": mr_id,
+                    "iid": mr_data["iid"],
+                    "created_at": mr_data["created_at"],
+                    "merged_at": mr_data["merged_at"],
+                    "comment_ids": mr_data["comment_ids"],
+                    "comment_bodies": mr_data["comment_bodies"],
+                }
+            )
+
+        # Add the MR data to the 'reviewed_mrs_data' list for that project
+        for mr_id, mr_data in reviewed_mrs_data.items():
+            project_id = mr_data["project_id"]
+
+            # Check if there are comments for the mr
+            if not mr_data.get("comment_ids"):
+                mr_data["comment_ids"] = False
+            if not mr_data.get("comment_bodies"):
+                mr_data["comment_bodies"] = False
+
+            # Check if the project_id exists in the body
+            body[project_id]["reviewed_mrs_data"].append(
+                {
+                    "mr_id": mr_id,
+                    "iid": mr_data["iid"],
+                    "created_at": mr_data["created_at"],
+                    "merged_at": mr_data["merged_at"],
+                    "comment_ids": mr_data["comment_ids"],
+                    "comment_bodies": mr_data["comment_bodies"],
+                }
+            )
 
         # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
         for project_id, commit_data_list in commits_created_data.items():
@@ -451,10 +494,94 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                                 ],
                             }
                         )
-        # TODO stats calculation
 
-        print("body")
-        print(body)
+        active_projects30 = created_mrs_counter30 = reviewed_mrs_counter30 = (
+            comments_in_created_mrs30
+        ) = created_commits30 = lines_added30 = lines_removed30 = 0
+        active_projects7 = created_mrs_counter7 = reviewed_mrs_counter7 = (
+            comments_in_created_mrs7
+        ) = created_commits7 = lines_added7 = lines_removed7 = 0
+
+        # Loop through each project to get number of projects
+        for project, project_data in body.items():
+            # Loop through each MR created
+            for created_mr in project_data["created_mrs_data"]:
+                if created_mr["created_at"] > data_limitation7_iso_format:
+                    created_mrs_counter7 += 1
+                    created_mrs_counter30 += 1
+                    for comment in created_mr["comment_ids"]:
+                        comments_in_created_mrs7 += 1
+                        comments_in_created_mrs30 += 1
+
+                elif (
+                    data_limitation7_iso_format
+                    > created_mr["created_at"]
+                    > data_limitation_iso_format30
+                ):
+                    created_mrs_counter30 += 1
+                    for comment in created_mr["comment_ids"]:
+                        comments_in_created_mrs30 += 1
+
+            # Loop through each MR reviewed
+            for reviewed_mr in project_data["reviewed_mrs_data"]:
+                if reviewed_mr["created_at"] > data_limitation7_iso_format:
+                    reviewed_mrs_counter7 += 1
+                    reviewed_mrs_counter30 += 1
+                elif (
+                    data_limitation7_iso_format
+                    > reviewed_mr["created_at"]
+                    > data_limitation_iso_format30
+                ):
+                    reviewed_mrs_counter30 += 1
+
+            # If there were MRs created or reviewed - count as an active project
+            if created_mrs_counter7 > 0 or reviewed_mrs_counter7 > 0:
+                active_projects7 += 1
+            if created_mrs_counter30 > 0 or reviewed_mrs_counter30 > 0:
+                active_projects30 += 1
+
+            # Loop through each Commit created
+            for commit in project_data["created_commits_data"]:
+                if commit["created_at"] > data_limitation7_iso_format:
+                    created_commits7 += 1
+                    created_commits30 += 1
+                    for diff_item in commit["diff_data"]:
+                        lines_added7 += int(diff_item["lines_added"])
+                        lines_added30 += int(diff_item["lines_added"])
+                        lines_removed7 += int(diff_item["lines_removed"])
+                        lines_removed30 += int(diff_item["lines_removed"])
+                elif (
+                    data_limitation7_iso_format
+                    > commit["created_at"]
+                    > data_limitation_iso_format30
+                ):
+                    created_commits30 += 1
+                    for diff_item in commit["diff_data"]:
+                        lines_added30 += int(diff_item["lines_added"])
+                        lines_removed30 += int(diff_item["lines_removed"])
+
+            # TODO add the stats per project
+
+            body = {
+                "counters7": {
+                    "active_projects7": active_projects7,
+                    "created_mrs_counter7": created_mrs_counter7,
+                    "reviewed_mrs_counter7": reviewed_mrs_counter7,
+                    "comments_in_created_mrs7": comments_in_created_mrs7,
+                    "created_commits7": created_commits7,
+                    "lines_added7": lines_added7,
+                    "lines_removed7": lines_removed7,
+                },
+                "counters30": {
+                    "active_projects30": active_projects30,
+                    "created_mrs_counter30": created_mrs_counter30,
+                    "reviewed_mrs_counter30": reviewed_mrs_counter30,
+                    "comments_in_created_mrs30": comments_in_created_mrs30,
+                    "created_commits30": created_commits30,
+                    "lines_added30": lines_added30,
+                    "lines_removed30": lines_removed30,
+                },
+            }
 
     def gitlab_merge_requests_api_call(self, data):
         # To make the api call you need to provide if check author_id or reviewer_id
@@ -665,12 +792,17 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 response = requests.get(url, headers=headers)
                 if response.status_code >= 200 and response.status_code < 300:
                     data = response.json()
+                    # Initialize lists to store comment IDs and bodies for this MR
+                    comment_ids = []
+                    comment_bodies = []
                     # Get the needed data for each commit
                     for record in data:
-                        mrs_comments_data_dict[mr_id] = {
-                            "comment_id": record["id"],
-                            "comment_body": record["body"],
-                        }
+                        comment_ids.append(record["id"])
+                        comment_bodies.append(record["body"])
+                    mrs_comments_data_dict[mr_id] = {
+                        "comment_ids": comment_ids,
+                        "comment_bodies": comment_bodies,
+                    }
                 else:
                     return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
             except requests.exceptions.RequestException as e:
