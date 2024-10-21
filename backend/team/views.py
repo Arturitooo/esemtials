@@ -373,23 +373,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "created_mrs_data": [],
                 "reviewed_mrs_data": [],
                 "created_commits_data": [],
-                "counters7": {
-                    "project_created_mrs_counter7": 0,
-                    "project_reviewed_mrs_counter7": 0,
-                    "project_comments_in_created_mrs7": 0,
-                    "project_created_commits7": 0,
-                    "project_lines_added7": 0,
-                    "project_lines_removed7": 0,
-                },
-                "counters30": {
-                    "project_active_projects30": 0,
-                    "project_created_mrs_counter30": 0,
-                    "project_reviewed_mrs_counter30": 0,
-                    "project_comments_in_created_mrs30": 0,
-                    "project_created_commits30": 0,
-                    "project_lines_added30": 0,
-                    "project_lines_removed30": 0,
-                },
             }
 
         # Before adding MRs data - merge the comments and the MRs info into one variable
@@ -495,15 +478,16 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                             }
                         )
 
-        active_projects30 = created_mrs_counter30 = reviewed_mrs_counter30 = (
-            comments_in_created_mrs30
-        ) = created_commits30 = lines_added30 = lines_removed30 = 0
-        active_projects7 = created_mrs_counter7 = reviewed_mrs_counter7 = (
-            comments_in_created_mrs7
-        ) = created_commits7 = lines_added7 = lines_removed7 = 0
-
         # Loop through each project to get number of projects
         for project, project_data in body.items():
+            # initialize the stats
+            active_projects30 = created_mrs_counter30 = reviewed_mrs_counter30 = (
+                comments_in_created_mrs30
+            ) = created_commits30 = lines_added30 = lines_removed30 = 0
+            active_projects7 = created_mrs_counter7 = reviewed_mrs_counter7 = (
+                comments_in_created_mrs7
+            ) = created_commits7 = lines_added7 = lines_removed7 = 0
+
             # Loop through each MR created
             for created_mr in project_data["created_mrs_data"]:
                 if created_mr["created_at"] > data_limitation7_iso_format:
@@ -560,28 +544,91 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         lines_added30 += int(diff_item["lines_added"])
                         lines_removed30 += int(diff_item["lines_removed"])
 
-            # TODO add the stats per project
-
-            body = {
-                "counters7": {
-                    "active_projects7": active_projects7,
-                    "created_mrs_counter7": created_mrs_counter7,
-                    "reviewed_mrs_counter7": reviewed_mrs_counter7,
-                    "comments_in_created_mrs7": comments_in_created_mrs7,
-                    "created_commits7": created_commits7,
-                    "lines_added7": lines_added7,
-                    "lines_removed7": lines_removed7,
-                },
-                "counters30": {
-                    "active_projects30": active_projects30,
-                    "created_mrs_counter30": created_mrs_counter30,
-                    "reviewed_mrs_counter30": reviewed_mrs_counter30,
-                    "comments_in_created_mrs30": comments_in_created_mrs30,
-                    "created_commits30": created_commits30,
-                    "lines_added30": lines_added30,
-                    "lines_removed30": lines_removed30,
-                },
+            body[project]["counters7"] = {
+                "active_projects7": active_projects7,
+                "created_mrs_counter7": created_mrs_counter7,
+                "reviewed_mrs_counter7": reviewed_mrs_counter7,
+                "comments_in_created_mrs7": comments_in_created_mrs7,
+                "created_commits7": created_commits7,
+                "lines_added7": lines_added7,
+                "lines_removed7": lines_removed7,
             }
+
+            body[project]["counters30"] = {
+                "active_projects30": active_projects30,
+                "created_mrs_counter30": created_mrs_counter30,
+                "reviewed_mrs_counter30": reviewed_mrs_counter30,
+                "comments_in_created_mrs30": comments_in_created_mrs30,
+                "created_commits30": created_commits30,
+                "lines_added30": lines_added30,
+                "lines_removed30": lines_removed30,
+            }
+
+        # global counters
+
+        global_active_projects7 = 0
+        global_created_mrs_counter7 = 0
+        global_reviewed_mrs_counter7 = 0
+        global_comments_in_created_mrs7 = 0
+        global_created_commits7 = 0
+        global_lines_added7 = 0
+        global_lines_removed7 = 0
+        global_active_projects30 = 0
+        global_created_mrs_counter30 = 0
+        global_reviewed_mrs_counter30 = 0
+        global_comments_in_created_mrs30 = 0
+        global_created_commits30 = 0
+        global_lines_added30 = 0
+        global_lines_removed30 = 0
+
+        for project, project_data in body.items():
+            global_active_projects7 += project_data["counters7"]["active_projects7"]
+            global_created_mrs_counter7 += project_data["counters7"][
+                "created_mrs_counter7"
+            ]
+            global_reviewed_mrs_counter7 += project_data["counters7"][
+                "reviewed_mrs_counter7"
+            ]
+            global_comments_in_created_mrs7 += project_data["counters7"][
+                "comments_in_created_mrs7"
+            ]
+            global_created_commits7 += project_data["counters7"]["created_commits7"]
+            global_lines_added7 += project_data["counters7"]["lines_added7"]
+            global_lines_removed7 += project_data["counters7"]["lines_removed7"]
+            global_active_projects30 += project_data["counters30"]["active_projects30"]
+            global_created_mrs_counter30 += project_data["counters30"][
+                "created_mrs_counter30"
+            ]
+            global_reviewed_mrs_counter30 += project_data["counters30"][
+                "reviewed_mrs_counter30"
+            ]
+            global_comments_in_created_mrs30 += project_data["counters30"][
+                "comments_in_created_mrs30"
+            ]
+            global_created_commits30 += project_data["counters30"]["created_commits30"]
+            global_lines_added30 += project_data["counters30"]["lines_added30"]
+            global_lines_removed30 += project_data["counters30"]["lines_removed30"]
+
+        body["global_counters7"] = {
+            "active_projects7": global_active_projects7,
+            "created_mrs_counter7": global_created_mrs_counter7,
+            "reviewed_mrs_counter7": global_reviewed_mrs_counter7,
+            "comments_in_created_mrs7": global_comments_in_created_mrs7,
+            "created_commits7": global_created_commits7,
+            "lines_added7": global_lines_added7,
+            "lines_removed7": global_lines_removed7,
+        }
+        body["global_counters30"] = {
+            "active_projects30": global_active_projects30,
+            "created_mrs_counter30": global_created_mrs_counter30,
+            "reviewed_mrs_counter30": global_reviewed_mrs_counter30,
+            "comments_in_created_mrs30": global_comments_in_created_mrs30,
+            "created_commits30": global_created_commits30,
+            "lines_added30": global_lines_added30,
+            "lines_removed30": global_lines_removed30,
+        }
+
+        serializer.save(teammember=teammember, body=body)
 
     def gitlab_merge_requests_api_call(self, data):
         # To make the api call you need to provide if check author_id or reviewer_id
