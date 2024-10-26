@@ -117,5 +117,8 @@ class TeammemberCodingStats(models.Model):
     teammember = models.OneToOneField(
         Teammember, on_delete=models.CASCADE, default=None, unique=True
     )
-    latestUpdate = models.DateTimeField(null=False, auto_now=True)
+    latestUpdate = models.DateTimeField(null=False)
+    body = models.JSONField(default=dict)
+    counters7 = models.JSONField(default=dict)
+    counters30 = models.JSONField(default=dict)
     body = models.JSONField(default=dict)

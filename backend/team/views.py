@@ -609,7 +609,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_lines_added30 += project_data["counters30"]["lines_added30"]
             global_lines_removed30 += project_data["counters30"]["lines_removed30"]
 
-        body["global_counters7"] = {
+        global_counters7 = {
             "active_projects7": global_active_projects7,
             "created_mrs_counter7": global_created_mrs_counter7,
             "reviewed_mrs_counter7": global_reviewed_mrs_counter7,
@@ -618,7 +618,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "lines_added7": global_lines_added7,
             "lines_removed7": global_lines_removed7,
         }
-        body["global_counters30"] = {
+
+        global_counters30 = {
             "active_projects30": global_active_projects30,
             "created_mrs_counter30": global_created_mrs_counter30,
             "reviewed_mrs_counter30": global_reviewed_mrs_counter30,
@@ -628,7 +629,12 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "lines_removed30": global_lines_removed30,
         }
 
-        serializer.save(teammember=teammember, body=body)
+        serializer.save(
+            teammember=teammember,
+            body=body,
+            counters7=global_counters7,
+            counters30=global_counters30,
+        )
 
     def gitlab_merge_requests_api_call(self, data):
         # To make the api call you need to provide if check author_id or reviewer_id
