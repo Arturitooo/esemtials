@@ -265,19 +265,70 @@ class TeamMemberGitIntegrationDataDeleteAPIView(DestroyAPIView):
 
 
 class TeammemberCodingStatsListAPIView(ListAPIView):
-    queryset = TeammemberCodingStats.objects.all()
     serializer_class = TeammemberCodingStatsSerializer
+
+    def get_queryset(self):
+        # Get the list of team member IDs from the request query parameters
+        teammember_ids = self.request.query_params.getlist("ids")
+
+        # Filter the queryset based on the provided IDs
+        if teammember_ids:
+            return TeammemberCodingStats.objects.filter(
+                teammember_id__in=teammember_ids
+            )
+        return (
+            TeammemberCodingStats.objects.none()
+        )  # Return an empty queryset if no IDs are provided
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Create a custom response to include only the required fields
+        response_data = [
+            {
+                "teammember": coding_stat.teammember.id,  # Assuming you want the team member ID
+                "counters7": coding_stat.counters7,
+                "counters30": coding_stat.counters30,
+            }
+            for coding_stat in queryset
+        ]
+
+        return response.Response(response_data, status=status.HTTP_200_OK)
+
+    # example: http://127.0.0.1:8000/team/teammember-coding-stats/?ids=8&ids=9
 
 
 class TeammemberCodingStatsDetailAPIView(RetrieveAPIView):
     queryset = TeammemberCodingStats.objects.all()
     serializer_class = TeammemberCodingStatsSerializer
 
+    def get_object(self):
+        # Get the team member ID from the URL parameters
+        teammember_id = self.kwargs.get("teammember_id")
+
+        # Retrieve the CodingStats instance based on the teammember ID
+        try:
+            return TeammemberCodingStats.objects.get(teammember_id=teammember_id)
+        except TeammemberCodingStats.DoesNotExist:
+            # Handle the case where the team member coding stats do not exist
+            raise NotFound(
+                detail="Coding stats not found for the specified team member."
+            )
+
+    def retrieve(self, request, *args, **kwargs):
+        # Call the superclass retrieve method to get the object
+        coding_stats = self.get_object()
+        serializer = self.get_serializer(coding_stats)
+
+        # Return the serialized data
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TeammemberCodingStatsCreateAPIView(CreateAPIView):
     queryset = TeammemberCodingStats.objects.all()
     serializer_class = TeammemberCodingStatsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         user = self.request.user

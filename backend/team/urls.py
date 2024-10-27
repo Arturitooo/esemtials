@@ -59,7 +59,7 @@ urlpatterns = [
         name="teammember-coding-stats-list",
     ),
     path(
-        "teammember-coding-stats/<int:pk>/",
+        "teammember-coding-stats/<int:teammember_id>/",
         TeammemberCodingStatsDetailAPIView.as_view(),
         name="teammember-coding-stats-detail",
     ),
