@@ -133,6 +133,9 @@ export const TeammemberGitInfoUpdate = () => {
               content: "Removed Git Integration Data",
             })
           );
+          AxiosInstance.delete(
+            `team/teammember-coding-stats/${teammember}/delete/`
+          );
           // Redirect to the details page
           navigate(`/team/member/${teammember}`);
         } else {

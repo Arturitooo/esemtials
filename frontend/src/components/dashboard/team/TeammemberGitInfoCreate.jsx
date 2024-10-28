@@ -33,7 +33,7 @@ const LoadingOverlay = ({ open }) => (
         zIndex: 9999,
       }}
     >
-      Downloading the data from the GitLab API...
+      Downloading the data from the GitLab API
       <CircularProgress color="inherit" sx={{ ml: 2 }} />
     </Box>
   </Modal>
@@ -126,10 +126,8 @@ export const TeammemberGitInfoCreate = () => {
       // Handle errors
       console.error("Error during submission:", error);
     } finally {
-      setTimeout(() => {
-        setLoading(false); // Always set loading to false in the finally block
-        navigate(`/team/member/${teammember}`);
-      }, 30000);
+      setLoading(false); // Always set loading to false in the finally block
+      navigate(`/team/member/${teammember}`);
     }
   };
 

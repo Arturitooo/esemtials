@@ -923,3 +923,23 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 class TeammemberCodingStatsDeleteAPIView(DestroyAPIView):
     queryset = TeammemberCodingStats.objects.all()
     serializer_class = TeammemberCodingStatsSerializer
+
+    def get_object(self):
+        # Get the team member ID from the URL parameters
+        teammember_id = self.kwargs.get("teammember_id")
+
+        # Retrieve the CodingStats instance based on the teammember ID
+        try:
+            return TeammemberCodingStats.objects.get(teammember_id=teammember_id)
+        except TeammemberCodingStats.DoesNotExist:
+            # Handle the case where the team member coding stats do not exist
+            raise NotFound(
+                detail="Coding stats not found for the specified team member."
+            )
+
+    def destroy(self, request, *args, **kwargs):
+        # Call the superclass retrieve method to get the object
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        self.perform_destroy(instance)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)

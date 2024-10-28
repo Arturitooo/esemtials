@@ -69,7 +69,7 @@ urlpatterns = [
         name="teammember-coding-stats-update",
     ),
     path(
-        "teammember-coding-stats/<int:pk>/delete/",
+        "teammember-coding-stats/<int:teammember_id>/delete/",
         TeammemberCodingStatsDeleteAPIView.as_view(),
         name="teammember-coding-stats-delete",
     ),

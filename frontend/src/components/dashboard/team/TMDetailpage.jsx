@@ -404,7 +404,9 @@ export const TMDetailpage = () => {
             </CardContent>
           </Card>
 
-          <TeammemberGitStats />
+          {tmData.teammember_hasGitIntegration && (
+            <TeammemberGitStats teammember={tmData.id} />
+          )}
 
           <TMComments
             userData={userData.id}
