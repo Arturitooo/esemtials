@@ -16,10 +16,6 @@ export const TeammemberGitStats = ({ teammember }) => {
     const url = `team/teammember-coding-stats/${teammember_id}/`;
     AxiosInstance.get(url).then((res) => {
       const data = res.data;
-      // parse string to json
-      if (typeof data.tm_stack === "string") {
-        data.tm_stack = JSON.parse(data.tm_stack);
-      }
       setCodingData(data);
     });
   };
@@ -36,7 +32,13 @@ export const TeammemberGitStats = ({ teammember }) => {
       <h2>Coding Stats</h2>
       <div>
         <Card className="card-section">
-          <CardContent>{JSON.stringify(codingData.counters7)}</CardContent>
+          <CardContent>
+            {codingData ? (
+              <>{JSON.stringify(codingData.counters7)}</>
+            ) : (
+              <>Loading...</>
+            )}
+          </CardContent>
         </Card>
       </div>
     </Box>
