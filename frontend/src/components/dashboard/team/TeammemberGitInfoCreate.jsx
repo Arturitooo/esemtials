@@ -127,6 +127,7 @@ export const TeammemberGitInfoCreate = () => {
       console.error("Error during submission:", error);
     } finally {
       setLoading(false); // Always set loading to false in the finally block
+      localStorage.setItem("gitStatsTimeframe", 7);
       navigate(`/team/member/${teammember}`);
     }
   };
