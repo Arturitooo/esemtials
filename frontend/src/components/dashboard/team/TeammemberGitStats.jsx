@@ -3,7 +3,6 @@ import AxiosInstance from "../../AxiosInstance";
 
 import { Box } from "@mui/material";
 import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -68,9 +67,10 @@ export const TeammemberGitStats = ({ teammember }) => {
         </Box>
       </Box>
 
-      <Card className="card-section">
-        {codingData ? (
-          <CardContent sx={{ padding: "0px 10px 0px 10px" }}>
+      {codingData ? (
+        <Box>
+          {/* Repos info */}
+          <Card className="card-section">
             <Box
               sx={{
                 display: "inline-flex",
@@ -103,8 +103,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                     style={{
                       margin: "auto",
                       fontWeight: "400",
-                      fontSize: "64px",
-                      lineHeight: "60px",
+                      fontSize: "40px",
+                      lineHeight: "40px",
                     }}
                   >
                     12
@@ -168,8 +168,10 @@ export const TeammemberGitStats = ({ teammember }) => {
                 </div>
               </Box>
             </Box>
-            <Divider />
+          </Card>
 
+          {/* MRs stats */}
+          <Card className="card-section">
             <Box
               sx={{
                 display: "inline-flex",
@@ -189,6 +191,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                     width: "100%",
                   }}
                 >
+                  {/* Left column */}
                   <Box
                     sx={{
                       display: "flex",
@@ -214,8 +217,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                           display: "table",
                           margin: "auto",
                           fontWeight: "400",
-                          fontSize: "50px",
-                          lineHeight: "50px",
+                          fontSize: "40px",
+                          lineHeight: "40px",
                         }}
                       >
                         37
@@ -251,8 +254,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                           display: "table",
                           margin: "auto",
                           fontWeight: "400",
-                          fontSize: "50px",
-                          lineHeight: "50px",
+                          fontSize: "40px",
+                          lineHeight: "40px",
                         }}
                       >
                         51
@@ -270,6 +273,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                       </div>
                     </Box>
                   </Box>
+                  {/* Right column */}
                   <Box
                     sx={{
                       display: "flex",
@@ -303,6 +307,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                             margin: "0px",
                             paddingLeft: "00px",
                             fontSize: "14px",
+                            lineHeight: "40px",
                           }}
                         >
                           3 days, 20 minutes
@@ -338,8 +343,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                           display: "table",
                           margin: "auto",
                           fontWeight: "400",
-                          fontSize: "50px",
-                          lineHeight: "50px",
+                          fontSize: "40px",
+                          lineHeight: "40px",
                         }}
                       >
                         86
@@ -368,9 +373,10 @@ export const TeammemberGitStats = ({ teammember }) => {
                 <Box sx={{ paddingLeft: "5px" }}>XYZ</Box>
               </Box>
             </Box>
+          </Card>
 
-            <Divider />
-
+          {/* Commits stats */}
+          <Card className="card-section">
             <Box
               sx={{
                 display: "inline-flex",
@@ -415,8 +421,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                           display: "table",
                           margin: "auto",
                           fontWeight: "400",
-                          fontSize: "50px",
-                          lineHeight: "50px",
+                          fontSize: "40px",
+                          lineHeight: "40px",
                         }}
                       >
                         9637
@@ -452,8 +458,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                           display: "table",
                           margin: "auto",
                           fontWeight: "400",
-                          fontSize: "50px",
-                          lineHeight: "50px",
+                          fontSize: "40px",
+                          lineHeight: "40px",
                         }}
                       >
                         851
@@ -496,8 +502,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                           display: "table",
                           margin: "auto",
                           fontWeight: "400",
-                          fontSize: "50px",
-                          lineHeight: "50px",
+                          fontSize: "40px",
+                          lineHeight: "40px",
                         }}
                       >
                         150
@@ -539,6 +545,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                             margin: "0px",
                             paddingLeft: "00px",
                             fontSize: "14px",
+                            lineHeight: "40px",
                           }}
                         >
                           ~2,5 commits per day
@@ -568,13 +575,13 @@ export const TeammemberGitStats = ({ teammember }) => {
                 <Box sx={{ paddingLeft: "5px" }}>XYZ 2</Box>
               </Box>
             </Box>
-          </CardContent>
-        ) : (
-          <CardContent>
-            <>Loading...</>
-          </CardContent>
-        )}
-      </Card>
+          </Card>
+        </Box>
+      ) : (
+        <Card>
+          <>Loading...</>
+        </Card>
+      )}
     </Box>
   );
 };
