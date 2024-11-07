@@ -13,6 +13,10 @@ export const TeammemberGitStats = ({ teammember }) => {
     // Initialize with localStorage or fallback to 7
     return Number(localStorage.getItem("gitStatsTimeframe")) || 7;
   });
+  const [counters7, setCounters7] = useState(null);
+  const [counters30, setCounters30] = useState(null);
+  const [gitStatsBody, setGitStatsBody] = useState(null);
+
   const successColor = "#42BC09";
   const errorColor = "#d10000";
 
@@ -23,8 +27,18 @@ export const TeammemberGitStats = ({ teammember }) => {
   const GetGitData = (teammember_id) => {
     const url = `team/teammember-coding-stats/${teammember_id}/`;
     AxiosInstance.get(url).then((res) => {
+      // save the response data to data variable
       const data = res.data;
-      setCodingData(data);
+      // stringify the data
+      const stringData = JSON.stringify(data);
+      const theCodingStats = JSON.parse(stringData);
+      setCodingData(theCodingStats);
+      const counters7 = theCodingStats.counters7;
+      setCounters7(counters7);
+      const counters30 = theCodingStats.counters30;
+      setCounters30(counters30);
+      const body = theCodingStats.body;
+      setGitStatsBody(body);
     });
   };
 
@@ -62,7 +76,7 @@ export const TeammemberGitStats = ({ teammember }) => {
             aria-label="Platform"
           >
             <ToggleButton value={7}>7 days</ToggleButton>
-            <ToggleButton value={31}>31 days</ToggleButton>
+            <ToggleButton value={30}>30 days</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Box>
@@ -107,7 +121,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                       lineHeight: "40px",
                     }}
                   >
-                    12
+                    {gitStatsTimeframe === 7 ? (
+                      <>{counters7.active_projects7}</>
+                    ) : (
+                      <>{counters30.active_projects30}</>
+                    )}
                   </div>
                   <div
                     style={{
@@ -140,30 +158,21 @@ export const TeammemberGitStats = ({ teammember }) => {
                       fontSize: "14px",
                     }}
                   >
-                    <li>
-                      <a
-                        href="repo address"
-                        style={{
-                          textDecoration: "underline",
-                          color: "rgba(0, 0, 0, 0.87)",
-                        }}
-                        target="_blank"
-                      >
-                        link content
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="repo 2 address 2"
-                        style={{
-                          textDecoration: "underline",
-                          color: "rgba(0, 0, 0, 0.87)",
-                        }}
-                        target="_blank"
-                      >
-                        link 2 content 2
-                      </a>
-                    </li>
+                    {Object.entries(gitStatsBody).map(([id, project]) => (
+                      <li key={id}>
+                        <a
+                          href={project.project_url}
+                          style={{
+                            textDecoration: "underline",
+                            color: "rgba(0, 0, 0, 0.87)",
+                          }}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {project.project_name}
+                        </a>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </Box>
@@ -221,8 +230,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                           lineHeight: "40px",
                         }}
                       >
-                        37
-                        {/* {JSON.stringify(codingData.counters7)} */}
+                        {gitStatsTimeframe === 7 ? (
+                          <>{counters7.created_mrs_counter7}</>
+                        ) : (
+                          <>{counters30.created_mrs_counter30}</>
+                        )}
                       </div>
                       <div
                         style={{
@@ -258,7 +270,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                           lineHeight: "40px",
                         }}
                       >
-                        51
+                        {gitStatsTimeframe === 7 ? (
+                          <>{counters7.reviewed_mrs_counter7}</>
+                        ) : (
+                          <>{counters30.reviewed_mrs_counter30}</>
+                        )}
                       </div>
                       <div
                         style={{
@@ -347,7 +363,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                           lineHeight: "40px",
                         }}
                       >
-                        86
+                        {gitStatsTimeframe === 7 ? (
+                          <>{counters7.comments_in_created_mrs7}</>
+                        ) : (
+                          <>{counters30.comments_in_created_mrs30}</>
+                        )}
                       </div>
                       <div
                         style={{
@@ -425,8 +445,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                           lineHeight: "40px",
                         }}
                       >
-                        9637
-                        {/* {JSON.stringify(codingData.counters7)} */}
+                        {gitStatsTimeframe === 7 ? (
+                          <>{counters7.lines_added7}</>
+                        ) : (
+                          <>{counters30.lines_added30}</>
+                        )}
                       </div>
                       <div
                         style={{
@@ -462,7 +485,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                           lineHeight: "40px",
                         }}
                       >
-                        851
+                        {gitStatsTimeframe === 7 ? (
+                          <>{counters7.lines_removed7}</>
+                        ) : (
+                          <>{counters30.lines_removed30}</>
+                        )}
                       </div>
                       <div
                         style={{
@@ -506,7 +533,11 @@ export const TeammemberGitStats = ({ teammember }) => {
                           lineHeight: "40px",
                         }}
                       >
-                        150
+                        {gitStatsTimeframe === 7 ? (
+                          <>{counters7.created_commits7}</>
+                        ) : (
+                          <>{counters30.created_commits30}</>
+                        )}
                       </div>
                       <div
                         style={{
