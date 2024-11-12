@@ -462,6 +462,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     "iid": mr_data["iid"],
                     "created_at": mr_data["created_at"],
                     "merged_at": mr_data["merged_at"],
+                    "create_to_merge": mr_data["create_to_merge"],
                     "comment_ids": mr_data["comment_ids"],
                     "comment_bodies": mr_data["comment_bodies"],
                 }
@@ -705,12 +706,29 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             if response.status_code >= 200 and response.status_code < 300:
                 data = response.json()
                 # Create a dictionary to store the MR data with MR ID as the key
+
                 mr_data_dict = {
                     record["id"]: {
                         "project_id": record["project_id"],
                         "iid": record["iid"],
                         "created_at": record["created_at"],
                         "merged_at": record.get("merged_at"),
+                        # Add create_to_merge if requesttype is author_id and merged_at is available
+                        **(
+                            {
+                                "create_to_merge": (
+                                    datetime.fromisoformat(
+                                        record["merged_at"].replace("Z", "+00:00")
+                                    )
+                                    - datetime.fromisoformat(
+                                        record["created_at"].replace("Z", "+00:00")
+                                    )
+                                ).total_seconds()
+                                / 3600  # convert to hours
+                            }
+                            if requestType == "author_id" and record.get("merged_at")
+                            else {}
+                        ),
                     }
                     for record in data
                 }
