@@ -133,6 +133,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                       fontWeight: "400",
                       fontSize: "14px",
                       color: errorColor, // or successColor
+                      paddingBottom: "15px",
                     }}
                   >
                     -50%
@@ -158,21 +159,55 @@ export const TeammemberGitStats = ({ teammember }) => {
                       fontSize: "14px",
                     }}
                   >
-                    {Object.entries(gitStatsBody).map(([id, project]) => (
-                      <li key={id}>
-                        <a
-                          href={project.project_url}
-                          style={{
-                            textDecoration: "underline",
-                            color: "rgba(0, 0, 0, 0.87)",
-                          }}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {project.project_name}
-                        </a>
-                      </li>
-                    ))}
+                    {gitStatsTimeframe === 7 ? (
+                      <>
+                        {Object.entries(gitStatsBody)
+                          .filter(([id]) =>
+                            counters7.active_projects7_list.includes(
+                              parseInt(id)
+                            )
+                          )
+                          .map(([id, project]) => (
+                            <li key={id}>
+                              <a
+                                href={project.project_url}
+                                style={{
+                                  textDecoration: "underline",
+                                  color: "rgba(0, 0, 0, 0.87)",
+                                }}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {project.project_name}
+                              </a>
+                            </li>
+                          ))}
+                      </>
+                    ) : (
+                      <>
+                        {Object.entries(gitStatsBody)
+                          .filter(([id]) =>
+                            counters30.active_projects30_list.includes(
+                              parseInt(id)
+                            )
+                          )
+                          .map(([id, project]) => (
+                            <li key={id}>
+                              <a
+                                href={project.project_url}
+                                style={{
+                                  textDecoration: "underline",
+                                  color: "rgba(0, 0, 0, 0.87)",
+                                }}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {project.project_name}
+                              </a>
+                            </li>
+                          ))}
+                      </>
+                    )}
                   </ul>
                 </div>
               </Box>

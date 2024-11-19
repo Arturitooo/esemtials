@@ -530,6 +530,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                             }
                         )
 
+        active_projects30_list = []
+        active_projects7_list = []
         # Loop through each project to get number of projects
         for project, project_data in body.items():
             # initialize the stats
@@ -551,6 +553,11 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     create_to_merge30sum += created_mr["create_to_merge"]
                     created_mrs_counter7 += 1
                     created_mrs_counter30 += 1
+                    if project not in active_projects7_list:
+                        active_projects7_list.append(project)
+                    if project not in active_projects30_list:
+                        active_projects30_list.append(project)
+
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs7 += 1
                         comments_in_created_mrs30 += 1
@@ -561,6 +568,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     > data_limitation_iso_format30
                 ):
                     create_to_merge30sum += created_mr["create_to_merge"]
+                    if project not in active_projects30_list:
+                        active_projects30_list.append(project)
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs30 += 1
@@ -688,6 +697,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
         global_counters7 = {
             "active_projects7": global_active_projects7,
+            "active_projects7_list": active_projects7_list,
             "created_mrs_counter7": global_created_mrs_counter7,
             "reviewed_mrs_counter7": global_reviewed_mrs_counter7,
             "create_to_merge7": global_create_to_merge7 / global_active_projects7,
@@ -700,6 +710,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
         global_counters30 = {
             "active_projects30": global_active_projects30,
+            "active_projects30_list": active_projects30_list,
             "created_mrs_counter30": global_created_mrs_counter30,
             "reviewed_mrs_counter30": global_reviewed_mrs_counter30,
             "create_to_merge30": global_create_to_merge30 / global_active_projects30,
