@@ -534,15 +534,21 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         for project, project_data in body.items():
             # initialize the stats
             active_projects30 = created_mrs_counter30 = reviewed_mrs_counter30 = (
-                comments_in_created_mrs30
-            ) = created_commits30 = lines_added30 = lines_removed30 = 0
+                create_to_merge30
+            ) = create_to_merge30sum = comments_in_created_mrs30 = created_commits30 = (
+                lines_added30
+            ) = lines_removed30 = 0
             active_projects7 = created_mrs_counter7 = reviewed_mrs_counter7 = (
-                comments_in_created_mrs7
-            ) = created_commits7 = lines_added7 = lines_removed7 = 0
+                create_to_merge7
+            ) = create_to_merge7sum = comments_in_created_mrs7 = created_commits7 = (
+                lines_added7
+            ) = lines_removed7 = 0
 
-            # Loop through each MR created
+            # Loop through each MR created to count active projects
             for created_mr in project_data["created_mrs_data"]:
                 if created_mr["created_at"] > data_limitation7_iso_format:
+                    create_to_merge7sum += created_mr["create_to_merge"]
+                    create_to_merge30sum += created_mr["create_to_merge"]
                     created_mrs_counter7 += 1
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
@@ -554,9 +560,22 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     > created_mr["created_at"]
                     > data_limitation_iso_format30
                 ):
+                    create_to_merge30sum += created_mr["create_to_merge"]
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs30 += 1
+
+                if created_mrs_counter30 == 0:
+                    create_to_merge30 = 0
+                else:
+                    create_to_merge30 = create_to_merge30sum / (
+                        created_mrs_counter30 + created_mrs_counter7
+                    )
+
+                if created_mrs_counter7 == 0:
+                    create_to_merge7 = 0
+                else:
+                    create_to_merge7 = create_to_merge7sum / created_mrs_counter7
 
             # Loop through each MR reviewed
             for reviewed_mr in project_data["reviewed_mrs_data"]:
@@ -600,6 +619,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "active_projects7": active_projects7,
                 "created_mrs_counter7": created_mrs_counter7,
                 "reviewed_mrs_counter7": reviewed_mrs_counter7,
+                "create_to_merge7": create_to_merge7,
                 "comments_in_created_mrs7": comments_in_created_mrs7,
                 "created_commits7": created_commits7,
                 "lines_added7": lines_added7,
@@ -610,6 +630,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "active_projects30": active_projects30,
                 "created_mrs_counter30": created_mrs_counter30,
                 "reviewed_mrs_counter30": reviewed_mrs_counter30,
+                "create_to_merge30": create_to_merge30,
                 "comments_in_created_mrs30": comments_in_created_mrs30,
                 "created_commits30": created_commits30,
                 "lines_added30": lines_added30,
@@ -621,6 +642,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_active_projects7 = 0
         global_created_mrs_counter7 = 0
         global_reviewed_mrs_counter7 = 0
+        global_create_to_merge7 = 0
         global_comments_in_created_mrs7 = 0
         global_created_commits7 = 0
         global_lines_added7 = 0
@@ -628,6 +650,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_active_projects30 = 0
         global_created_mrs_counter30 = 0
         global_reviewed_mrs_counter30 = 0
+        global_create_to_merge30 = 0
         global_comments_in_created_mrs30 = 0
         global_created_commits30 = 0
         global_lines_added30 = 0
@@ -641,6 +664,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_reviewed_mrs_counter7 += project_data["counters7"][
                 "reviewed_mrs_counter7"
             ]
+            global_create_to_merge7 += project_data["counters7"]["create_to_merge7"]
             global_comments_in_created_mrs7 += project_data["counters7"][
                 "comments_in_created_mrs7"
             ]
@@ -654,6 +678,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_reviewed_mrs_counter30 += project_data["counters30"][
                 "reviewed_mrs_counter30"
             ]
+            global_create_to_merge30 += project_data["counters30"]["create_to_merge30"]
             global_comments_in_created_mrs30 += project_data["counters30"][
                 "comments_in_created_mrs30"
             ]
@@ -665,8 +690,10 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "active_projects7": global_active_projects7,
             "created_mrs_counter7": global_created_mrs_counter7,
             "reviewed_mrs_counter7": global_reviewed_mrs_counter7,
+            "create_to_merge7": global_create_to_merge7 / global_active_projects7,
             "comments_in_created_mrs7": global_comments_in_created_mrs7,
             "created_commits7": global_created_commits7,
+            "commits_frequency7": round(global_created_commits7 / 7, 1),
             "lines_added7": global_lines_added7,
             "lines_removed7": global_lines_removed7,
         }
@@ -675,8 +702,10 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "active_projects30": global_active_projects30,
             "created_mrs_counter30": global_created_mrs_counter30,
             "reviewed_mrs_counter30": global_reviewed_mrs_counter30,
+            "create_to_merge30": global_create_to_merge30 / global_active_projects30,
             "comments_in_created_mrs30": global_comments_in_created_mrs30,
             "created_commits30": global_created_commits30,
+            "commits_frequency30": round(global_created_commits30 / 30, 1),
             "lines_added30": global_lines_added30,
             "lines_removed30": global_lines_removed30,
         }
@@ -716,15 +745,17 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         # Add create_to_merge if requesttype is author_id and merged_at is available
                         **(
                             {
-                                "create_to_merge": (
-                                    datetime.fromisoformat(
-                                        record["merged_at"].replace("Z", "+00:00")
-                                    )
-                                    - datetime.fromisoformat(
-                                        record["created_at"].replace("Z", "+00:00")
-                                    )
-                                ).total_seconds()
-                                / 3600  # convert to hours
+                                "create_to_merge": round(
+                                    (
+                                        datetime.fromisoformat(
+                                            record["merged_at"].replace("Z", "+00:00")
+                                        )
+                                        - datetime.fromisoformat(
+                                            record["created_at"].replace("Z", "+00:00")
+                                        )
+                                    ).total_seconds(),
+                                    0,  # provide no numbers after comma
+                                )
                             }
                             if requestType == "author_id" and record.get("merged_at")
                             else {}

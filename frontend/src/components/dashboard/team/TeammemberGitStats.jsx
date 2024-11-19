@@ -189,15 +189,24 @@ export const TeammemberGitStats = ({ teammember }) => {
               }}
             >
               <Box sx={{ width: "40%", paddingRight: "10px" }}>
-                <h3 style={{ margin: "0px", padding: "5px" }}>
+                <h3
+                  style={{ margin: "0px", padding: "5px", textAlign: "left" }}
+                >
                   Merge requests
                 </h3>
-                <Divider sx={{ marginBottom: "10px", width: "40%" }} />
+                <Divider
+                  sx={{
+                    marginBottom: "10px",
+                    width: "40%",
+                    alignContent: "left",
+                  }}
+                />
                 <Box
                   sx={{
-                    display: "inline-flex",
+                    display: "flex",
                     flexWrap: "wrap",
                     width: "100%",
+                    textAlign: "center", // Center-align all content
                   }}
                 >
                   {/* Left column */}
@@ -210,84 +219,57 @@ export const TeammemberGitStats = ({ teammember }) => {
                       width: "50%",
                     }}
                   >
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                        }}
-                      >
-                        MR&apos;s created
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
-                        }}
-                      >
-                        {gitStatsTimeframe === 7 ? (
-                          <>{counters7.created_mrs_counter7}</>
-                        ) : (
-                          <>{counters30.created_mrs_counter30}</>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: errorColor, // or successColor
-                          paddingBottom: "15px",
-                        }}
-                      >
-                        -50%
-                      </div>
-                    </Box>
-
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                        }}
-                      >
-                        MR&apos;s reviewed
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
-                        }}
-                      >
-                        {gitStatsTimeframe === 7 ? (
-                          <>{counters7.reviewed_mrs_counter7}</>
-                        ) : (
-                          <>{counters30.reviewed_mrs_counter30}</>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: successColor, // or successColor
-                        }}
-                      >
-                        +8%
-                      </div>
-                    </Box>
+                    {[
+                      {
+                        label: "MR's created",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? counters7.created_mrs_counter7
+                            : counters30.created_mrs_counter30,
+                        change: "-50%",
+                        color: errorColor,
+                      },
+                      {
+                        label: "CR comments received",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? counters7.comments_in_created_mrs7
+                            : counters30.comments_in_created_mrs30,
+                        change: "-12%",
+                        color: successColor,
+                      },
+                    ].map((item, index) => (
+                      <Box key={index}>
+                        <div
+                          style={{
+                            color: "rgba(32, 32, 32, 0.5)",
+                            fontWeight: "400",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {item.label}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "40px",
+                            lineHeight: "40px",
+                          }}
+                        >
+                          {item.value}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "12px",
+                            color: item.color,
+                            paddingBottom: "15px",
+                          }}
+                        >
+                          {item.change}
+                        </div>
+                      </Box>
+                    ))}
                   </Box>
                   {/* Right column */}
                   <Box
@@ -299,91 +281,108 @@ export const TeammemberGitStats = ({ teammember }) => {
                       width: "50%",
                     }}
                   >
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                        }}
-                      >
-                        MR Creation to merge time
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "16px",
-                        }}
-                      >
-                        <ul
+                    {[
+                      {
+                        label: "MR's reviewed",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? counters7.reviewed_mrs_counter7
+                            : counters30.reviewed_mrs_counter30,
+                        change: "+8%",
+                        color: successColor,
+                      },
+                      {
+                        label: "MR create to merge time",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? `${
+                                Math.floor(counters7.create_to_merge7 / 3600) >
+                                0
+                                  ? `${Math.floor(
+                                      counters7.create_to_merge7 / 3600
+                                    )} h `
+                                  : ""
+                              }${
+                                Math.floor(
+                                  (counters7.create_to_merge7 % 3600) / 60
+                                ) > 0
+                                  ? `${Math.floor(
+                                      (counters7.create_to_merge7 % 3600) / 60
+                                    )} min `
+                                  : ""
+                              }${
+                                Math.floor(counters7.create_to_merge7 % 60) > 0
+                                  ? `${Math.floor(
+                                      counters7.create_to_merge7 % 60
+                                    )} sec`
+                                  : ""
+                              }`
+                            : `${
+                                Math.floor(
+                                  counters30.create_to_merge30 / 3600
+                                ) > 0
+                                  ? `${Math.floor(
+                                      counters30.create_to_merge30 / 3600
+                                    )} h `
+                                  : ""
+                              }${
+                                Math.floor(
+                                  (counters30.create_to_merge30 % 3600) / 60
+                                ) > 0
+                                  ? `${Math.floor(
+                                      (counters30.create_to_merge30 % 3600) / 60
+                                    )} min `
+                                  : ""
+                              }${
+                                Math.floor(counters30.create_to_merge30 % 60) >
+                                0
+                                  ? `${Math.floor(
+                                      counters30.create_to_merge30 % 60
+                                    )} sec`
+                                  : ""
+                              }`,
+                        change: "-17%",
+                        color: errorColor,
+                      },
+                    ].map((item, index) => (
+                      <Box key={index}>
+                        <div
                           style={{
-                            margin: "0px",
-                            paddingLeft: "00px",
+                            color: "rgba(32, 32, 32, 0.5)",
+                            fontWeight: "400",
                             fontSize: "14px",
+                          }}
+                        >
+                          {item.label}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize:
+                              item.label === "MR create to merge time"
+                                ? "16px"
+                                : "40px",
                             lineHeight: "40px",
                           }}
                         >
-                          3 days, 20 minutes
-                        </ul>
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: errorColor, // or successColor
-                          paddingBottom: "15px",
-                        }}
-                      >
-                        -17%
-                      </div>
-                    </Box>
-
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "15px",
-                        }}
-                      >
-                        CR comments received
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
-                        }}
-                      >
-                        {gitStatsTimeframe === 7 ? (
-                          <>{counters7.comments_in_created_mrs7}</>
-                        ) : (
-                          <>{counters30.comments_in_created_mrs30}</>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                          color: successColor, // or successColor
-                        }}
-                      >
-                        -12%
-                      </div>
-                    </Box>
+                          {item.value}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "12px",
+                            color: item.color,
+                            paddingBottom: "15px",
+                          }}
+                        >
+                          {item.change}
+                        </div>
+                      </Box>
+                    ))}
                   </Box>
                 </Box>
               </Box>
+
               <Divider orientation="vertical" flexItem />
               <Box sx={{ width: "60%", paddingLeft: "10px" }}>
                 <h3 style={{ margin: "0px", padding: "5px" }}>
@@ -405,17 +404,27 @@ export const TeammemberGitStats = ({ teammember }) => {
               }}
             >
               <Box sx={{ width: "40%", paddingRight: "10px" }}>
-                <h3 style={{ margin: "0px", padding: "5px" }}>
+                <h3
+                  style={{ margin: "0px", padding: "5px", textAlign: "left" }}
+                >
                   Commited changes
                 </h3>
-                <Divider sx={{ marginBottom: "10px", width: "45%" }} />
+                <Divider
+                  sx={{
+                    marginBottom: "10px",
+                    width: "45%",
+                    alignContent: "left",
+                  }}
+                />
                 <Box
                   sx={{
-                    display: "inline-flex",
+                    display: "flex",
                     flexWrap: "wrap",
                     width: "100%",
+                    textAlign: "center", // Align all content
                   }}
                 >
+                  {/* Left column */}
                   <Box
                     sx={{
                       display: "flex",
@@ -425,178 +434,126 @@ export const TeammemberGitStats = ({ teammember }) => {
                       width: "50%",
                     }}
                   >
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Lines of code added
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
-                        }}
-                      >
-                        {gitStatsTimeframe === 7 ? (
-                          <>{counters7.lines_added7}</>
-                        ) : (
-                          <>{counters30.lines_added30}</>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: errorColor, // or successColor
-                          paddingBottom: "15px",
-                        }}
-                      >
-                        -50%
-                      </div>
-                    </Box>
-
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Lines of Code Deleted
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
-                        }}
-                      >
-                        {gitStatsTimeframe === 7 ? (
-                          <>{counters7.lines_removed7}</>
-                        ) : (
-                          <>{counters30.lines_removed30}</>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: successColor, // or successColor
-                        }}
-                      >
-                        -3%
-                      </div>
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "50%",
-                    }}
-                  >
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "15px",
-                        }}
-                      >
-                        Commits Created
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
-                        }}
-                      >
-                        {gitStatsTimeframe === 7 ? (
-                          <>{counters7.created_commits7}</>
-                        ) : (
-                          <>{counters30.created_commits30}</>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                          color: successColor, // or successColor
-                          paddingBottom: "15px",
-                        }}
-                      >
-                        +10%
-                      </div>
-                    </Box>
-                    <Box>
-                      <div
-                        style={{
-                          margin: "auto",
-                          color: "rgba(32, 32, 32, 0.5)",
-                          fontWeight: "400",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Commits Frequency
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "16px",
-                        }}
-                      >
-                        <ul
+                    {[
+                      {
+                        label: "Lines of code added",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? counters7.lines_added7
+                            : counters30.lines_added30,
+                        change: "-50%",
+                        color: errorColor,
+                      },
+                      {
+                        label: "Commits Created",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? counters7.created_commits7
+                            : counters30.created_commits30,
+                        change: "+10%",
+                        color: successColor,
+                      },
+                    ].map((item, index) => (
+                      <Box key={index}>
+                        <div
                           style={{
-                            margin: "0px",
-                            paddingLeft: "00px",
+                            color: "rgba(32, 32, 32, 0.5)",
+                            fontWeight: "400",
                             fontSize: "14px",
+                          }}
+                        >
+                          {item.label}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "40px",
                             lineHeight: "40px",
                           }}
                         >
-                          ~2,5 commits per day
-                        </ul>
-                      </div>
-                      <div
-                        style={{
-                          display: "table",
-                          margin: "auto",
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: errorColor, // or successColor
-                        }}
-                      >
-                        -17%
-                      </div>
-                    </Box>
+                          {item.value}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "12px",
+                            color: item.color,
+                            paddingBottom: "15px",
+                          }}
+                        >
+                          {item.change}
+                        </div>
+                      </Box>
+                    ))}
+                  </Box>
+                  {/* Right column */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "50%",
+                    }}
+                  >
+                    {[
+                      {
+                        label: "Lines of Code Deleted",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? counters7.lines_removed7
+                            : counters30.lines_removed30,
+                        change: "-3%",
+                        color: successColor,
+                      },
+                      {
+                        label: "Commits Frequency",
+                        value:
+                          gitStatsTimeframe === 7
+                            ? `~ ${counters7.commits_frequency7} per day`
+                            : `~ ${counters30.commits_frequency30} per day`,
+                        change: "-17%",
+                        color: errorColor,
+                      },
+                    ].map((item, index) => (
+                      <Box key={index}>
+                        <div
+                          style={{
+                            color: "rgba(32, 32, 32, 0.5)",
+                            fontWeight: "400",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {item.label}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize:
+                              item.label === "Commits Frequency"
+                                ? "16px"
+                                : "40px",
+                            lineHeight: "40px",
+                          }}
+                        >
+                          {item.value}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "12px",
+                            color: item.color,
+                            paddingBottom: "15px",
+                          }}
+                        >
+                          {item.change}
+                        </div>
+                      </Box>
+                    ))}
                   </Box>
                 </Box>
               </Box>
+
               <Divider orientation="vertical" flexItem />
               <Box sx={{ width: "60%", paddingLeft: "10px" }}>
                 <h3 style={{ margin: "0px", padding: "5px" }}>
