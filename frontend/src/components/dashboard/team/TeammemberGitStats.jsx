@@ -6,6 +6,7 @@ import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { BarChart } from "@mui/x-charts/BarChart";
 
 export const TeammemberGitStats = ({ teammember }) => {
   const [codingData, setCodingData] = useState(null);
@@ -231,7 +232,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 </h3>
                 <Divider
                   sx={{
-                    marginBottom: "10px",
+                    marginBottom: "15px",
                     width: "40%",
                     alignContent: "left",
                   }}
@@ -419,12 +420,97 @@ export const TeammemberGitStats = ({ teammember }) => {
               </Box>
 
               <Divider orientation="vertical" flexItem />
-              <Box sx={{ width: "60%", paddingLeft: "10px" }}>
+              <Box
+                sx={{
+                  width: "60%",
+                  maxWidth: "100%",
+                  paddingLeft: "10px",
+                  overflow: "hidden",
+                }}
+              >
                 <h3 style={{ margin: "0px", padding: "5px" }}>
-                  Number of MR&apos;s over time
+                  Created and Reviewed MR&apos;s over time
                 </h3>
-                <Divider sx={{ marginBottom: "10px", width: "40%" }} />
-                <Box sx={{ paddingLeft: "5px" }}>XYZ</Box>
+                <Divider sx={{ marginBottom: "10px", width: "60%" }} />
+                <Box sx={{ paddingLeft: "5px" }}>
+                  {gitStatsTimeframe === 7 ? (
+                    <>
+                      <BarChart
+                        xAxis={[
+                          {
+                            data: [
+                              ...counters7.mrs_created_last_7_days_xAxis,
+                              ...counters7.mrs_reviewed_last_7_days_xAxis,
+                            ],
+                            scaleType: "band",
+                          },
+                        ]}
+                        series={[
+                          {
+                            id: "created",
+                            data: counters7.mrs_created_last_7_days_yAxis,
+                            color: "#0451E5",
+                            stack: "stack1",
+                            label: "created",
+                          },
+                          {
+                            id: "reviewed",
+                            data: counters7.mrs_reviewed_last_7_days_yAxis,
+                            color: "#000",
+                            stack: "stack1",
+                            label: "reviewed",
+                          },
+                        ]}
+                        slotProps={{
+                          legend: {
+                            labelStyle: {
+                              fontSize: 14,
+                            },
+                          },
+                        }}
+                        height={190}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <BarChart
+                        xAxis={[
+                          {
+                            data: [
+                              ...counters30.mrs_created_last_30_days_xAxis,
+                              ...counters30.mrs_reviewed_last_30_days_xAxis,
+                            ],
+                            scaleType: "band",
+                          },
+                        ]}
+                        series={[
+                          {
+                            id: "created",
+                            data: counters30.mrs_created_last_30_days_yAxis,
+                            color: "#0451E5",
+                            stack: "stack1",
+                            label: "created",
+                          },
+                          {
+                            id: "reviewed",
+                            data: counters30.mrs_reviewed_last_30_days_yAxis,
+                            color: "#000",
+                            stack: "stack1",
+                            label: "reviewed",
+                          },
+                        ]}
+                        slotProps={{
+                          legend: {
+                            labelStyle: {
+                              fontSize: 14,
+                            },
+                          },
+                        }}
+                        height={190}
+                      />
+                    </>
+                  )}
+                </Box>
               </Box>
             </Box>
           </Card>
@@ -446,7 +532,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 </h3>
                 <Divider
                   sx={{
-                    marginBottom: "10px",
+                    marginBottom: "15px",
                     width: "45%",
                     alignContent: "left",
                   }}
@@ -594,7 +680,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 <h3 style={{ margin: "0px", padding: "5px" }}>
                   Lines of Code changed over time
                 </h3>
-                <Divider sx={{ marginBottom: "10px", width: "50%" }} />
+                <Divider sx={{ marginBottom: "10px", width: "60%" }} />
                 <Box sx={{ paddingLeft: "5px" }}>XYZ 2</Box>
               </Box>
             </Box>
