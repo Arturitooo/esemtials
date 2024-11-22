@@ -446,25 +446,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 ]
 
         # Add the MR data to the 'created_mrs_data' list for that project
-        # initialise variable for mrs chart created at data and counting the timeframes
-        today = datetime.now()
-        last_7_days = today - timedelta(days=7)
-        last_30_days = today - timedelta(days=30)
-
-        # Initialize the specified time sets
-        mrs_created_last_7_days_data = {}
-        mrs_created_last_30_days_data = {}
-        mrs_reviewed_last_7_days_data = {}
-        mrs_reviewed_last_30_days_data = {}
+        # initialise variable for mrs chart created at data
         mr_created_chart_data = {}
-
-        for i in range(30):
-            date = today - timedelta(days=i)  # Subtract i days from today
-            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
-            mr_created_chart_data[date_str] = 0  # Initialize with value 0
-
-        # Reverse the dictionary to have the latest date as the last item
-        mr_created_chart_data = dict(reversed(list(mr_created_chart_data.items())))
 
         for mr_id, mr_data in created_mrs_data.items():
             project_id = mr_data["project_id"]
@@ -493,20 +476,14 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 mr_data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
             ).strftime("%Y-%m-%d")
 
-            if created_at_simplified in mr_created_chart_data:
+            if created_at_simplified not in mr_created_chart_data:
+                mr_created_chart_data[created_at_simplified] = 1
+            else:
                 mr_created_chart_data[created_at_simplified] += 1
 
         # Add the MR data to the 'reviewed_mrs_data' list for that project
         # initialise variable for mrs chart reviewed at data
         mr_reviewed_chart_data = {}
-
-        for i in range(30):
-            date = today - timedelta(days=i)  # Subtract i days from today
-            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
-            mr_reviewed_chart_data[date_str] = 0  # Initialize with value 0
-
-        # Reverse the dictionary to have the latest date as the last item
-        mr_reviewed_chart_data = dict(reversed(list(mr_reviewed_chart_data.items())))
 
         for mr_id, mr_data in reviewed_mrs_data.items():
             project_id = mr_data["project_id"]
@@ -534,33 +511,34 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 mr_data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
             ).strftime("%Y-%m-%d")
 
-            if created_at_simplified in mr_reviewed_chart_data:
+            if created_at_simplified not in mr_reviewed_chart_data:
+                mr_reviewed_chart_data[created_at_simplified] = 1
+            else:
                 mr_reviewed_chart_data[created_at_simplified] += 1
 
-        for date_str, value in mr_created_chart_data.items():
+        today = datetime.now()
+        last_7_days = today - timedelta(days=7)
+        last_30_days = today - timedelta(days=30)
+
+        # Initialize the sets
+        mrs_last_7_days_data = {}
+        mrs_last_30_days_data = {}
+
+        mr_chart_data = mr_reviewed_chart_data | mr_created_chart_data
+
+        for date_str, value in mr_chart_data.items():
             date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
             if date >= last_7_days:
-                mrs_created_last_7_days_data[date_str] = value  # Add to 7 days set
+                mrs_last_7_days_data[date_str] = value  # Add to 7 days set
             if date >= last_30_days:
-                mrs_created_last_30_days_data[date_str] = value  # Add to 30 days set
+                mrs_last_30_days_data[date_str] = value  # Add to 30 days set
 
-        for date_str, value in mr_reviewed_chart_data.items():
-            date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
-            if date >= last_7_days:
-                mrs_reviewed_last_7_days_data[date_str] = value  # Add to 7 days set
-            if date >= last_30_days:
-                mrs_reviewed_last_30_days_data[date_str] = value  # Add to 30 days set
+        # Convert to lists if needed
+        last_7_days_xAxis = list(mrs_last_7_days_data.keys())
+        last_7_days_yAxis = list(mrs_last_7_days_data.values())
 
-        # Convert to lists to easly render the chart
-        mrs_created_last_7_days_xAxis = list(mrs_created_last_7_days_data.keys())
-        mrs_created_last_7_days_yAxis = list(mrs_created_last_7_days_data.values())
-        mrs_created_last_30_days_xAxis = list(mrs_created_last_30_days_data.keys())
-        mrs_created_last_30_days_yAxis = list(mrs_created_last_30_days_data.values())
-
-        mrs_reviewed_last_7_days_xAxis = list(mrs_reviewed_last_7_days_data.keys())
-        mrs_reviewed_last_7_days_yAxis = list(mrs_reviewed_last_7_days_data.values())
-        mrs_reviewed_last_30_days_xAxis = list(mrs_reviewed_last_30_days_data.keys())
-        mrs_reviewed_last_30_days_yAxis = list(mrs_reviewed_last_30_days_data.values())
+        last_30_days_xAxis = list(mrs_last_30_days_data.keys())
+        last_30_days_yAxis = list(mrs_last_30_days_data.values())
 
         # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
         for project_id, commit_data_list in commits_created_data.items():
@@ -649,7 +627,9 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 if created_mrs_counter30 == 0:
                     create_to_merge30 = 0
                 else:
-                    create_to_merge30 = create_to_merge30sum / created_mrs_counter30
+                    create_to_merge30 = create_to_merge30sum / (
+                        created_mrs_counter30 + created_mrs_counter7
+                    )
 
                 if created_mrs_counter7 == 0:
                     create_to_merge7 = 0
@@ -703,10 +683,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "created_commits7": created_commits7,
                 "lines_added7": lines_added7,
                 "lines_removed7": lines_removed7,
-                "mrs_created_last_7_days_xAxis": mrs_created_last_7_days_xAxis,
-                "mrs_reviewed_last_7_days_xAxis": mrs_reviewed_last_7_days_xAxis,
-                "mrs_created_last_7_days_yAxis": mrs_created_last_7_days_yAxis,
-                "mrs_reviewed_last_7_days_yAxis": mrs_reviewed_last_7_days_yAxis,
+                "last_7_days_xAxis": last_7_days_xAxis,
+                "last_7_days_yAxis": last_7_days_yAxis,
             }
 
             body[project]["counters30"] = {
@@ -718,10 +696,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "created_commits30": created_commits30,
                 "lines_added30": lines_added30,
                 "lines_removed30": lines_removed30,
-                "mrs_created_last_30_days_xAxis": mrs_created_last_30_days_xAxis,
-                "mrs_reviewed_last_30_days_xAxis": mrs_reviewed_last_30_days_xAxis,
-                "mrs_created_last_30_days_yAxis": mrs_created_last_30_days_yAxis,
-                "mrs_reviewed_last_30_days_yAxis": mrs_reviewed_last_30_days_yAxis,
+                "last_30_days_xAxis": last_30_days_xAxis,
+                "last_30_days_yAxis": last_30_days_yAxis,
             }
 
         # global counters
@@ -734,10 +710,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_created_commits7 = 0
         global_lines_added7 = 0
         global_lines_removed7 = 0
-        global_mrs_created_last_7_days_xAxis = []
-        global_mrs_reviewed_last_7_days_xAxis = []
-        global_mrs_created_last_7_days_yAxis = []
-        global_mrs_reviewed_last_7_days_yAxis = []
+        global_last_7_days_xAxis = []
+        global_last_7_days_yAxis = []
         global_active_projects30 = 0
         global_created_mrs_counter30 = 0
         global_reviewed_mrs_counter30 = 0
@@ -746,10 +720,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_created_commits30 = 0
         global_lines_added30 = 0
         global_lines_removed30 = 0
-        global_mrs_created_last_30_days_xAxis = []
-        global_mrs_reviewed_last_30_days_xAxis = []
-        global_mrs_created_last_30_days_yAxis = []
-        global_mrs_reviewed_last_30_days_yAxis = []
+        global_last_30_days_xAxis = []
+        global_last_30_days_yAxis = []
 
         for project, project_data in body.items():
             global_active_projects7 += project_data["counters7"]["active_projects7"]
@@ -766,18 +738,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_created_commits7 += project_data["counters7"]["created_commits7"]
             global_lines_added7 += project_data["counters7"]["lines_added7"]
             global_lines_removed7 += project_data["counters7"]["lines_removed7"]
-            global_mrs_created_last_7_days_xAxis += project_data["counters7"][
-                "mrs_created_last_7_days_xAxis"
-            ]
-            global_mrs_created_last_7_days_yAxis += project_data["counters7"][
-                "mrs_created_last_7_days_yAxis"
-            ]
-            global_mrs_reviewed_last_7_days_xAxis += project_data["counters7"][
-                "mrs_reviewed_last_7_days_xAxis"
-            ]
-            global_mrs_reviewed_last_7_days_yAxis += project_data["counters7"][
-                "mrs_reviewed_last_7_days_yAxis"
-            ]
+            global_last_7_days_xAxis += project_data["counters7"]["last_7_days_xAxis"]
+            global_last_7_days_yAxis += project_data["counters7"]["last_7_days_yAxis"]
             global_active_projects30 += project_data["counters30"]["active_projects30"]
             global_created_mrs_counter30 += project_data["counters30"][
                 "created_mrs_counter30"
@@ -792,17 +754,11 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_created_commits30 += project_data["counters30"]["created_commits30"]
             global_lines_added30 += project_data["counters30"]["lines_added30"]
             global_lines_removed30 += project_data["counters30"]["lines_removed30"]
-            global_mrs_created_last_30_days_xAxis += project_data["counters30"][
-                "mrs_created_last_30_days_xAxis"
+            global_last_30_days_xAxis += project_data["counters30"][
+                "last_30_days_xAxis"
             ]
-            global_mrs_created_last_30_days_yAxis += project_data["counters30"][
-                "mrs_created_last_30_days_yAxis"
-            ]
-            global_mrs_reviewed_last_30_days_xAxis += project_data["counters30"][
-                "mrs_reviewed_last_30_days_xAxis"
-            ]
-            global_mrs_reviewed_last_30_days_yAxis += project_data["counters30"][
-                "mrs_reviewed_last_30_days_yAxis"
+            global_last_30_days_yAxis += project_data["counters30"][
+                "last_30_days_yAxis"
             ]
 
         global_counters7 = {
@@ -816,10 +772,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "commits_frequency7": round(global_created_commits7 / 7, 1),
             "lines_added7": global_lines_added7,
             "lines_removed7": global_lines_removed7,
-            "mrs_created_last_7_days_xAxis": global_mrs_created_last_7_days_xAxis,
-            "mrs_created_last_7_days_yAxis": global_mrs_created_last_7_days_yAxis,
-            "mrs_reviewed_last_7_days_xAxis": global_mrs_reviewed_last_7_days_xAxis,
-            "mrs_reviewed_last_7_days_yAxis": global_mrs_reviewed_last_7_days_yAxis,
+            "last_7_days_xAxis": global_last_7_days_xAxis,
+            "last_7_days_yAxis": global_last_7_days_yAxis,
         }
 
         global_counters30 = {
@@ -833,10 +787,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "commits_frequency30": round(global_created_commits30 / 30, 1),
             "lines_added30": global_lines_added30,
             "lines_removed30": global_lines_removed30,
-            "mrs_created_last_30_days_xAxis": global_mrs_created_last_30_days_xAxis,
-            "mrs_created_last_30_days_yAxis": global_mrs_created_last_30_days_yAxis,
-            "mrs_reviewed_last_30_days_xAxis": global_mrs_reviewed_last_30_days_xAxis,
-            "mrs_reviewed_last_30_days_yAxis": global_mrs_reviewed_last_30_days_yAxis,
+            "last_30_days_xAxis": global_last_30_days_xAxis,
+            "last_30_days_yAxis": global_last_30_days_yAxis,
         }
 
         serializer.save(
