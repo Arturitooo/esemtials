@@ -461,6 +461,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                             label: "reviewed",
                           },
                         ]}
+                        grid={{ horizontal: true }}
                         slotProps={{
                           legend: {
                             labelStyle: {
@@ -499,6 +500,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                             label: "reviewed",
                           },
                         ]}
+                        grid={{ horizontal: true }}
                         slotProps={{
                           legend: {
                             labelStyle: {
@@ -681,7 +683,113 @@ export const TeammemberGitStats = ({ teammember }) => {
                   Lines of Code changed over time
                 </h3>
                 <Divider sx={{ marginBottom: "10px", width: "60%" }} />
-                <Box sx={{ paddingLeft: "5px" }}>XYZ 2</Box>
+                <Box sx={{ paddingLeft: "5px" }}>
+                  {gitStatsTimeframe === 7 ? (
+                    <>
+                      <BarChart
+                        xAxis={[
+                          {
+                            data: [
+                              ...counters7.mrs_reviewed_last_7_days_xAxis,
+                              ...counters7.mrs_reviewed_last_7_days_xAxis,
+                            ],
+                            scaleType: "band",
+                          },
+                        ]}
+                        yAxis={[
+                          {
+                            min: Math.min(
+                              ...counters7.commits_added_lines_last_7_days_yAxis,
+                              ...counters7.commits_removed_lines_last_7_days_yAxis
+                            ), // Minimum value from both datasets
+                            max: Math.max(
+                              ...counters7.commits_added_lines_last_7_days_yAxis,
+                              ...counters7.commits_removed_lines_last_7_days_yAxis
+                            ), // Maximum value from both datasets
+                          },
+                        ]}
+                        series={[
+                          {
+                            id: "added",
+                            data: counters7.commits_added_lines_last_7_days_yAxis,
+                            color: "#0451E5",
+                            stack: "stack1",
+                            label: "added",
+                          },
+                          {
+                            id: "removed",
+                            data: counters7.commits_removed_lines_last_7_days_yAxis,
+                            color: "#d10000",
+                            stack: "stack1",
+                            label: "removed",
+                          },
+                        ]}
+                        grid={{ horizontal: true }}
+                        slotProps={{
+                          legend: {
+                            labelStyle: {
+                              fontSize: 14,
+                            },
+                          },
+                        }}
+                        height={190}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <BarChart
+                        xAxis={[
+                          {
+                            data: [
+                              ...counters30.mrs_reviewed_last_30_days_xAxis,
+                              ...counters30.mrs_reviewed_last_30_days_xAxis,
+                            ],
+                            scaleType: "band",
+                          },
+                        ]}
+                        yAxis={[
+                          {
+                            min: Math.min(
+                              ...counters30.commits_added_lines_last_30_days_yAxis,
+                              ...counters30.commits_removed_lines_last_30_days_yAxis
+                            ), // Minimum value from both datasets
+                            max: Math.max(
+                              ...counters30.commits_added_lines_last_30_days_yAxis,
+                              ...counters30.commits_removed_lines_last_30_days_yAxis
+                            ), // Maximum value from both datasets
+                          },
+                        ]}
+                        series={[
+                          {
+                            id: "added",
+                            data: counters30.commits_added_lines_last_30_days_yAxis,
+                            color: "#0451E5",
+                            stack: "stack1",
+                            label: "added",
+                            baseline: 0,
+                          },
+                          {
+                            id: "removed",
+                            data: counters30.commits_removed_lines_last_30_days_yAxis,
+                            color: "#d10000",
+                            stack: "stack1",
+                            label: "removed",
+                            baseline: 0,
+                          },
+                        ]}
+                        grid={{ horizontal: true }}
+                        slotProps={{
+                          legend: {
+                            labelStyle: {
+                              fontSize: 14,
+                            },
+                          },
+                        }}
+                        height={190}
+                      />
+                    </>
+                  )}
+                </Box>
               </Box>
             </Box>
           </Card>
