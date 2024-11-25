@@ -110,7 +110,7 @@ export const TMDetailpage = () => {
   };
 
   const DeleteTM = () => {
-    const url = `team/teammember/${id}`;
+    const url = `team/teammember/${id}/`;
     AxiosInstance.delete(url).then(() => {
       console.log("you've successfully deleted the team member");
     });

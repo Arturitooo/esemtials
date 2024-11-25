@@ -44,8 +44,10 @@ class TeammemberViewSet(viewsets.ModelViewSet):
         return response.Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        # Create a new team member for the authenticated user
-        serializer = self.get_serializer(data=request.data)
+        data = request.data.copy()  # Make a mutable copy
+        if "teammember_hasGitIntegration" not in data:
+            data["teammember_hasGitIntegration"] = None
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save(created_by=request.user)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)

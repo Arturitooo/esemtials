@@ -13,6 +13,11 @@ class TeammemberSerializer(serializers.ModelSerializer):
         model = Teammember
         fields = "__all__"
 
+    def to_internal_value(self, data):
+        if "teammember_hasGitIntegration" not in data:
+            data["teammember_hasGitIntegration"] = None
+        return super().to_internal_value(data)
+
 
 class TeamMemberCommentSerializer(serializers.ModelSerializer):
     class Meta:

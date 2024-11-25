@@ -51,15 +51,9 @@ class Teammember(models.Model):
     tm_photo = models.ImageField(
         upload_to="teammembers_profile_pictures/", null=True, blank=True
     )
-    teammember_hasGitIntegration = models.BooleanField(
-        default=None, null=True, blank=True
-    )
-    teammember_hasBoardIntegration = models.BooleanField(
-        default=None, null=True, blank=True
-    )
-    teammember_hasCalendarIntegration = models.BooleanField(
-        default=None, null=True, blank=True
-    )
+    teammember_hasGitIntegration = models.BooleanField(null=True, blank=True)
+    teammember_hasBoardIntegration = models.BooleanField(null=True, blank=True)
+    teammember_hasCalendarIntegration = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.tm_name} {self.tm_lname}"

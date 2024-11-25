@@ -456,7 +456,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                           {
                             id: "reviewed",
                             data: counters7.mrs_reviewed_last_7_days_yAxis,
-                            color: "#000",
+                            color: "#EB8A17",
                             stack: "stack1",
                             label: "reviewed",
                           },
@@ -495,7 +495,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                           {
                             id: "reviewed",
                             data: counters30.mrs_reviewed_last_30_days_yAxis,
-                            color: "#000",
+                            color: "#EB8A17",
                             stack: "stack1",
                             label: "reviewed",
                           },
@@ -719,7 +719,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                           {
                             id: "removed",
                             data: counters7.commits_removed_lines_last_7_days_yAxis,
-                            color: "#d10000",
+                            color: "#1D212F",
                             stack: "stack1",
                             label: "removed",
                           },
@@ -771,7 +771,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                           {
                             id: "removed",
                             data: counters30.commits_removed_lines_last_30_days_yAxis,
-                            color: "#d10000",
+                            color: "#1D212F",
                             stack: "stack1",
                             label: "removed",
                             baseline: 0,
