@@ -61,13 +61,12 @@ class TeammemberViewSet(viewsets.ModelViewSet):
         return response.Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        # Update a specific team member if the user is the creator
+        data = request.data.copy()  # Make a mutable copy
+        if "teammember_hasGitIntegration" not in data:
+            data["teammember_hasGitIntegration"] = None
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
-        if instance.created_by != request.user:
-            return response.Response(status=status.HTTP_403_FORBIDDEN)
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=kwargs.pop("partial", False)
-        )
+        serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return response.Response(serializer.data)
@@ -323,8 +322,12 @@ class TeammemberCodingStatsDetailAPIView(RetrieveAPIView):
         coding_stats = self.get_object()
         serializer = self.get_serializer(coding_stats)
 
+        # Remove the `body` field from the serialized data
+        data = serializer.data
+        data.pop("body", None)
+
         # Return the serialized data
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
+        return response.Response(data, status=status.HTTP_200_OK)
 
 
 class TeammemberCodingStatsCreateAPIView(CreateAPIView):

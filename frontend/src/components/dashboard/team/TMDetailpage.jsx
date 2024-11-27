@@ -27,6 +27,8 @@ export const TMDetailpage = () => {
   const [toast, setToast] = useState({ open: false, type: "", content: "" });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [commentsRefreshKey, setCommentsRefreshKey] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+  const MAX_ITEMS = 3;
 
   const handleConfirmDeleteTM = () => {
     setDeleteModalOpen(true);
@@ -98,6 +100,10 @@ export const TMDetailpage = () => {
       localStorage.removeItem("toastMessage"); // Clear the toast message after showing it
     }
   }, [id]);
+
+  const handleToggle = () => {
+    setShowAll(!showAll);
+  };
 
   const handleToastClose = () => {
     setToast({ ...toast, open: false });
@@ -272,8 +278,12 @@ export const TMDetailpage = () => {
                     <h4>Stack</h4>
                     {tmData.tm_stack.length > 0 ? (
                       <ul style={{ paddingLeft: "20px" }}>
-                        {tmData.tm_stack &&
-                          tmData.tm_stack.map((tech, index) => (
+                        {tmData.tm_stack
+                          .slice(
+                            0,
+                            showAll ? tmData.tm_stack.length : MAX_ITEMS
+                          )
+                          .map((tech, index) => (
                             <li key={index}>
                               <p>{tech}</p>
                             </li>
@@ -281,6 +291,18 @@ export const TMDetailpage = () => {
                       </ul>
                     ) : (
                       <p className="no-data">No data</p>
+                    )}
+                    {tmData.tm_stack.length > MAX_ITEMS && (
+                      <Button
+                        onClick={handleToggle}
+                        size="small"
+                        sx={{
+                          fontFamily: "Ubuntu",
+                          fontWeight: 300,
+                        }}
+                      >
+                        {showAll ? "less" : "more"}
+                      </Button>
                     )}
                   </div>
                   <div className="grid-2-columns">

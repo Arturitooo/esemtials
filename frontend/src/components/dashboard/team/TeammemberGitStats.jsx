@@ -465,8 +465,16 @@ export const TeammemberGitStats = ({ teammember }) => {
                         slotProps={{
                           legend: {
                             labelStyle: {
-                              fontSize: 14,
+                              fontSize: 12,
                             },
+                          },
+                        }}
+                        sx={{
+                          "& .MuiChartsLegend-mark": {
+                            x: "14px",
+                            y: "-2px",
+                            width: "8px",
+                            height: "8px",
                           },
                         }}
                         height={190}
@@ -504,8 +512,16 @@ export const TeammemberGitStats = ({ teammember }) => {
                         slotProps={{
                           legend: {
                             labelStyle: {
-                              fontSize: 14,
+                              fontSize: 12,
                             },
+                          },
+                        }}
+                        sx={{
+                          "& .MuiChartsLegend-mark": {
+                            x: "14px",
+                            y: "-2px",
+                            width: "8px",
+                            height: "8px",
                           },
                         }}
                         height={190}
@@ -728,8 +744,16 @@ export const TeammemberGitStats = ({ teammember }) => {
                         slotProps={{
                           legend: {
                             labelStyle: {
-                              fontSize: 14,
+                              fontSize: 12,
                             },
+                          },
+                        }}
+                        sx={{
+                          "& .MuiChartsLegend-mark": {
+                            x: "14px",
+                            y: "-2px",
+                            width: "8px",
+                            height: "8px",
                           },
                         }}
                         height={190}
@@ -781,8 +805,16 @@ export const TeammemberGitStats = ({ teammember }) => {
                         slotProps={{
                           legend: {
                             labelStyle: {
-                              fontSize: 14,
+                              fontSize: 12,
                             },
+                          },
+                        }}
+                        sx={{
+                          "& .MuiChartsLegend-mark": {
+                            x: "14px",
+                            y: "-2px",
+                            width: "8px",
+                            height: "8px",
                           },
                         }}
                         height={190}
