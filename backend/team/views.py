@@ -355,6 +355,11 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         dt_object7 = datetime.strptime(data_limitation7, "%Y-%m-%d %H:%M:%S.%f")
         data_limitation7_iso_format = dt_object7.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        # set date limes to 14 days ago and convert to needed format
+        data_limitation14 = str(datetime.today() - timedelta(days=14))
+        dt_object14 = datetime.strptime(data_limitation14, "%Y-%m-%d %H:%M:%S.%f")
+        data_limitation14_iso_format = dt_object14.strftime("%Y-%m-%dT%H:%M:%SZ")
+
         # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
         if gitIntegrationData:
             # Prepare the apiCallsInput
@@ -614,11 +619,27 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             ) = create_to_merge30sum = comments_in_created_mrs30 = created_commits30 = (
                 lines_added30
             ) = lines_removed30 = 0
+            active_projects30_change = created_mrs_counter30_change = (
+                reviewed_mrs_counter30_change
+            ) = create_to_merge30_change = create_to_merge30sum_change = (
+                comments_in_created_mrs30_change
+            ) = created_commits30_change = lines_added30_change = (
+                lines_removed30_change
+            ) = commits_frequency30_change = "-"
+
             active_projects7 = created_mrs_counter7 = reviewed_mrs_counter7 = (
                 create_to_merge7
             ) = create_to_merge7sum = comments_in_created_mrs7 = created_commits7 = (
                 lines_added7
             ) = lines_removed7 = 0
+
+            active_projects7_change = created_mrs_counter7_change = (
+                reviewed_mrs_counter7_change
+            ) = create_to_merge7_change = create_to_merge7sum_change = (
+                comments_in_created_mrs7_change
+            ) = created_commits7_change = lines_added7_change = (
+                lines_removed7_change
+            ) = commits_frequency7_change = "-"
 
             # Loop through each MR created to count active projects
             for created_mr in project_data["created_mrs_data"]:
@@ -627,10 +648,21 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     create_to_merge30sum += created_mr["create_to_merge"]
                     created_mrs_counter7 += 1
                     created_mrs_counter30 += 1
-                    if project not in active_projects7_list:
-                        active_projects7_list.append(project)
-                    if project not in active_projects30_list:
-                        active_projects30_list.append(project)
+
+                    # generate project set of data
+                    temp_project_name = mrs_projects_data[project]["project_name"]
+                    temp_project_url = mrs_projects_data[project]["project_url"]
+                    project_info = {
+                        project: {
+                            "project_name": temp_project_name,
+                            "project_url": temp_project_url,
+                        }
+                    }
+
+                    if project_info not in active_projects7_list:
+                        active_projects7_list.append(project_info)
+                    if project_info not in active_projects30_list:
+                        active_projects30_list.append(project_info)
 
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs7 += 1
@@ -641,9 +673,19 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     > created_mr["created_at"]
                     > data_limitation_iso_format30
                 ):
+                    # generate project set of data
+                    temp_project_name = mrs_projects_data[project]["project_name"]
+                    temp_project_url = mrs_projects_data[project]["project_url"]
+                    project_info = {
+                        project: {
+                            "project_name": temp_project_name,
+                            "project_url": temp_project_url,
+                        }
+                    }
+
                     create_to_merge30sum += created_mr["create_to_merge"]
-                    if project not in active_projects30_list:
-                        active_projects30_list.append(project)
+                    if project_info not in active_projects30_list:
+                        active_projects30_list.append(project_info)
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs30 += 1
@@ -1151,11 +1193,39 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "commits_removed_lines_last_30_days_yAxis": global_commits_removed_lines_last_30_days_yAxis,
         }
 
+        # collect data change data set
+        difference30 = {
+            "active_projects30_change": active_projects30_change,
+            "created_mrs_counter30_change": created_mrs_counter30_change,
+            "reviewed_mrs_counter30_change": reviewed_mrs_counter30_change,
+            "comments_in_created_mrs30_change": comments_in_created_mrs30_change,
+            "create_to_merge30_change": create_to_merge30_change,
+            "created_commits30_change": created_commits30_change,
+            "lines_added30_change": lines_added30_change,
+            "lines_removed30_change": lines_removed30_change,
+            "commits_frequency30_change": commits_frequency30_change,
+        }
+
+        difference7 = {
+            "active_projects7_change": active_projects7_change,
+            "created_mrs_counter7_change": created_mrs_counter7_change,
+            "reviewed_mrs_counter7_change": reviewed_mrs_counter7_change,
+            "comments_in_created_mrs7_change": comments_in_created_mrs7_change,
+            "create_to_merge7_change": create_to_merge7_change,
+            "created_commits7_change": created_commits7_change,
+            "lines_added7_change": lines_added7_change,
+            "lines_removed7_change": lines_removed7_change,
+            "commits_frequency7_change": commits_frequency7_change,
+        }
+
+        # save serialized data to database
         serializer.save(
             teammember=teammember,
             body=body,
             counters7=global_counters7,
             counters30=global_counters30,
+            difference7=difference7,
+            difference30=difference30,
         )
 
     def gitlab_merge_requests_api_call(self, data):

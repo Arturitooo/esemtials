@@ -115,3 +115,5 @@ class TeammemberCodingStats(models.Model):
     body = models.JSONField(default=dict)
     counters7 = models.JSONField(default=dict)
     counters30 = models.JSONField(default=dict)
+    difference7 = models.JSONField(default=dict)
+    difference30 = models.JSONField(default=dict)

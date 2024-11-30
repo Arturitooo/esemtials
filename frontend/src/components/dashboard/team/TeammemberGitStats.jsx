@@ -16,7 +16,6 @@ export const TeammemberGitStats = ({ teammember }) => {
   });
   const [counters7, setCounters7] = useState(null);
   const [counters30, setCounters30] = useState(null);
-  const [gitStatsBody, setGitStatsBody] = useState(null);
 
   const successColor = "#42BC09";
   const errorColor = "#d10000";
@@ -38,8 +37,6 @@ export const TeammemberGitStats = ({ teammember }) => {
       setCounters7(counters7);
       const counters30 = theCodingStats.counters30;
       setCounters30(counters30);
-      const body = theCodingStats.body;
-      setGitStatsBody(body);
     });
   };
 
@@ -162,13 +159,10 @@ export const TeammemberGitStats = ({ teammember }) => {
                   >
                     {gitStatsTimeframe === 7 ? (
                       <>
-                        {Object.entries(gitStatsBody)
-                          .filter(([id]) =>
-                            counters7.active_projects7_list.includes(
-                              parseInt(id)
-                            )
-                          )
-                          .map(([id, project]) => (
+                        {counters7.active_projects7_list.map((projectObj) => {
+                          // Extract the project ID and details
+                          const [id, project] = Object.entries(projectObj)[0];
+                          return (
                             <li key={id}>
                               <a
                                 href={project.project_url}
@@ -182,17 +176,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                                 {project.project_name}
                               </a>
                             </li>
-                          ))}
+                          );
+                        })}
                       </>
                     ) : (
                       <>
-                        {Object.entries(gitStatsBody)
-                          .filter(([id]) =>
-                            counters30.active_projects30_list.includes(
-                              parseInt(id)
-                            )
-                          )
-                          .map(([id, project]) => (
+                        {counters30.active_projects30_list.map((projectObj) => {
+                          const [id, project] = Object.entries(projectObj)[0];
+                          return (
                             <li key={id}>
                               <a
                                 href={project.project_url}
@@ -206,7 +197,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                                 {project.project_name}
                               </a>
                             </li>
-                          ))}
+                          );
+                        })}
                       </>
                     )}
                   </ul>
