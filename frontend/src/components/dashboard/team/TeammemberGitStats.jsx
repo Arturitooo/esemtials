@@ -16,9 +16,12 @@ export const TeammemberGitStats = ({ teammember }) => {
   });
   const [counters7, setCounters7] = useState(null);
   const [counters30, setCounters30] = useState(null);
+  const [previous7, setprevious7] = useState(null);
+  const [previous30, setprevious30] = useState(null);
 
   const successColor = "#42BC09";
-  const errorColor = "#d10000";
+  const warningColor = "rgba(32, 32, 32, 0.25)";
+  const errorColor = "#D10000";
 
   useEffect(() => {
     GetGitData(teammember);
@@ -37,6 +40,10 @@ export const TeammemberGitStats = ({ teammember }) => {
       setCounters7(counters7);
       const counters30 = theCodingStats.counters30;
       setCounters30(counters30);
+      const previous7 = theCodingStats.previous7;
+      setprevious7(previous7);
+      const previous30 = theCodingStats.previous30;
+      setprevious30(previous30);
     });
   };
 
@@ -45,6 +52,28 @@ export const TeammemberGitStats = ({ teammember }) => {
       // Prevent setting null
       setGitStatsTimeframe(newAlignment);
       localStorage.setItem("gitStatsTimeframe", newAlignment); // Keep localStorage updated
+    }
+  };
+
+  const getColor = (currentValue, previousValue) => {
+    if (currentValue > previousValue) return successColor;
+    if (currentValue < previousValue) return errorColor;
+    if (currentValue == previousValue) return warningColor;
+  };
+
+  const getNegativeColor = (currentValue, previousValue) => {
+    if (currentValue > previousValue) return errorColor;
+    if (currentValue < previousValue) return successColor;
+    if (currentValue == previousValue) return warningColor;
+  };
+
+  const calculateChange = (currentValue, previousValue) => {
+    if (currentValue === previousValue) {
+      return "0%";
+    } else {
+      return (
+        Math.round(((currentValue - previousValue) / previousValue) * 100) + "%"
+      );
     }
   };
 
@@ -130,11 +159,34 @@ export const TeammemberGitStats = ({ teammember }) => {
                       margin: "auto",
                       fontWeight: "400",
                       fontSize: "14px",
-                      color: errorColor, // or successColor
+                      color:
+                        gitStatsTimeframe === 7
+                          ? getColor(
+                              counters7.active_projects7,
+                              previous7.previous_active_projects7
+                            )
+                          : getColor(
+                              counters30.active_projects30,
+                              previous30.previous_active_projects30
+                            ),
                       paddingBottom: "15px",
                     }}
                   >
-                    -50%
+                    {gitStatsTimeframe === 7 ? (
+                      <>
+                        {calculateChange(
+                          counters7.active_projects7,
+                          previous7.previous_active_projects7
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {calculateChange(
+                          counters30.active_projects30,
+                          previous30.previous_active_projects30
+                        )}
+                      </>
+                    )}
                   </div>
                 </Box>
               </Box>
@@ -254,8 +306,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? counters7.created_mrs_counter7
                             : counters30.created_mrs_counter30,
-                        change: "-50%",
-                        color: errorColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.created_mrs_counter7,
+                                previous7.previous_created_mrs_counter7
+                              )
+                            : calculateChange(
+                                counters30.created_mrs_counter30,
+                                previous30.previous_created_mrs_counter30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getColor(
+                                counters7.created_mrs_counter7,
+                                previous7.previous_created_mrs_counter7
+                              )
+                            : getColor(
+                                counters30.created_mrs_counter30,
+                                previous30.previous_created_mrs_counter30
+                              ),
                       },
                       {
                         label: "CR comments received",
@@ -263,8 +333,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? counters7.comments_in_created_mrs7
                             : counters30.comments_in_created_mrs30,
-                        change: "-12%",
-                        color: successColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.comments_in_created_mrs7,
+                                previous7.previous_comments_in_created_mrs7
+                              )
+                            : calculateChange(
+                                counters30.comments_in_created_mrs30,
+                                previous30.previous_comments_in_created_mrs30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getNegativeColor(
+                                counters7.comments_in_created_mrs7,
+                                previous7.previous_comments_in_created_mrs7
+                              )
+                            : getNegativeColor(
+                                counters30.comments_in_created_mrs30,
+                                previous30.previous_comments_in_created_mrs30
+                              ),
                       },
                     ].map((item, index) => (
                       <Box key={index}>
@@ -316,8 +404,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? counters7.reviewed_mrs_counter7
                             : counters30.reviewed_mrs_counter30,
-                        change: "+8%",
-                        color: successColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.reviewed_mrs_counter7,
+                                previous7.previous_reviewed_mrs_counter7
+                              )
+                            : calculateChange(
+                                counters30.reviewed_mrs_counter30,
+                                previous30.previous_reviewed_mrs_counter30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getColor(
+                                counters7.reviewed_mrs_counter7,
+                                previous7.previous_reviewed_mrs_counter7
+                              )
+                            : getColor(
+                                counters30.reviewed_mrs_counter30,
+                                previous30.previous_reviewed_mrs_counter30
+                              ),
                       },
                       {
                         label: "MR create to merge time",
@@ -369,8 +475,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                                     )} sec`
                                   : ""
                               }`,
-                        change: "-17%",
-                        color: errorColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.create_to_merge7,
+                                previous7.previous_create_to_merge7
+                              )
+                            : calculateChange(
+                                counters30.create_to_merge30,
+                                previous30.previous_create_to_merge30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getNegativeColor(
+                                counters7.create_to_merge7,
+                                previous7.previous_create_to_merge7
+                              )
+                            : getNegativeColor(
+                                counters30.create_to_merge30,
+                                previous30.previous_create_to_merge30
+                              ),
                       },
                     ].map((item, index) => (
                       <Box key={index}>
@@ -572,8 +696,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? counters7.lines_added7
                             : counters30.lines_added30,
-                        change: "-50%",
-                        color: errorColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.lines_added7,
+                                previous7.previous_lines_added7
+                              )
+                            : calculateChange(
+                                counters30.lines_added30,
+                                previous30.previous_lines_added30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getColor(
+                                counters7.lines_added7,
+                                previous7.previous_lines_added7
+                              )
+                            : getColor(
+                                counters30.lines_added30,
+                                previous30.previous_lines_added30
+                              ),
                       },
                       {
                         label: "Commits Created",
@@ -581,8 +723,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? counters7.created_commits7
                             : counters30.created_commits30,
-                        change: "+10%",
-                        color: successColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.created_commits7,
+                                previous7.previous_created_commits7
+                              )
+                            : calculateChange(
+                                counters30.created_commits30,
+                                previous30.previous_created_commits30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getColor(
+                                counters7.created_commits7,
+                                previous7.previous_created_commits7
+                              )
+                            : getColor(
+                                counters30.created_commits30,
+                                previous30.previous_created_commits30
+                              ),
                       },
                     ].map((item, index) => (
                       <Box key={index}>
@@ -634,8 +794,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? counters7.lines_removed7
                             : counters30.lines_removed30,
-                        change: "-3%",
-                        color: successColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.lines_removed7,
+                                previous7.previous_lines_removed7
+                              )
+                            : calculateChange(
+                                counters30.lines_removed30,
+                                previous30.previous_lines_removed30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getNegativeColor(
+                                counters7.lines_removed7,
+                                previous7.previous_lines_removed7
+                              )
+                            : getNegativeColor(
+                                counters30.lines_removed30,
+                                previous30.previous_lines_removed30
+                              ),
                       },
                       {
                         label: "Commits Frequency",
@@ -643,8 +821,26 @@ export const TeammemberGitStats = ({ teammember }) => {
                           gitStatsTimeframe === 7
                             ? `~ ${counters7.commits_frequency7} per day`
                             : `~ ${counters30.commits_frequency30} per day`,
-                        change: "-17%",
-                        color: errorColor,
+                        change:
+                          gitStatsTimeframe === 7
+                            ? calculateChange(
+                                counters7.commits_frequency7,
+                                previous7.previous_commits_frequency7
+                              )
+                            : calculateChange(
+                                counters30.commits_frequency30,
+                                previous30.previous_commits_frequency30
+                              ),
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getColor(
+                                counters7.commits_frequency7,
+                                previous7.previous_commits_frequency7
+                              )
+                            : getColor(
+                                counters30.commits_frequency30,
+                                previous30.previous_commits_frequency30
+                              ),
                       },
                     ].map((item, index) => (
                       <Box key={index}>

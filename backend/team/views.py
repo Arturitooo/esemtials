@@ -687,17 +687,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs7 += 1
                         comments_in_created_mrs30 += 1
-                elif (
-                    data_limitation7_iso_format
-                    > created_mr["created_at"]
-                    > data_limitation14_iso_format
-                ):
-                    previous_created_mrs_counter7 += 1
-                    previous_create_to_merge7sum += created_mr["create_to_merge"]
-                    for comment in created_mr["comment_ids"]:
-                        previous_comments_in_created_mrs7 += 1
 
-                elif (
+                if (
                     data_limitation7_iso_format
                     > created_mr["created_at"]
                     > data_limitation_iso_format30
@@ -718,7 +709,17 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs30 += 1
-                elif (
+                if (
+                    data_limitation7_iso_format
+                    > created_mr["created_at"]
+                    > data_limitation14_iso_format
+                ):
+                    previous_created_mrs_counter7 += 1
+                    previous_create_to_merge7sum += created_mr["create_to_merge"]
+                    for comment in created_mr["comment_ids"]:
+                        previous_comments_in_created_mrs7 += 1
+
+                if (
                     data_limitation_iso_format30
                     > created_mr["created_at"]
                     > data_limitation_iso_format60
@@ -760,15 +761,16 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 elif (
                     data_limitation7_iso_format
                     > reviewed_mr["created_at"]
-                    > data_limitation14_iso_format
-                ):
-                    previous_reviewed_mrs_counter7 += 1
-                elif (
-                    data_limitation7_iso_format
-                    > reviewed_mr["created_at"]
                     > data_limitation_iso_format30
                 ):
                     reviewed_mrs_counter30 += 1
+
+                if (
+                    data_limitation7_iso_format
+                    > reviewed_mr["created_at"]
+                    > data_limitation14_iso_format
+                ):
+                    previous_reviewed_mrs_counter7 += 1
                 elif (
                     data_limitation_iso_format30
                     > reviewed_mr["created_at"]
@@ -829,23 +831,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 elif (
                     data_limitation7_iso_format
                     > commit["created_at"]
-                    > data_limitation14_iso_format
-                ):
-                    previous_created_commits7 += 1
-
-                    # provide simmplified date for commits
-                    commit_created_at_simplified = datetime.strptime(
-                        commit["created_at"].replace("+00:00", "Z"),
-                        "%Y-%m-%dT%H:%M:%S.%fZ",
-                    ).strftime("%Y-%m-%d")
-
-                    for diff_item in commit["diff_data"]:
-                        previous_lines_added7 += int(diff_item["lines_added"])
-                        previous_lines_removed7 += int(diff_item["lines_removed"])
-
-                elif (
-                    data_limitation7_iso_format
-                    > commit["created_at"]
                     > data_limitation_iso_format30
                 ):
                     created_commits30 += 1
@@ -864,6 +849,23 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         )
                         lines_added30 += int(diff_item["lines_added"])
                         lines_removed30 += int(diff_item["lines_removed"])
+
+                if (
+                    data_limitation7_iso_format
+                    > commit["created_at"]
+                    > data_limitation14_iso_format
+                ):
+                    previous_created_commits7 += 1
+
+                    # provide simmplified date for commits
+                    commit_created_at_simplified = datetime.strptime(
+                        commit["created_at"].replace("+00:00", "Z"),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ).strftime("%Y-%m-%d")
+
+                    for diff_item in commit["diff_data"]:
+                        previous_lines_added7 += int(diff_item["lines_added"])
+                        previous_lines_removed7 += int(diff_item["lines_removed"])
 
                 elif (
                     data_limitation_iso_format30
