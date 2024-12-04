@@ -90,16 +90,20 @@ export const TMDetailpage = () => {
   };
 
   useEffect(() => {
-    // fetch user data
+    // Check if team member is part of the project after tmData is set
+    if (tmData && tmData.project != localStorage.getItem("selectedProjectId")) {
+      navigate("/team/");
+    }
     GetData(id);
     // show integration form toast
     const toastMessage = localStorage.getItem("toastMessage");
+
     if (toastMessage) {
       const { type, content } = JSON.parse(toastMessage);
       setToast({ open: true, type, content });
       localStorage.removeItem("toastMessage"); // Clear the toast message after showing it
     }
-  }, [id]);
+  }, [tmData, navigate, id]);
 
   const handleToggle = () => {
     setShowAll(!showAll);

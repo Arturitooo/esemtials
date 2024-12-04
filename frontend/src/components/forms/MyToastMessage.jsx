@@ -33,6 +33,7 @@ export function MyToastMessage({ type, content, open, handleClose }) {
             backgroundColor: toastBackground[type],
             alignContent: "center",
             justifyContent: "center",
+            textAlign: "center",
             display: "flex",
           },
         }}
