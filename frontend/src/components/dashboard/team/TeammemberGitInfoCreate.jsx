@@ -125,6 +125,13 @@ export const TeammemberGitInfoCreate = () => {
     } catch (error) {
       // Handle errors
       console.error("Error during submission:", error);
+      localStorage.setItem(
+        "toastMessage",
+        JSON.stringify({
+          type: "fail",
+          content: "Invalid data, please try again.",
+        })
+      );
     } finally {
       setLoading(false); // Always set loading to false in the finally block
       localStorage.setItem("gitStatsTimeframe", 7);

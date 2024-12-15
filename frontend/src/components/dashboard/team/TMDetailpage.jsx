@@ -90,11 +90,8 @@ export const TMDetailpage = () => {
   };
 
   useEffect(() => {
-    // Check if team member is part of the project after tmData is set
-    if (tmData && tmData.project != localStorage.getItem("selectedProjectId")) {
-      navigate("/team/");
-    }
     GetData(id);
+
     // show integration form toast
     const toastMessage = localStorage.getItem("toastMessage");
 
@@ -103,7 +100,14 @@ export const TMDetailpage = () => {
       setToast({ open: true, type, content });
       localStorage.removeItem("toastMessage"); // Clear the toast message after showing it
     }
-  }, [tmData, navigate, id]);
+  }, [id]);
+
+  useEffect(() => {
+    // Check if team member is part of the project after tmData is set
+    if (tmData && tmData.project != localStorage.getItem("selectedProjectId")) {
+      navigate("/team/");
+    }
+  }, [tmData, navigate]);
 
   const handleToggle = () => {
     setShowAll(!showAll);
@@ -226,7 +230,12 @@ export const TMDetailpage = () => {
           <h1>Team member</h1>
           <Card className="card-section team-member__card">
             <CardContent className="team-member__content">
-              <div className="team-member__content--photo">
+              <div
+                className="team-member__content--photo"
+                style={{
+                  height: "240px",
+                }}
+              >
                 {tmData.tm_photo ? (
                   <div>
                     <img src={tmData.tm_photo} alt="Team member photo" />

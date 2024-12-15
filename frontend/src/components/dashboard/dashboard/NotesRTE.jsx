@@ -186,19 +186,18 @@ const NotesRTE = ({ limitHeight }) => {
         console.log("New note created successfully:", res.data.note_name);
         GetNotesList(selectedProjectId);
 
-        //
-        setToast({
-          open: true,
-          type: "informative",
-          content: "Provide and submit a name for the note",
-        });
-
         // Delay focus to allow rendering
         setTimeout(() => {
           if (newNoteRef.current) {
             newNoteRef.current.focus(); // Set focus to the input
           }
         }, 50);
+
+        setToast({
+          open: true,
+          type: "success",
+          content: "You've created a note",
+        });
       })
       .catch((error) => {
         console.error("Error while creating new note:", error);
@@ -227,11 +226,6 @@ const NotesRTE = ({ limitHeight }) => {
         setEditingNoteName(false); // Disable editing mode
         GetNotesList(selectedProjectId);
         fetchNoteContent(updatedNote);
-        setToast({
-          open: true,
-          type: "success",
-          content: "You've successfully named the note",
-        });
       })
       .catch((error) => {
         console.error("Error updating note name:", error);
@@ -382,24 +376,40 @@ const NotesRTE = ({ limitHeight }) => {
                             fontWeight: "bold",
                             padding: "3px 0",
                             marginRight: "3px",
+                            paddingLeft: "5px",
                           }}
                           onChange={(e) => setEditedNoteName(e.target.value)}
                           autoComplete="off"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleCheckNoteName();
+                            }
+                          }}
                         />
-                        <ThumbUpAltIcon
+                        <div
+                          tabIndex="0"
+                          role="button"
                           style={{
+                            display: "inline-block",
                             position: "relative",
                             top: "4px",
-                            fontSize: "medium",
                             marginLeft: "3px",
                             color: "#1D212F66",
+                            outline: "none", // Removes default focus styles
                           }}
                           onMouseEnter={(e) => (e.target.style.color = "black")}
                           onMouseLeave={(e) =>
                             (e.target.style.color = "#1D212F66")
                           }
                           onClick={handleCheckNoteName}
-                        />
+                        >
+                          <ThumbUpAltIcon
+                            style={{
+                              fontSize: "medium",
+                              color: "inherit", // Inherits the color from the wrapper
+                            }}
+                          />
+                        </div>
                       </>
                     ) : (
                       <>
@@ -461,7 +471,7 @@ const NotesRTE = ({ limitHeight }) => {
               }}
               onClick={handleNewPageClick}
             >
-              + New Page
+              + New Note
             </Button>
           </div>
         </div>

@@ -161,17 +161,30 @@ class TeamMemberGitIntegrationDataCreateAPIView(CreateAPIView):
         # get related teammember instance
         teammember = get_object_or_404(Teammember, pk=validated_data["teammember"].pk)
 
-        # perform testing API call and based on result change the Teammember
-        integration_status = self.gitlab_verification_api_call(validated_data)
-        teammember.teammember_hasGitIntegration = integration_status
-
-        teammember.save()
-
         try:
+            # Perform API verification
+            integration_status = self.gitlab_verification_api_call(validated_data)
+
+            if integration_status:
+                teammember.teammember_hasGitIntegration = True
+            else:
+                teammember.teammember_hasGitIntegration = False
+
+            teammember.save()
+
+            # Save the serializer if the integration succeeded
             serializer.save(created_by=self.request.user)
-        except IntegrityError:
+
+        except (requests.exceptions.RequestException, KeyError, ValueError) as error:
+            # Handle any error during the API call or data validation
+            teammember.teammember_hasGitIntegration = False
+            teammember.save()
+
+            # Raise validation error for invalid data
             raise ValidationError(
-                "This team member already has Git data associated with them."
+                {
+                    "detail": "GitLab integration failed due to invalid data or API error."
+                }
             )
 
     def gitlab_verification_api_call(self, data):
@@ -192,10 +205,10 @@ class TeamMemberGitIntegrationDataCreateAPIView(CreateAPIView):
                 member_ids = [member["id"] for member in members]
                 return str(userID) in map(str, member_ids)
             else:
-                return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
-        except requests.exceptions.RequestException as e:
+                return False
+        except requests.exceptions.RequestException as error:
             # Handle any errors that occur during the request
-            return {"success": False, "message": str(e)}
+            return error
 
 
 class TeamMemberGitIntegrationDataDetailAPIView(RetrieveAPIView):
