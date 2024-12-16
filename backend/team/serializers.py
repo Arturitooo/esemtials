@@ -49,7 +49,3 @@ class TeammemberCodingStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeammemberCodingStats
         fields = "__all__"
-
-    def update(self, instance, validated_data):
-        instance.latestUpdate = timezone.now()  # Set the current timestamp
-        return super().update(instance, validated_data)
