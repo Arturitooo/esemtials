@@ -1421,6 +1421,8 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
     def perform_update(self, serializer):
         user = self.request.user
         teammember_id = self.kwargs.get("teammember_id")
+        teammemberCodingStats = self.get_object()
+        updateBody = {}
 
         # Get the related teammember
         teammember = get_object_or_404(Teammember, id=teammember_id, created_by=user)
@@ -1433,7 +1435,15 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         if gitIntegrationData:
             git_integration_dict = model_to_dict(gitIntegrationData)
             integration_status = gitlab_verification_api_call(git_integration_dict)
-            print(integration_status)
+
+            if integration_status is False:
+                # integration got broken so change it's status in the teammember model
+                teammember.teammember_hasGitIntegration = False
+                teammember.save()
+
+                return ValidationError(
+                    {"detail": "Git integration verification failed."}
+                )
 
         # get info about latest coding stats update
         teammemberCodingStats = TeammemberCodingStats.objects.get(
@@ -1441,14 +1451,202 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         )
 
         data_limitation = teammemberCodingStats.latestUpdate
+        data_limitation_iso_format = data_limitation.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        # TODO handle the case when git verification api call fails - show error to the user + change git integration status
-        # TODO make all the api calls and gather all data for the last day
-        # TODO check if the data you have is not a part of the stats already
-        # TODO append the data to the database records
-        # TODO save refreshed serializer
+        apiCallsInput = {
+            "groupID": gitIntegrationData.teammemberGitGroupID,
+            "userID": gitIntegrationData.teammemberGitUserID,
+            "accessToken": gitIntegrationData.teammemberGitPersonalAccessToken,
+            "data_limitation": data_limitation_iso_format,
+        }
 
-        # TODO schedule the updates for all users
+        # Make created mrs api call with gitlab_merge_requests_api_call
+        apiCallsInput["requestType"] = "author_id"
+        created_mrs_data = gitlab_merge_requests_api_call(apiCallsInput)
+
+        # Make reviewed mrs api call with gitlab_merge_requests_api_call
+        apiCallsInput["requestType"] = "reviewer_id"
+        reviewed_mrs_data = gitlab_merge_requests_api_call(apiCallsInput)
+        del apiCallsInput["requestType"]
+
+        # Extract MR IDs and prepare the list for mrs_list
+        mrs_ids = set()  # Use a set to avoid duplicate IDs
+        # Add created MRs IDs to the set
+        for mr_id in created_mrs_data.keys():
+            mrs_ids.add(mr_id)
+
+        # Convert the set to a list and add to apiCallsInput
+        apiCallsInput["mrs_list"] = list(mrs_ids)
+
+        merged_project_ids = set()
+        for mr_id, mr_info in created_mrs_data.items():
+            project_id = mr_info.get("project_id")
+            if project_id:
+                merged_project_ids.add(project_id)  # Add to the set to avoid duplicates
+        for mr_id, mr_info in reviewed_mrs_data.items():
+            project_id = mr_info.get("project_id")
+            if project_id:
+                merged_project_ids.add(project_id)  # Add to the set to avoid duplicates
+
+        # Convert the set to a list and add it to api calls input
+        merged_project_ids_list = list(merged_project_ids)
+        apiCallsInput["projects_list"] = merged_project_ids_list
+
+        # Make Project api call
+        mrs_projects_data = gitlab_project_api_call(apiCallsInput)
+        del apiCallsInput["mrs_list"]
+
+        # Make commits created api call with gitlab_commits_created_api_call
+        commits_created_data = gitlab_commits_created_api_call(apiCallsInput)
+        del apiCallsInput["projects_list"]
+
+        # Make commits difference api call with gitlab_commits_diff_api_call
+        # apiCallsInput["commits_list"] = created_commits_data_dict
+        apiCallsInput["commits_list"] = commits_created_data
+        commits_diffs_data = gitlab_commits_diff_api_call(apiCallsInput)
+        del apiCallsInput["commits_list"]
+
+        # Fetch MRs comments api call with gitlab_commits_diff_api_call
+        # Combine both dictionaries
+        combined_mrs_data = created_mrs_data.copy()  # Start with created_mrs_data
+        combined_mrs_data.update(reviewed_mrs_data)  # Merge in reviewed_mrs_data
+        apiCallsInput["mrs_data"] = combined_mrs_data
+        mrs_comments_data = gitlab_mrs_comments_api_call(apiCallsInput)
+
+        # Structure the data in a reasonable way
+        # Adding the project data to the body and initializing the groups of data to be provided later
+        for project_id, project_data in mrs_projects_data.items():
+            updateBody[project_id] = {
+                "project_name": project_data["project_name"],
+                "project_url": project_data["project_url"],
+                "created_mrs_data": [],
+                "reviewed_mrs_data": [],
+                "created_commits_data": [],
+            }
+
+        # Before adding MRs data - merge the comments and the MRs info into one variable
+        for mr_id, comment_data in mrs_comments_data.items():
+            # Check if the MR ID exists in the created_mrs_data
+            if mr_id in created_mrs_data:
+                # Add the comment data to the respective MR in created_mrs_data
+                created_mrs_data[mr_id]["comment_ids"] = comment_data["comment_ids"]
+                created_mrs_data[mr_id]["comment_bodies"] = comment_data[
+                    "comment_bodies"
+                ]
+
+        for mr_id, comment_data in mrs_comments_data.items():
+            # Check if the MR ID exists in the reviewed_mrs_data
+            if mr_id in reviewed_mrs_data and mr_id not in created_mrs_data:
+                # Add the comment data to the respective MR in reviewed_mrs_data
+                reviewed_mrs_data[mr_id]["comment_ids"] = comment_data["comment_ids"]
+                reviewed_mrs_data[mr_id]["comment_bodies"] = comment_data[
+                    "comment_bodies"
+                ]
+
+        for mr_id, mr_data in created_mrs_data.items():
+            project_id = mr_data["project_id"]
+
+            # check if there are comments for the mr
+            if not mr_data.get("comment_ids"):
+                mr_data["comment_ids"] = False
+            if not mr_data.get("comment_bodies"):
+                mr_data["comment_bodies"] = False
+
+            # Check if the project_id exists in the body
+            updateBody[project_id]["created_mrs_data"].append(
+                {
+                    "mr_id": mr_id,
+                    "iid": mr_data["iid"],
+                    "created_at": mr_data["created_at"],
+                    "merged_at": mr_data["merged_at"],
+                    "create_to_merge": mr_data["create_to_merge"],
+                    "comment_ids": mr_data["comment_ids"],
+                    "comment_bodies": mr_data["comment_bodies"],
+                }
+            )
+
+        for mr_id, mr_data in reviewed_mrs_data.items():
+            project_id = mr_data["project_id"]
+
+            # Check if there are comments for the mr
+            if not mr_data.get("comment_ids"):
+                mr_data["comment_ids"] = False
+            if not mr_data.get("comment_bodies"):
+                mr_data["comment_bodies"] = False
+
+            # Check if the project_id exists in the body
+            updateBody[project_id]["reviewed_mrs_data"].append(
+                {
+                    "mr_id": mr_id,
+                    "iid": mr_data["iid"],
+                    "created_at": mr_data["created_at"],
+                    "merged_at": mr_data["merged_at"],
+                    "comment_ids": mr_data["comment_ids"],
+                    "comment_bodies": mr_data["comment_bodies"],
+                }
+            )
+
+        # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
+        for project_id, commit_data_list in commits_created_data.items():
+            # Ensure the project ID exists in the body
+            if project_id not in updateBody:
+                updateBody[project_id] = {"created_commits_data": []}
+
+            for commit_data in commit_data_list:
+                updateBody[project_id]["created_commits_data"].append(
+                    {
+                        "commit_short_id": commit_data["commit_short_id"],
+                        "created_at": commit_data["created_at"],
+                        "commit_web_url": commit_data["commit_web_url"],
+                        "diff_data": [],  # Initialize as an empty list
+                    }
+                )
+
+        # Add the commit diff data
+        for project_id, commit_comments_data_list in commits_diffs_data.items():
+            for commit_comments_data in commit_comments_data_list:
+                # Find the correct commit in the body's created_commits_data list
+                for commit in updateBody[project_id]["created_commits_data"]:
+                    if (
+                        commit["commit_short_id"]
+                        == commit_comments_data["commit_short_id"]
+                    ):
+                        # Access 'diff_data' from commit_comments_data
+                        diff_data = commit_comments_data["diff_data"]
+
+                        # Append diff data to the respective commit's diff_data list
+                        commit["diff_data"].append(
+                            {
+                                "lines_added": diff_data["lines_added"],
+                                "lines_removed": diff_data["lines_removed"],
+                                "added_lines_content": diff_data["added_lines_content"],
+                                "removed_lines_content": diff_data[
+                                    "removed_lines_content"
+                                ],
+                            }
+                        )
+
+        # TODO FIX append the data to the database records
+        # TODO check why there are duplicates in the
+        for project_id, project_data in updateBody.items():
+            # handle a case when new project was added
+            if project_id not in teammemberCodingStats.body:
+                teammemberCodingStats.body[project_id] = project_data
+            else:
+                teammemberCodingStats.body[project_id]["created_mrs_data"].union(
+                    updateBody[project_id]["created_mrs_data"]
+                )
+                teammemberCodingStats.body[project_id]["reviewed_mrs_data"].union(
+                    updateBody[project_id]["reviewed_mrs_data"]
+                )
+                teammemberCodingStats.body[project_id]["created_commits_data"].union(
+                    updateBody[project_id]["created_commits_data"]
+                )
+
+        print(teammemberCodingStats.body)
+
+        # TODO recalculate the counters in projects and globally
+        # TODO save updated model
 
 
 class TeammemberCodingStatsDeleteAPIView(DestroyAPIView):
