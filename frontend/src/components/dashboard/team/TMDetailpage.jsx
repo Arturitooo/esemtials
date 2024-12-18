@@ -27,6 +27,8 @@ export const TMDetailpage = () => {
   const [toast, setToast] = useState({ open: false, type: "", content: "" });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [commentsRefreshKey, setCommentsRefreshKey] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+  const MAX_ITEMS = 3;
 
   const handleConfirmDeleteTM = () => {
     setDeleteModalOpen(true);
@@ -88,16 +90,28 @@ export const TMDetailpage = () => {
   };
 
   useEffect(() => {
-    // fetch user data
     GetData(id);
+
     // show integration form toast
     const toastMessage = localStorage.getItem("toastMessage");
+
     if (toastMessage) {
       const { type, content } = JSON.parse(toastMessage);
       setToast({ open: true, type, content });
       localStorage.removeItem("toastMessage"); // Clear the toast message after showing it
     }
   }, [id]);
+
+  useEffect(() => {
+    // Check if team member is part of the project after tmData is set
+    if (tmData && tmData.project != localStorage.getItem("selectedProjectId")) {
+      navigate("/team/");
+    }
+  }, [tmData, navigate]);
+
+  const handleToggle = () => {
+    setShowAll(!showAll);
+  };
 
   const handleToastClose = () => {
     setToast({ ...toast, open: false });
@@ -110,7 +124,7 @@ export const TMDetailpage = () => {
   };
 
   const DeleteTM = () => {
-    const url = `team/teammember/${id}`;
+    const url = `team/teammember/${id}/`;
     AxiosInstance.delete(url).then(() => {
       console.log("you've successfully deleted the team member");
     });
@@ -216,7 +230,12 @@ export const TMDetailpage = () => {
           <h1>Team member</h1>
           <Card className="card-section team-member__card">
             <CardContent className="team-member__content">
-              <div className="team-member__content--photo">
+              <div
+                className="team-member__content--photo"
+                style={{
+                  height: "240px",
+                }}
+              >
                 {tmData.tm_photo ? (
                   <div>
                     <img src={tmData.tm_photo} alt="Team member photo" />
@@ -272,8 +291,12 @@ export const TMDetailpage = () => {
                     <h4>Stack</h4>
                     {tmData.tm_stack.length > 0 ? (
                       <ul style={{ paddingLeft: "20px" }}>
-                        {tmData.tm_stack &&
-                          tmData.tm_stack.map((tech, index) => (
+                        {tmData.tm_stack
+                          .slice(
+                            0,
+                            showAll ? tmData.tm_stack.length : MAX_ITEMS
+                          )
+                          .map((tech, index) => (
                             <li key={index}>
                               <p>{tech}</p>
                             </li>
@@ -281,6 +304,18 @@ export const TMDetailpage = () => {
                       </ul>
                     ) : (
                       <p className="no-data">No data</p>
+                    )}
+                    {tmData.tm_stack.length > MAX_ITEMS && (
+                      <Button
+                        onClick={handleToggle}
+                        size="small"
+                        sx={{
+                          fontFamily: "Ubuntu",
+                          fontWeight: 300,
+                        }}
+                      >
+                        {showAll ? "less" : "more"}
+                      </Button>
                     )}
                   </div>
                   <div className="grid-2-columns">
@@ -404,7 +439,9 @@ export const TMDetailpage = () => {
             </CardContent>
           </Card>
 
-          <TeammemberGitStats />
+          {tmData.teammember_hasGitIntegration && (
+            <TeammemberGitStats teammember={tmData.id} />
+          )}
 
           <TMComments
             userData={userData.id}

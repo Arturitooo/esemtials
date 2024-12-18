@@ -22,8 +22,8 @@ class LoginViewset(viewsets.ViewSet):
             email = serializer.validated_data["email"]
             password = serializer.validated_data["password"]
             user = authenticate(request, email=email, password=password)
-            print(email, password)
             if user:
+                AuthToken.objects.filter(user=user).delete()
                 _, token = AuthToken.objects.create(user)
                 return Response(
                     {"user": self.serializer_class(user).data, "token": token}

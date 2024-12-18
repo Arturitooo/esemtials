@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Editor,
   EditorState,
@@ -7,7 +7,7 @@ import {
   getDefaultKeyBinding,
   RichUtils,
 } from "draft-js";
-import "draft-js/dist/Draft.css"; // for styling
+import "draft-js/dist/Draft.css";
 import debounce from "lodash.debounce";
 
 import "./NotesRTE.css";
@@ -15,8 +15,8 @@ import AxiosInstance from "../../AxiosInstance";
 import Button from "@mui/material/Button";
 import { UserInfo } from "../../UserInfo";
 import { MyModal } from "../../forms/MyModal";
+import { MyToastMessage } from "../../forms/MyToastMessage";
 import chooseProjectImage from "../../../assets/illustrations/pick-a-project.svg";
-
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -36,6 +36,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 
 const NotesRTE = ({ limitHeight }) => {
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState({ open: false, type: "", content: "" });
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [myNotesList, setMyNotesList] = useState(null);
   const [selectedNote, setSelectedNote] = useState(null);
@@ -46,6 +47,7 @@ const NotesRTE = ({ limitHeight }) => {
   const { userData } = UserInfo();
 
   const editorRef = React.createRef();
+  const newNoteRef = useRef(null);
 
   useEffect(() => {
     const storedProjectId = localStorage.getItem("selectedProjectId");
@@ -172,6 +174,7 @@ const NotesRTE = ({ limitHeight }) => {
 
   const handleNewPageClick = () => {
     setEditedNoteName("");
+    setEditingNoteName(true);
     const newNote = {
       note_updated: new Date().toISOString(),
       note_owner: userData.id,
@@ -182,7 +185,19 @@ const NotesRTE = ({ limitHeight }) => {
       .then((res) => {
         console.log("New note created successfully:", res.data.note_name);
         GetNotesList(selectedProjectId);
-        handleEditNoteName();
+
+        // Delay focus to allow rendering
+        setTimeout(() => {
+          if (newNoteRef.current) {
+            newNoteRef.current.focus(); // Set focus to the input
+          }
+        }, 50);
+
+        setToast({
+          open: true,
+          type: "success",
+          content: "You've created a note",
+        });
       })
       .catch((error) => {
         console.error("Error while creating new note:", error);
@@ -192,6 +207,11 @@ const NotesRTE = ({ limitHeight }) => {
   const handleEditNoteName = () => {
     setEditingNoteName(true); // Enable editing mode
     setEditedNoteName(selectedNote.note_name); // Set the current note name for editing
+    setTimeout(() => {
+      if (newNoteRef.current) {
+        newNoteRef.current.focus(); // Trigger focus
+      }
+    }, 50);
   };
 
   const handleCheckNoteName = () => {
@@ -233,6 +253,12 @@ const NotesRTE = ({ limitHeight }) => {
       .catch((error) => {
         console.error("Error while deleting note", error);
       });
+
+    setToast({
+      open: true,
+      type: "informative",
+      content: "You've deleted the note",
+    });
   };
 
   const handleProjectChange = (projectId) => {
@@ -252,15 +278,22 @@ const NotesRTE = ({ limitHeight }) => {
     }
   }
 
+  const handleToastClose = () => {
+    setToast({ ...toast, open: false });
+  };
+
   if (!selectedProjectId) {
     return (
       <div>
         <h1>Notes</h1>
         <Card className="card empty-state-card">
           <CardContent>
-            <img src={chooseProjectImage} alt="choose-project"/>
+            <img src={chooseProjectImage} alt="choose-project" />
             <h2>Choose a project, duh</h2>
-            <p>To create or review <b>Notes</b>, please select a project on the left.</p>
+            <p>
+              To create or review <b>Notes</b>, please select a project on the
+              left.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -276,7 +309,11 @@ const NotesRTE = ({ limitHeight }) => {
           handleClose={() => setDeleteModalOpen(false)}
           content="Are you sure you want to delete this note?"
           actions={[
-            { label: "Cancel", onClick: () => setDeleteModalOpen(false), className:"modal-action-cancel"},
+            {
+              label: "Cancel",
+              onClick: () => setDeleteModalOpen(false),
+              className: "modal-action-cancel",
+            },
             { label: "Yes, delete", onClick: handleDeleteNote },
           ]}
         />
@@ -328,6 +365,7 @@ const NotesRTE = ({ limitHeight }) => {
                     {editingNoteName && selectedNote.id === note.id ? ( // Display input field if in editing mode and selected note matches
                       <>
                         <input
+                          ref={newNoteRef}
                           type="text"
                           value={editedNoteName}
                           style={{
@@ -338,24 +376,40 @@ const NotesRTE = ({ limitHeight }) => {
                             fontWeight: "bold",
                             padding: "3px 0",
                             marginRight: "3px",
+                            paddingLeft: "5px",
                           }}
                           onChange={(e) => setEditedNoteName(e.target.value)}
                           autoComplete="off"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleCheckNoteName();
+                            }
+                          }}
                         />
-                        <ThumbUpAltIcon
+                        <div
+                          tabIndex="0"
+                          role="button"
                           style={{
+                            display: "inline-block",
                             position: "relative",
                             top: "4px",
-                            fontSize: "medium",
                             marginLeft: "3px",
                             color: "#1D212F66",
+                            outline: "none", // Removes default focus styles
                           }}
                           onMouseEnter={(e) => (e.target.style.color = "black")}
                           onMouseLeave={(e) =>
                             (e.target.style.color = "#1D212F66")
                           }
                           onClick={handleCheckNoteName}
-                        />
+                        >
+                          <ThumbUpAltIcon
+                            style={{
+                              fontSize: "medium",
+                              color: "inherit", // Inherits the color from the wrapper
+                            }}
+                          />
+                        </div>
                       </>
                     ) : (
                       <>
@@ -417,7 +471,7 @@ const NotesRTE = ({ limitHeight }) => {
               }}
               onClick={handleNewPageClick}
             >
-              + New Page
+              + New Note
             </Button>
           </div>
         </div>
@@ -450,6 +504,12 @@ const NotesRTE = ({ limitHeight }) => {
             spellCheck={true}
           />
         </div>
+        <MyToastMessage
+          type={toast.type}
+          content={toast.content}
+          open={toast.open}
+          handleClose={handleToastClose}
+        />
       </div>
     </>
   );

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from time import timezone
 from .models import (
     Teammember,
     TeamMemberComment,
@@ -11,6 +12,11 @@ class TeammemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teammember
         fields = "__all__"
+
+    def to_internal_value(self, data):
+        if "teammember_hasGitIntegration" not in data:
+            data["teammember_hasGitIntegration"] = None
+        return super().to_internal_value(data)
 
 
 class TeamMemberCommentSerializer(serializers.ModelSerializer):
@@ -43,4 +49,3 @@ class TeammemberCodingStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeammemberCodingStats
         fields = "__all__"
-        read_only_fields = ["latestUpdate"]

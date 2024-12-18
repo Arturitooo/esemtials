@@ -130,8 +130,11 @@ export const TeammemberGitInfoUpdate = () => {
             "toastMessage",
             JSON.stringify({
               type: "informative",
-              content: "Removed Git Integration Data",
+              content: "Removed Git Integration successfully",
             })
+          );
+          AxiosInstance.delete(
+            `team/teammember-coding-stats/${teammember}/delete/`
           );
           // Redirect to the details page
           navigate(`/team/member/${teammember}`);
