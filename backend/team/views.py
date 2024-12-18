@@ -1516,6 +1516,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         # Structure the data in a reasonable way
         # Adding the project data to the body and initializing the groups of data to be provided later
         for project_id, project_data in mrs_projects_data.items():
+            project_id = str(project_id)
             updateBody[project_id] = {
                 "project_name": project_data["project_name"],
                 "project_url": project_data["project_url"],
@@ -1545,6 +1546,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 
         for mr_id, mr_data in created_mrs_data.items():
             project_id = mr_data["project_id"]
+            project_id = str(project_id)
 
             # check if there are comments for the mr
             if not mr_data.get("comment_ids"):
@@ -1567,6 +1569,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 
         for mr_id, mr_data in reviewed_mrs_data.items():
             project_id = mr_data["project_id"]
+            project_id = str(project_id)
 
             # Check if there are comments for the mr
             if not mr_data.get("comment_ids"):
@@ -1588,6 +1591,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 
         # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
         for project_id, commit_data_list in commits_created_data.items():
+            project_id = str(project_id)
             # Ensure the project ID exists in the body
             if project_id not in updateBody:
                 updateBody[project_id] = {"created_commits_data": []}
@@ -1604,6 +1608,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 
         # Add the commit diff data
         for project_id, commit_comments_data_list in commits_diffs_data.items():
+            project_id = str(project_id)
             for commit_comments_data in commit_comments_data_list:
                 # Find the correct commit in the body's created_commits_data list
                 for commit in updateBody[project_id]["created_commits_data"]:
@@ -1626,25 +1631,25 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                             }
                         )
 
-        # TODO FIX append the data to the database records
-        # TODO check why there are duplicates in the
         for project_id, project_data in updateBody.items():
-            # handle a case when new project was added
+            project_id = str(project_id)
             if project_id not in teammemberCodingStats.body:
                 teammemberCodingStats.body[project_id] = project_data
             else:
-                teammemberCodingStats.body[project_id]["created_mrs_data"].union(
+                teammemberCodingStats.body[project_id]["created_mrs_data"] = (
                     updateBody[project_id]["created_mrs_data"]
+                    + teammemberCodingStats.body[project_id]["created_mrs_data"]
                 )
-                teammemberCodingStats.body[project_id]["reviewed_mrs_data"].union(
+                teammemberCodingStats.body[project_id]["reviewed_mrs_data"] = (
                     updateBody[project_id]["reviewed_mrs_data"]
+                    + teammemberCodingStats.body[project_id]["reviewed_mrs_data"]
                 )
-                teammemberCodingStats.body[project_id]["created_commits_data"].union(
+                teammemberCodingStats.body[project_id]["created_commits_data"] = (
                     updateBody[project_id]["created_commits_data"]
+                    + teammemberCodingStats.body[project_id]["created_commits_data"]
                 )
 
         print(teammemberCodingStats.body)
-
         # TODO recalculate the counters in projects and globally
         # TODO save updated model
 
