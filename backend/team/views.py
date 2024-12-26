@@ -579,8 +579,14 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     }
                 )
 
-        # Add the commit diff data
+        # Add the commit diff data and remove duplicates
         for project_id, commit_comments_data_list in commits_diffs_data.items():
+            # Track seen diff_data globally for all commits in the project
+            seen_diff_data = set()
+
+            # Use a list comprehension to filter out duplicate commits
+            keep_commits = []
+
             for commit_comments_data in commit_comments_data_list:
                 # Find the correct commit in the body's created_commits_data list
                 for commit in body[project_id]["created_commits_data"]:
@@ -591,17 +597,35 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         # Access 'diff_data' from commit_comments_data
                         diff_data = commit_comments_data["diff_data"]
 
-                        # Append diff data to the respective commit's diff_data list
-                        commit["diff_data"].append(
-                            {
-                                "lines_added": diff_data["lines_added"],
-                                "lines_removed": diff_data["lines_removed"],
-                                "added_lines_content": diff_data["added_lines_content"],
-                                "removed_lines_content": diff_data[
-                                    "removed_lines_content"
-                                ],
-                            }
+                        # Normalize the diff_data to a tuple for comparison
+                        diff_data_tuple = (
+                            diff_data["lines_added"],
+                            diff_data["lines_removed"],
+                            tuple(diff_data["added_lines_content"]),
+                            tuple(diff_data["removed_lines_content"]),
                         )
+
+                        # Check if this diff_data has already been seen
+                        if diff_data_tuple not in seen_diff_data:
+                            # Add to seen set and append the normalized diff_data to the commit
+                            seen_diff_data.add(diff_data_tuple)
+
+                            commit["diff_data"].append(
+                                {
+                                    "lines_added": diff_data["lines_added"],
+                                    "lines_removed": diff_data["lines_removed"],
+                                    "added_lines_content": diff_data[
+                                        "added_lines_content"
+                                    ],
+                                    "removed_lines_content": diff_data[
+                                        "removed_lines_content"
+                                    ],
+                                }
+                            )
+                            keep_commits.append(commit)
+
+            # Update the created_commits_data to only include the commits we want to keep
+            body[project_id]["created_commits_data"] = keep_commits
 
         active_projects30_list = []
         active_projects7_list = []
@@ -1606,9 +1630,15 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     }
                 )
 
-        # Add the commit diff data
+        # Add the commit diff data and remove duplicates
         for project_id, commit_comments_data_list in commits_diffs_data.items():
             project_id = str(project_id)
+            # Track seen diff_data globally for all commits in the project
+            seen_diff_data = set()
+
+            # Use a list comprehension to filter out duplicate commits
+            keep_commits = []
+
             for commit_comments_data in commit_comments_data_list:
                 # Find the correct commit in the body's created_commits_data list
                 for commit in updateBody[project_id]["created_commits_data"]:
@@ -1619,17 +1649,35 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                         # Access 'diff_data' from commit_comments_data
                         diff_data = commit_comments_data["diff_data"]
 
-                        # Append diff data to the respective commit's diff_data list
-                        commit["diff_data"].append(
-                            {
-                                "lines_added": diff_data["lines_added"],
-                                "lines_removed": diff_data["lines_removed"],
-                                "added_lines_content": diff_data["added_lines_content"],
-                                "removed_lines_content": diff_data[
-                                    "removed_lines_content"
-                                ],
-                            }
+                        # Normalize the diff_data to a tuple for comparison
+                        diff_data_tuple = (
+                            diff_data["lines_added"],
+                            diff_data["lines_removed"],
+                            tuple(diff_data["added_lines_content"]),
+                            tuple(diff_data["removed_lines_content"]),
                         )
+
+                        # Check if this diff_data has already been seen
+                        if diff_data_tuple not in seen_diff_data:
+                            # Add to seen set and append the normalized diff_data to the commit
+                            seen_diff_data.add(diff_data_tuple)
+
+                            commit["diff_data"].append(
+                                {
+                                    "lines_added": diff_data["lines_added"],
+                                    "lines_removed": diff_data["lines_removed"],
+                                    "added_lines_content": diff_data[
+                                        "added_lines_content"
+                                    ],
+                                    "removed_lines_content": diff_data[
+                                        "removed_lines_content"
+                                    ],
+                                }
+                            )
+                            keep_commits.append(commit)
+
+            # Update the created_commits_data to only include the commits we want to keep
+            updateBody[project_id]["created_commits_data"] = keep_commits
 
         for project_id, project_data in updateBody.items():
             project_id = str(project_id)

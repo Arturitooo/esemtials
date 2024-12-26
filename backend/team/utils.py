@@ -150,7 +150,10 @@ def gitlab_commits_created_api_call(data):
                         "commit_web_url": commit.get("web_url"),
                     }
                     # Append each commit's data to the list for the respective project
-                    created_commits_data_dict[project].append(commit_info)
+                    if commit_info["created_at"] not in [
+                        c["created_at"] for c in created_commits_data_dict[project]
+                    ]:
+                        created_commits_data_dict[project].append(commit_info)
             else:
                 return f"GitLab API call failed with status code: {response.status_code}, response: {response.text}"
         except requests.exceptions.RequestException as e:
