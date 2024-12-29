@@ -670,8 +670,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     created_mrs_counter30 += 1
 
                     # generate project set of data
-                    temp_project_name = mrs_projects_data[project]["project_name"]
-                    temp_project_url = mrs_projects_data[project]["project_url"]
+                    temp_project_name = project_data["project_name"]
+                    temp_project_url = project_data["project_url"]
                     project_info = {
                         project: {
                             "project_name": temp_project_name,
@@ -694,8 +694,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     > data_limitation_iso_format30
                 ):
                     # generate project set of data
-                    temp_project_name = mrs_projects_data[project]["project_name"]
-                    temp_project_url = mrs_projects_data[project]["project_url"]
+                    temp_project_name = project_data["project_name"]
+                    temp_project_url = project_data["project_url"]
                     project_info = {
                         project: {
                             "project_name": temp_project_name,
@@ -1578,15 +1578,6 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         mrs_created_previous_30_days_data = {}
         mrs_reviewed_previous_7_days_data = {}
         mrs_reviewed_previous_30_days_data = {}
-        mr_created_chart_data = {}
-
-        for i in range(30):
-            date = today - timedelta(days=i)  # Subtract i days from today
-            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
-            mr_created_chart_data[date_str] = 0  # Initialize with value 0
-
-        # Reverse the dictionary to have the latest date as the last item
-        mr_created_chart_data = dict(reversed(list(mr_created_chart_data.items())))
 
         for mr_id, mr_data in created_mrs_data.items():
             project_id = mr_data["project_id"]
@@ -1611,26 +1602,6 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 }
             )
 
-            # Generate data for MRs chart - created MRs
-            created_at_simplified = datetime.strptime(
-                mr_data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ).strftime("%Y-%m-%d")
-
-            if created_at_simplified in mr_created_chart_data:
-                mr_created_chart_data[created_at_simplified] += 1
-
-        # Add the MR data to the 'reviewed_mrs_data' list for that project
-        # initialise variable for mrs chart reviewed at data
-        mr_reviewed_chart_data = {}
-
-        for i in range(30):
-            date = today - timedelta(days=i)  # Subtract i days from today
-            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
-            mr_reviewed_chart_data[date_str] = 0  # Initialize with value 0
-
-        # Reverse the dictionary to have the latest date as the last item
-        mr_reviewed_chart_data = dict(reversed(list(mr_reviewed_chart_data.items())))
-
         for mr_id, mr_data in reviewed_mrs_data.items():
             project_id = mr_data["project_id"]
             project_id = str(project_id)
@@ -1652,44 +1623,6 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     "comment_bodies": mr_data["comment_bodies"],
                 }
             )
-
-            # Generate data for MRs chart - created MRs
-            created_at_simplified = datetime.strptime(
-                mr_data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ).strftime("%Y-%m-%d")
-
-            if created_at_simplified in mr_reviewed_chart_data:
-                mr_reviewed_chart_data[created_at_simplified] += 1
-
-        for date_str, value in mr_created_chart_data.items():
-            date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
-            if date >= last_7_days:
-                mrs_created_last_7_days_data[date_str] = value  # Add to 7 days set
-            if date <= last_7_days and date >= previous_7_days:
-                mrs_created_previous_7_days_data[date_str] = value
-            if date >= last_30_days:
-                mrs_created_last_30_days_data[date_str] = value  # Add to 30 days set
-            if date <= last_30_days and date >= previous_30_days:
-                mrs_created_previous_30_days_data[date_str] = value
-
-        for date_str, value in mr_reviewed_chart_data.items():
-            date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
-            if date >= last_7_days:
-                mrs_reviewed_last_7_days_data[date_str] = value  # Add to 7 days set
-            if date <= last_7_days and date >= previous_7_days:
-                mrs_reviewed_previous_7_days_data[date_str] = value
-            if date >= last_30_days:
-                mrs_reviewed_last_30_days_data[date_str] = value  # Add to 30 days set
-            if date <= last_30_days and date >= previous_30_days:
-                mrs_reviewed_previous_30_days_data[date_str] = value
-
-        # Convert to lists to easly render the chart
-        last_7_days_xAxis = list(mrs_created_last_7_days_data.keys())
-        mrs_created_last_7_days_yAxis = list(mrs_created_last_7_days_data.values())
-        last_30_days_xAxis = list(mrs_created_last_30_days_data.keys())
-        mrs_created_last_30_days_yAxis = list(mrs_created_last_30_days_data.values())
-        mrs_reviewed_last_7_days_yAxis = list(mrs_reviewed_last_7_days_data.values())
-        mrs_reviewed_last_30_days_yAxis = list(mrs_reviewed_last_30_days_data.values())
 
         # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
         for project_id, commit_data_list in commits_created_data.items():
@@ -1780,6 +1713,24 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         # initialize global counters and limitations
         active_projects30_list = []
         active_projects7_list = []
+        mr_created_chart_data = {}
+        mr_reviewed_chart_data = {}
+
+        for i in range(30):
+            date = today - timedelta(days=i)  # Subtract i days from today
+            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
+            mr_created_chart_data[date_str] = 0  # Initialize with value 0
+
+        # Reverse the dictionary to have the latest date as the last item
+        mr_created_chart_data = dict(reversed(list(mr_created_chart_data.items())))
+
+        for i in range(30):
+            date = today - timedelta(days=i)  # Subtract i days from today
+            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
+            mr_created_chart_data[date_str] = 0  # Initialize with value 0
+
+        # Reverse the dictionary to have the latest date as the last item
+        mr_reviewed_chart_data = dict(reversed(list(mr_created_chart_data.items())))
 
         # Loop through each project to get number of projects
         for project, project_data in teammemberCodingStats.body.items():
@@ -1814,6 +1765,14 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 
             # Loop through each MR created to count active projects
             for created_mr in project_data["created_mrs_data"]:
+                # Generate data for MRs chart - created MRs
+                created_at_simplified = datetime.strptime(
+                    created_mr["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                ).strftime("%Y-%m-%d")
+
+                if created_at_simplified in mr_created_chart_data:
+                    mr_created_chart_data[created_at_simplified] += 1
+
                 if created_mr["created_at"] > data_limitation7_iso_format:
                     create_to_merge7sum += created_mr["create_to_merge"]
                     create_to_merge30sum += created_mr["create_to_merge"]
@@ -1906,6 +1865,14 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
 
             # Loop through each MR reviewed
             for reviewed_mr in project_data["reviewed_mrs_data"]:
+                # Generate data for MRs chart - created MRs
+                created_at_simplified = datetime.strptime(
+                    created_mr["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                ).strftime("%Y-%m-%d")
+
+                if created_at_simplified in mr_reviewed_chart_data:
+                    mr_reviewed_chart_data[created_at_simplified] += 1
+
                 if reviewed_mr["created_at"] > data_limitation7_iso_format:
                     reviewed_mrs_counter7 += 1
                     reviewed_mrs_counter30 += 1
@@ -1941,6 +1908,50 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 or previous_reviewed_mrs_counter30 > 0
             ):
                 previous_active_projects30 += 1
+
+            for date_str, value in mr_created_chart_data.items():
+                date = datetime.strptime(
+                    date_str, "%Y-%m-%d"
+                )  # Convert string to datetime
+                if date >= last_7_days:
+                    mrs_created_last_7_days_data[date_str] = value  # Add to 7 days set
+                if date <= last_7_days and date >= previous_7_days:
+                    mrs_created_previous_7_days_data[date_str] = value
+                if date >= last_30_days:
+                    mrs_created_last_30_days_data[date_str] = (
+                        value  # Add to 30 days set
+                    )
+                if date <= last_30_days and date >= previous_30_days:
+                    mrs_created_previous_30_days_data[date_str] = value
+
+            for date_str, value in mr_reviewed_chart_data.items():
+                date = datetime.strptime(
+                    date_str, "%Y-%m-%d"
+                )  # Convert string to datetime
+                if date >= last_7_days:
+                    mrs_reviewed_last_7_days_data[date_str] = value  # Add to 7 days set
+                if date <= last_7_days and date >= previous_7_days:
+                    mrs_reviewed_previous_7_days_data[date_str] = value
+                if date >= last_30_days:
+                    mrs_reviewed_last_30_days_data[date_str] = (
+                        value  # Add to 30 days set
+                    )
+                if date <= last_30_days and date >= previous_30_days:
+                    mrs_reviewed_previous_30_days_data[date_str] = value
+
+            # Convert to lists to easly render the chart
+            last_7_days_xAxis = list(mrs_created_last_7_days_data.keys())
+            mrs_created_last_7_days_yAxis = list(mrs_created_last_7_days_data.values())
+            last_30_days_xAxis = list(mrs_created_last_30_days_data.keys())
+            mrs_created_last_30_days_yAxis = list(
+                mrs_created_last_30_days_data.values()
+            )
+            mrs_reviewed_last_7_days_yAxis = list(
+                mrs_reviewed_last_7_days_data.values()
+            )
+            mrs_reviewed_last_30_days_yAxis = list(
+                mrs_reviewed_last_30_days_data.values()
+            )
 
             # Initialise the commit chart data
             commit_chart_data = {
