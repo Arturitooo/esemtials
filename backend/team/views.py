@@ -34,6 +34,33 @@ from .utils import (
     gitlab_mrs_comments_api_call,
 )
 
+# set date limes to 30 days ago and convert to needed format
+data_limitation30 = str(datetime.today() - timedelta(days=30))
+dt_object30 = datetime.strptime(data_limitation30, "%Y-%m-%d %H:%M:%S.%f")
+data_limitation_iso_format30 = dt_object30.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+# set date limes to 60 days ago and convert to needed format
+data_limitation60 = str(datetime.today() - timedelta(days=60))
+dt_object60 = datetime.strptime(data_limitation60, "%Y-%m-%d %H:%M:%S.%f")
+data_limitation_iso_format60 = dt_object60.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+# set date limes to 7 days ago and convert to needed format
+data_limitation7 = str(datetime.today() - timedelta(days=7))
+dt_object7 = datetime.strptime(data_limitation7, "%Y-%m-%d %H:%M:%S.%f")
+data_limitation7_iso_format = dt_object7.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+# set date limes to 14 days ago and convert to needed format
+data_limitation14 = str(datetime.today() - timedelta(days=14))
+dt_object14 = datetime.strptime(data_limitation14, "%Y-%m-%d %H:%M:%S.%f")
+data_limitation14_iso_format = dt_object14.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+# initialise variable for mrs chart created at data and counting the timeframes
+today = datetime.now()
+last_7_days = today - timedelta(days=7)
+last_30_days = today - timedelta(days=30)
+previous_7_days = today - timedelta(days=14)
+previous_30_days = today - timedelta(days=60)
+
 
 class TeammemberViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -320,26 +347,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             teammember=teammember
         ).first()
 
-        # set date limes to 30 days ago and convert to needed format
-        data_limitation30 = str(datetime.today() - timedelta(days=30))
-        dt_object30 = datetime.strptime(data_limitation30, "%Y-%m-%d %H:%M:%S.%f")
-        data_limitation_iso_format30 = dt_object30.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        # set date limes to 60 days ago and convert to needed format
-        data_limitation60 = str(datetime.today() - timedelta(days=60))
-        dt_object60 = datetime.strptime(data_limitation60, "%Y-%m-%d %H:%M:%S.%f")
-        data_limitation_iso_format60 = dt_object60.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        # set date limes to 7 days ago and convert to needed format
-        data_limitation7 = str(datetime.today() - timedelta(days=7))
-        dt_object7 = datetime.strptime(data_limitation7, "%Y-%m-%d %H:%M:%S.%f")
-        data_limitation7_iso_format = dt_object7.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        # set date limes to 14 days ago and convert to needed format
-        data_limitation14 = str(datetime.today() - timedelta(days=14))
-        dt_object14 = datetime.strptime(data_limitation14, "%Y-%m-%d %H:%M:%S.%f")
-        data_limitation14_iso_format = dt_object14.strftime("%Y-%m-%dT%H:%M:%SZ")
-
         # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
         if gitIntegrationData:
             # Prepare the apiCallsInput
@@ -436,12 +443,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 ]
 
         # Add the MR data to the 'created_mrs_data' list for that project
-        # initialise variable for mrs chart created at data and counting the timeframes
-        today = datetime.now()
-        last_7_days = today - timedelta(days=7)
-        last_30_days = today - timedelta(days=30)
-        previous_7_days = today - timedelta(days=14)
-        previous_30_days = today - timedelta(days=60)
 
         # Initialize the specified time sets
         mrs_created_last_7_days_data = {}
@@ -1568,6 +1569,25 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     "comment_bodies"
                 ]
 
+        # Initialize the specified time sets
+        mrs_created_last_7_days_data = {}
+        mrs_created_last_30_days_data = {}
+        mrs_reviewed_last_7_days_data = {}
+        mrs_reviewed_last_30_days_data = {}
+        mrs_created_previous_7_days_data = {}
+        mrs_created_previous_30_days_data = {}
+        mrs_reviewed_previous_7_days_data = {}
+        mrs_reviewed_previous_30_days_data = {}
+        mr_created_chart_data = {}
+
+        for i in range(30):
+            date = today - timedelta(days=i)  # Subtract i days from today
+            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
+            mr_created_chart_data[date_str] = 0  # Initialize with value 0
+
+        # Reverse the dictionary to have the latest date as the last item
+        mr_created_chart_data = dict(reversed(list(mr_created_chart_data.items())))
+
         for mr_id, mr_data in created_mrs_data.items():
             project_id = mr_data["project_id"]
             project_id = str(project_id)
@@ -1591,6 +1611,26 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 }
             )
 
+            # Generate data for MRs chart - created MRs
+            created_at_simplified = datetime.strptime(
+                mr_data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            ).strftime("%Y-%m-%d")
+
+            if created_at_simplified in mr_created_chart_data:
+                mr_created_chart_data[created_at_simplified] += 1
+
+        # Add the MR data to the 'reviewed_mrs_data' list for that project
+        # initialise variable for mrs chart reviewed at data
+        mr_reviewed_chart_data = {}
+
+        for i in range(30):
+            date = today - timedelta(days=i)  # Subtract i days from today
+            date_str = date.strftime("%Y-%m-%d")  # Format the date as "YYYY-MM-DD"
+            mr_reviewed_chart_data[date_str] = 0  # Initialize with value 0
+
+        # Reverse the dictionary to have the latest date as the last item
+        mr_reviewed_chart_data = dict(reversed(list(mr_reviewed_chart_data.items())))
+
         for mr_id, mr_data in reviewed_mrs_data.items():
             project_id = mr_data["project_id"]
             project_id = str(project_id)
@@ -1612,6 +1652,44 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     "comment_bodies": mr_data["comment_bodies"],
                 }
             )
+
+            # Generate data for MRs chart - created MRs
+            created_at_simplified = datetime.strptime(
+                mr_data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+            ).strftime("%Y-%m-%d")
+
+            if created_at_simplified in mr_reviewed_chart_data:
+                mr_reviewed_chart_data[created_at_simplified] += 1
+
+        for date_str, value in mr_created_chart_data.items():
+            date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
+            if date >= last_7_days:
+                mrs_created_last_7_days_data[date_str] = value  # Add to 7 days set
+            if date <= last_7_days and date >= previous_7_days:
+                mrs_created_previous_7_days_data[date_str] = value
+            if date >= last_30_days:
+                mrs_created_last_30_days_data[date_str] = value  # Add to 30 days set
+            if date <= last_30_days and date >= previous_30_days:
+                mrs_created_previous_30_days_data[date_str] = value
+
+        for date_str, value in mr_reviewed_chart_data.items():
+            date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
+            if date >= last_7_days:
+                mrs_reviewed_last_7_days_data[date_str] = value  # Add to 7 days set
+            if date <= last_7_days and date >= previous_7_days:
+                mrs_reviewed_previous_7_days_data[date_str] = value
+            if date >= last_30_days:
+                mrs_reviewed_last_30_days_data[date_str] = value  # Add to 30 days set
+            if date <= last_30_days and date >= previous_30_days:
+                mrs_reviewed_previous_30_days_data[date_str] = value
+
+        # Convert to lists to easly render the chart
+        last_7_days_xAxis = list(mrs_created_last_7_days_data.keys())
+        mrs_created_last_7_days_yAxis = list(mrs_created_last_7_days_data.values())
+        last_30_days_xAxis = list(mrs_created_last_30_days_data.keys())
+        mrs_created_last_30_days_yAxis = list(mrs_created_last_30_days_data.values())
+        mrs_reviewed_last_7_days_yAxis = list(mrs_reviewed_last_7_days_data.values())
+        mrs_reviewed_last_30_days_yAxis = list(mrs_reviewed_last_30_days_data.values())
 
         # Add the Commit data to the 'created_commits_data' list for that project and initialize diff data
         for project_id, commit_data_list in commits_created_data.items():
@@ -1697,8 +1775,332 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     + teammemberCodingStats.body[project_id]["created_commits_data"]
                 )
 
-        print(teammemberCodingStats.body)
         # TODO recalculate the counters in projects and globally
+
+        # initialize global counters and limitations
+        active_projects30_list = []
+        active_projects7_list = []
+
+        # Loop through each project to get number of projects
+        for project, project_data in teammemberCodingStats.body.items():
+            # initialize the inproject stats
+            active_projects30 = created_mrs_counter30 = reviewed_mrs_counter30 = (
+                create_to_merge30
+            ) = create_to_merge30sum = comments_in_created_mrs30 = created_commits30 = (
+                lines_added30
+            ) = lines_removed30 = 0
+
+            previous_active_projects30 = previous_created_mrs_counter30 = (
+                previous_reviewed_mrs_counter30
+            ) = previous_create_to_merge30 = previous_create_to_merge30sum = (
+                previous_comments_in_created_mrs30
+            ) = previous_created_commits30 = previous_lines_added30 = (
+                previous_lines_removed30
+            ) = 0
+
+            active_projects7 = created_mrs_counter7 = reviewed_mrs_counter7 = (
+                create_to_merge7
+            ) = create_to_merge7sum = comments_in_created_mrs7 = created_commits7 = (
+                lines_added7
+            ) = lines_removed7 = 0
+
+            previous_active_projects7 = previous_created_mrs_counter7 = (
+                previous_reviewed_mrs_counter7
+            ) = previous_create_to_merge7 = previous_create_to_merge7sum = (
+                previous_comments_in_created_mrs7
+            ) = previous_created_commits7 = previous_lines_added7 = (
+                previous_lines_removed7
+            ) = 0
+
+            # Loop through each MR created to count active projects
+            for created_mr in project_data["created_mrs_data"]:
+                if created_mr["created_at"] > data_limitation7_iso_format:
+                    create_to_merge7sum += created_mr["create_to_merge"]
+                    create_to_merge30sum += created_mr["create_to_merge"]
+                    created_mrs_counter7 += 1
+                    created_mrs_counter30 += 1
+
+                    # generate project set of data
+                    temp_project_name = project_data["project_name"]
+                    temp_project_url = project_data["project_url"]
+                    project_info = {
+                        project: {
+                            "project_name": temp_project_name,
+                            "project_url": temp_project_url,
+                        }
+                    }
+
+                    if project_info not in active_projects7_list:
+                        active_projects7_list.append(project_info)
+                    if project_info not in active_projects30_list:
+                        active_projects30_list.append(project_info)
+
+                    for comment in created_mr["comment_ids"]:
+                        comments_in_created_mrs7 += 1
+                        comments_in_created_mrs30 += 1
+
+                if (
+                    data_limitation7_iso_format
+                    > created_mr["created_at"]
+                    > data_limitation_iso_format30
+                ):
+                    # generate project set of data
+                    temp_project_name = project_data["project_name"]
+                    temp_project_url = project_data["project_url"]
+                    project_info = {
+                        project: {
+                            "project_name": temp_project_name,
+                            "project_url": temp_project_url,
+                        }
+                    }
+
+                    create_to_merge30sum += created_mr["create_to_merge"]
+                    if project_info not in active_projects30_list:
+                        active_projects30_list.append(project_info)
+                    created_mrs_counter30 += 1
+                    for comment in created_mr["comment_ids"]:
+                        comments_in_created_mrs30 += 1
+                if (
+                    data_limitation7_iso_format
+                    > created_mr["created_at"]
+                    > data_limitation14_iso_format
+                ):
+                    previous_created_mrs_counter7 += 1
+                    previous_create_to_merge7sum += created_mr["create_to_merge"]
+                    for comment in created_mr["comment_ids"]:
+                        previous_comments_in_created_mrs7 += 1
+
+                if (
+                    data_limitation_iso_format30
+                    > created_mr["created_at"]
+                    > data_limitation_iso_format60
+                ):
+                    previous_create_to_merge30sum += created_mr["create_to_merge"]
+                    previous_created_mrs_counter30 += 1
+                    for comment in created_mr["comment_ids"]:
+                        previous_comments_in_created_mrs30 += 1
+
+                if created_mrs_counter30 == 0:
+                    create_to_merge30 = 0
+                else:
+                    create_to_merge30 = create_to_merge30sum / created_mrs_counter30
+
+                if previous_created_mrs_counter30 == 0:
+                    previous_create_to_merge30 = 0
+                else:
+                    previous_create_to_merge30 = (
+                        previous_created_mrs_counter30 / previous_created_mrs_counter30
+                    )
+
+                if created_mrs_counter7 == 0:
+                    create_to_merge7 = 0
+                else:
+                    create_to_merge7 = create_to_merge7sum / created_mrs_counter7
+
+                if previous_created_mrs_counter7 == 0:
+                    previous_create_to_merge7 = 0
+                else:
+                    previous_create_to_merge7 = (
+                        previous_create_to_merge7sum / previous_created_mrs_counter7
+                    )
+
+            # Loop through each MR reviewed
+            for reviewed_mr in project_data["reviewed_mrs_data"]:
+                if reviewed_mr["created_at"] > data_limitation7_iso_format:
+                    reviewed_mrs_counter7 += 1
+                    reviewed_mrs_counter30 += 1
+                elif (
+                    data_limitation7_iso_format
+                    > reviewed_mr["created_at"]
+                    > data_limitation_iso_format30
+                ):
+                    reviewed_mrs_counter30 += 1
+
+                if (
+                    data_limitation7_iso_format
+                    > reviewed_mr["created_at"]
+                    > data_limitation14_iso_format
+                ):
+                    previous_reviewed_mrs_counter7 += 1
+                elif (
+                    data_limitation_iso_format30
+                    > reviewed_mr["created_at"]
+                    > data_limitation_iso_format60
+                ):
+                    previous_reviewed_mrs_counter30 += 1
+
+            # If there were MRs created or reviewed - count as an active project
+            if created_mrs_counter7 > 0 or reviewed_mrs_counter7 > 0:
+                active_projects7 += 1
+            if created_mrs_counter30 > 0 or reviewed_mrs_counter30 > 0:
+                active_projects30 += 1
+            if previous_created_mrs_counter7 > 0 or previous_reviewed_mrs_counter7 > 0:
+                previous_active_projects7 += 1
+            if (
+                previous_created_mrs_counter30 > 0
+                or previous_reviewed_mrs_counter30 > 0
+            ):
+                previous_active_projects30 += 1
+
+            # Initialise the commit chart data
+            commit_chart_data = {
+                (today - timedelta(days=i)).strftime("%Y-%m-%d"): [0, 0]
+                for i in range(30)
+            }
+
+            # Reverse the dictionary to have the latest date as the last item
+            commit_chart_data = dict(reversed(list(commit_chart_data.items())))
+            commits_added_lines_last_30_days_yAxis = []
+            commits_removed_lines_last_30_days_yAxis = []
+            commits_added_lines_last_7_days_yAxis = []
+            commits_removed_lines_last_7_days_yAxis = []
+
+            # Loop through each Commit created
+            for commit in project_data["created_commits_data"]:
+                if commit["created_at"] > data_limitation7_iso_format:
+                    created_commits7 += 1
+                    created_commits30 += 1
+
+                    # provide simmplified date for commits
+                    commit_created_at_simplified = datetime.strptime(
+                        commit["created_at"].replace("+00:00", "Z"),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ).strftime("%Y-%m-%d")
+
+                    for diff_item in commit["diff_data"]:
+                        commit_chart_data[commit_created_at_simplified][0] += int(
+                            diff_item["lines_added"]
+                        )
+                        commit_chart_data[commit_created_at_simplified][1] -= int(
+                            diff_item["lines_removed"]
+                        )
+                        lines_added7 += int(diff_item["lines_added"])
+                        lines_added30 += int(diff_item["lines_added"])
+                        lines_removed7 += int(diff_item["lines_removed"])
+                        lines_removed30 += int(diff_item["lines_removed"])
+
+                elif (
+                    data_limitation7_iso_format
+                    > commit["created_at"]
+                    > data_limitation_iso_format30
+                ):
+                    created_commits30 += 1
+                    # provide simmplified date for commits
+                    commit_created_at_simplified = datetime.strptime(
+                        commit["created_at"].replace("+00:00", "Z"),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ).strftime("%Y-%m-%d")
+
+                    for diff_item in commit["diff_data"]:
+                        commit_chart_data[commit_created_at_simplified][0] += int(
+                            diff_item["lines_added"]
+                        )
+                        commit_chart_data[commit_created_at_simplified][1] -= int(
+                            diff_item["lines_removed"]
+                        )
+                        lines_added30 += int(diff_item["lines_added"])
+                        lines_removed30 += int(diff_item["lines_removed"])
+
+                if (
+                    data_limitation7_iso_format
+                    > commit["created_at"]
+                    > data_limitation14_iso_format
+                ):
+                    previous_created_commits7 += 1
+
+                    # provide simmplified date for commits
+                    commit_created_at_simplified = datetime.strptime(
+                        commit["created_at"].replace("+00:00", "Z"),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ).strftime("%Y-%m-%d")
+
+                    for diff_item in commit["diff_data"]:
+                        previous_lines_added7 += int(diff_item["lines_added"])
+                        previous_lines_removed7 += int(diff_item["lines_removed"])
+
+                elif (
+                    data_limitation_iso_format30
+                    > commit["created_at"]
+                    > data_limitation_iso_format60
+                ):
+                    previous_created_commits30 += 1
+                    # provide simmplified date for commits
+                    commit_created_at_simplified = datetime.strptime(
+                        commit["created_at"].replace("+00:00", "Z"),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ).strftime("%Y-%m-%d")
+
+                    for diff_item in commit["diff_data"]:
+                        previous_lines_added30 += int(diff_item["lines_added"])
+                        previous_lines_removed30 += int(diff_item["lines_removed"])
+
+            for daily_data in commit_chart_data.values():
+                commits_added_lines_last_30_days_yAxis.append(int(daily_data[0]))
+                commits_removed_lines_last_30_days_yAxis.append(int(daily_data[1]))
+
+            commits_added_lines_last_7_days_yAxis = (
+                commits_added_lines_last_30_days_yAxis[-7:]
+            )
+            commits_removed_lines_last_7_days_yAxis = (
+                commits_removed_lines_last_30_days_yAxis[-7:]
+            )
+
+            teammemberCodingStats.body[project]["counters7"] = {
+                "active_projects7": active_projects7,
+                "created_mrs_counter7": created_mrs_counter7,
+                "reviewed_mrs_counter7": reviewed_mrs_counter7,
+                "create_to_merge7": create_to_merge7,
+                "comments_in_created_mrs7": comments_in_created_mrs7,
+                "created_commits7": created_commits7,
+                "lines_added7": lines_added7,
+                "lines_removed7": lines_removed7,
+                "charts_last_7_days_xAxis": last_7_days_xAxis,
+                "mrs_created_last_7_days_yAxis": mrs_created_last_7_days_yAxis,
+                "mrs_reviewed_last_7_days_yAxis": mrs_reviewed_last_7_days_yAxis,
+                "commits_added_lines_last_7_days_yAxis": commits_added_lines_last_7_days_yAxis,
+                "commits_removed_lines_last_7_days_yAxis": commits_removed_lines_last_7_days_yAxis,
+            }
+
+            teammemberCodingStats.body[project]["counters30"] = {
+                "active_projects30": active_projects30,
+                "created_mrs_counter30": created_mrs_counter30,
+                "reviewed_mrs_counter30": reviewed_mrs_counter30,
+                "create_to_merge30": create_to_merge30,
+                "comments_in_created_mrs30": comments_in_created_mrs30,
+                "created_commits30": created_commits30,
+                "lines_added30": lines_added30,
+                "lines_removed30": lines_removed30,
+                "charts_last_30_days_xAxis": last_30_days_xAxis,
+                "mrs_created_last_30_days_yAxis": mrs_created_last_30_days_yAxis,
+                "mrs_reviewed_last_30_days_yAxis": mrs_reviewed_last_30_days_yAxis,
+                "commits_added_lines_last_30_days_yAxis": commits_added_lines_last_30_days_yAxis,
+                "commits_removed_lines_last_30_days_yAxis": commits_removed_lines_last_30_days_yAxis,
+            }
+
+            teammemberCodingStats.body[project]["previous30"] = {
+                "previous_active_projects30": previous_active_projects30,
+                "previous_created_mrs_counter30": previous_created_mrs_counter30,
+                "previous_reviewed_mrs_counter30": previous_reviewed_mrs_counter30,
+                "previous_create_to_merge30": previous_create_to_merge30,
+                "previous_comments_in_created_mrs30": previous_comments_in_created_mrs30,
+                "previous_created_commits30": previous_created_commits30,
+                "previous_lines_added30": previous_lines_added30,
+                "previous_lines_removed30": previous_lines_removed30,
+            }
+
+            teammemberCodingStats.body[project]["previous7"] = {
+                "previous_active_projects7": previous_active_projects7,
+                "previous_created_mrs_counter7": previous_created_mrs_counter7,
+                "previous_reviewed_mrs_counter7": previous_reviewed_mrs_counter7,
+                "previous_create_to_merge7": previous_create_to_merge7,
+                "previous_comments_in_created_mrs7": previous_comments_in_created_mrs7,
+                "previous_created_commits7": previous_created_commits7,
+                "previous_lines_added7": previous_lines_added7,
+                "previous_lines_removed7": previous_lines_removed7,
+            }
+
+        print(teammemberCodingStats.body)
+
         # TODO save updated model
 
 
