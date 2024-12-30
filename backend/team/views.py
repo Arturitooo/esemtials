@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime, timedelta
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from .models import (
     Teammember,
@@ -25,6 +26,7 @@ from rest_framework.generics import (
     DestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
+
 from .utils import (
     gitlab_verification_api_call,
     gitlab_merge_requests_api_call,
@@ -217,7 +219,7 @@ class TeamMemberGitIntegrationDataCreateAPIView(CreateAPIView):
             # Raise validation error for invalid data
             raise ValidationError(
                 {
-                    "detail": "GitLab integration failed due to invalid data or API error."
+                    "detail": f"GitLab integration failed due to invalid data or API error: {error}",
                 }
             )
 
@@ -960,12 +962,11 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_created_commits7 = 0
         global_lines_added7 = 0
         global_lines_removed7 = 0
-        global_mrs_created_last_7_days_xAxis = []
         global_mrs_reviewed_last_7_days_xAxis = []
         global_mrs_created_last_7_days_yAxis = []
         global_mrs_reviewed_last_7_days_yAxis = []
-        tmp_commits_added_lines_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
-        tmp_commits_removed_lines_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
+        tmp_commits_added_lines_last_7_days_yAxis = [0] * 7
+        tmp_commits_removed_lines_last_7_days_yAxis = [0] * 7
 
         global_previous_active_projects7 = 0
         global_previous_created_mrs_counter7 = 0
@@ -984,138 +985,14 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_created_commits30 = 0
         global_lines_added30 = 0
         global_lines_removed30 = 0
-        global_mrs_created_last_30_days_xAxis = []
-        global_mrs_reviewed_last_30_days_xAxis = []
-        global_mrs_created_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
-        global_mrs_reviewed_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
+        global_mrs_created_last_30_days_yAxis = []
+        global_mrs_reviewed_last_30_days_yAxis = []
+        tmp_mrs_created_last_30_days_yAxis = [0] * 30
+        tmp_mrs_reviewed_last_30_days_yAxis = [0] * 30
         global_commits_added_lines_last_30_days_yAxis = []
         global_commits_removed_lines_last_30_days_yAxis = []
-        tmp_commits_added_lines_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
-        tmp_commits_removed_lines_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
+        tmp_commits_added_lines_last_30_days_yAxis = [0] * 30
+        tmp_commits_removed_lines_last_30_days_yAxis = [0] * 30
         global_previous_active_projects30 = 0
         global_previous_created_mrs_counter30 = 0
         global_previous_reviewed_mrs_counter30 = 0
@@ -1164,8 +1041,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_previous_lines_removed7 += project_data["previous7"][
                 "previous_lines_removed7"
             ]
-            global_mrs_created_last_7_days_xAxis = last_7_days_xAxis
-            tmp_mrs_created_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
+            tmp_mrs_created_last_7_days_yAxis = [0] * 7
             global_mrs_created_last_7_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -1173,8 +1049,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     project_data["counters7"]["mrs_created_last_7_days_yAxis"],
                 )
             ]
-            global_mrs_reviewed_last_7_days_xAxis = last_7_days_xAxis
-            tmp_mrs_reviewed_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
+            tmp_mrs_reviewed_last_7_days_yAxis = [0] * 7
             global_mrs_reviewed_last_7_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -1243,39 +1118,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_previous_lines_removed30 += project_data["previous30"][
                 "previous_lines_removed30"
             ]
-            global_mrs_created_last_30_days_xAxis = last_30_days_xAxis
-            tmp_mrs_created_last_30_days_yAxis = [
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ]
             global_mrs_created_last_30_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -1283,43 +1125,11 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     project_data["counters30"]["mrs_created_last_30_days_yAxis"],
                 )
             ]
-            global_mrs_reviewed_last_30_days_xAxis = last_30_days_xAxis
-            tmp_mrs_reviewed_last_30_days_xAxis = [
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ]
+
             global_mrs_reviewed_last_30_days_yAxis = [
                 a + b
                 for a, b in zip(
-                    tmp_mrs_reviewed_last_30_days_xAxis,
+                    tmp_mrs_reviewed_last_30_days_yAxis,
                     project_data["counters30"]["mrs_reviewed_last_30_days_yAxis"],
                 )
             ]
@@ -1361,7 +1171,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "commits_frequency7": round(global_created_commits7 / 7, 1),
             "lines_added7": global_lines_added7,
             "lines_removed7": global_lines_removed7,
-            "mrs_created_last_7_days_xAxis": global_mrs_created_last_7_days_xAxis,
+            "charts_last_7_days_xAxis": last_7_days_xAxis,
             "mrs_created_last_7_days_yAxis": global_mrs_created_last_7_days_yAxis,
             "mrs_reviewed_last_7_days_xAxis": global_mrs_reviewed_last_7_days_xAxis,
             "mrs_reviewed_last_7_days_yAxis": global_mrs_reviewed_last_7_days_yAxis,
@@ -1395,9 +1205,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "commits_frequency30": round(global_created_commits30 / 30, 1),
             "lines_added30": global_lines_added30,
             "lines_removed30": global_lines_removed30,
-            "mrs_created_last_30_days_xAxis": global_mrs_created_last_30_days_xAxis,
+            "charts_last_30_days_xAxis": last_30_days_xAxis,
             "mrs_created_last_30_days_yAxis": global_mrs_created_last_30_days_yAxis,
-            "mrs_reviewed_last_30_days_xAxis": global_mrs_reviewed_last_30_days_xAxis,
             "mrs_reviewed_last_30_days_yAxis": global_mrs_reviewed_last_30_days_yAxis,
             "commits_added_lines_last_30_days_yAxis": global_commits_added_lines_last_30_days_yAxis,
             "commits_removed_lines_last_30_days_yAxis": global_commits_removed_lines_last_30_days_yAxis,
@@ -1590,7 +1399,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             mr_created_chart_data[date_str] = 0  # Initialize with value 0
 
         # Reverse the dictionary to have the latest date as the last item
-        mr_created_chart_data = dict(reversed(list(mr_created_chart_data.items())))
+        mr_created_chart_data = dict(list(mr_created_chart_data.items()))
 
         # initialise variable for mrs chart reviewed at data
         mr_reviewed_chart_data = {}
@@ -1601,7 +1410,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             mr_reviewed_chart_data[date_str] = 0  # Initialize with value 0
 
         # Reverse the dictionary to have the latest date as the last item
-        mr_reviewed_chart_data = dict(reversed(list(mr_reviewed_chart_data.items())))
+        mr_reviewed_chart_data = dict(list(mr_reviewed_chart_data.items()))
 
         for mr_id, mr_data in created_mrs_data.items():
             project_id = mr_data["project_id"]
@@ -1731,8 +1540,6 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     updateBody[project_id]["created_commits_data"]
                     + teammemberCodingStats.body[project_id]["created_commits_data"]
                 )
-
-        # TODO recalculate the counters in projects and globally
 
         # initialize global counters and limitations
         active_projects30_list = []
@@ -2157,12 +1964,12 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         global_created_commits7 = 0
         global_lines_added7 = 0
         global_lines_removed7 = 0
-        global_mrs_created_last_7_days_xAxis = []
-        global_mrs_reviewed_last_7_days_xAxis = []
         global_mrs_created_last_7_days_yAxis = []
         global_mrs_reviewed_last_7_days_yAxis = []
-        tmp_commits_added_lines_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
-        tmp_commits_removed_lines_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
+        tmp_mrs_created_last_7_days_yAxis = [0] * 7
+        tmp_mrs_reviewed_last_7_days_yAxis = [0] * 7
+        tmp_commits_added_lines_last_7_days_yAxis = [0] * 7
+        tmp_commits_removed_lines_last_7_days_yAxis = [0] * 7
 
         global_previous_active_projects7 = 0
         global_previous_created_mrs_counter7 = 0
@@ -2181,138 +1988,14 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         global_created_commits30 = 0
         global_lines_added30 = 0
         global_lines_removed30 = 0
-        global_mrs_created_last_30_days_xAxis = []
-        global_mrs_reviewed_last_30_days_xAxis = []
-        global_mrs_created_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
-        global_mrs_reviewed_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
+        global_mrs_created_last_30_days_yAxis = []
+        global_mrs_reviewed_last_30_days_yAxis = []
+        tmp_mrs_created_last_30_days_yAxis = [0] * 30
+        tmp_mrs_reviewed_last_30_days_yAxis = [0] * 30
         global_commits_added_lines_last_30_days_yAxis = []
         global_commits_removed_lines_last_30_days_yAxis = []
-        tmp_commits_added_lines_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
-        tmp_commits_removed_lines_last_30_days_yAxis = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
+        tmp_commits_added_lines_last_30_days_yAxis = [0] * 30
+        tmp_commits_removed_lines_last_30_days_yAxis = [0] * 30
         global_previous_active_projects30 = 0
         global_previous_created_mrs_counter30 = 0
         global_previous_reviewed_mrs_counter30 = 0
@@ -2361,8 +2044,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             global_previous_lines_removed7 += project_data["previous7"][
                 "previous_lines_removed7"
             ]
-            global_mrs_created_last_7_days_xAxis = last_7_days_xAxis
-            tmp_mrs_created_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
+
             global_mrs_created_last_7_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -2370,8 +2052,8 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     project_data["counters7"]["mrs_created_last_7_days_yAxis"],
                 )
             ]
-            global_mrs_reviewed_last_7_days_xAxis = last_7_days_xAxis
-            tmp_mrs_reviewed_last_7_days_yAxis = [0, 0, 0, 0, 0, 0, 0]
+            tmp_mrs_created_last_7_days_yAxis = global_mrs_created_last_7_days_yAxis
+
             global_mrs_reviewed_last_7_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -2379,6 +2061,8 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     project_data["counters7"]["mrs_reviewed_last_7_days_yAxis"],
                 )
             ]
+            tmp_mrs_reviewed_last_7_days_yAxis = global_mrs_reviewed_last_7_days_yAxis
+
             global_commits_added_lines_last_7_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -2389,6 +2073,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             tmp_commits_added_lines_last_7_days_yAxis = (
                 global_commits_added_lines_last_7_days_yAxis
             )
+
             global_commits_removed_lines_last_7_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -2440,39 +2125,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             global_previous_lines_removed30 += project_data["previous30"][
                 "previous_lines_removed30"
             ]
-            global_mrs_created_last_30_days_xAxis = last_30_days_xAxis
-            tmp_mrs_created_last_30_days_yAxis = [
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ]
+
             global_mrs_created_last_30_days_yAxis = [
                 a + b
                 for a, b in zip(
@@ -2480,46 +2133,16 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     project_data["counters30"]["mrs_created_last_30_days_yAxis"],
                 )
             ]
-            global_mrs_reviewed_last_30_days_xAxis = last_30_days_xAxis
-            tmp_mrs_reviewed_last_30_days_xAxis = [
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ]
+            tmp_mrs_created_last_30_days_yAxis = global_mrs_created_last_30_days_yAxis
+
             global_mrs_reviewed_last_30_days_yAxis = [
                 a + b
                 for a, b in zip(
-                    tmp_mrs_reviewed_last_30_days_xAxis,
+                    tmp_mrs_reviewed_last_30_days_yAxis,
                     project_data["counters30"]["mrs_reviewed_last_30_days_yAxis"],
                 )
             ]
+            tmp_mrs_reviewed_last_30_days_yAxis = global_mrs_reviewed_last_30_days_yAxis
 
             global_commits_added_lines_last_30_days_yAxis = [
                 a + b
@@ -2558,9 +2181,8 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             "commits_frequency7": round(global_created_commits7 / 7, 1),
             "lines_added7": global_lines_added7,
             "lines_removed7": global_lines_removed7,
-            "mrs_created_last_7_days_xAxis": global_mrs_created_last_7_days_xAxis,
+            "charts_last_7_days_xAxis": last_7_days_xAxis,
             "mrs_created_last_7_days_yAxis": global_mrs_created_last_7_days_yAxis,
-            "mrs_reviewed_last_7_days_xAxis": global_mrs_reviewed_last_7_days_xAxis,
             "mrs_reviewed_last_7_days_yAxis": global_mrs_reviewed_last_7_days_yAxis,
             "commits_added_lines_last_7_days_yAxis": global_commits_added_lines_last_7_days_yAxis,
             "commits_removed_lines_last_7_days_yAxis": global_commits_removed_lines_last_7_days_yAxis,
@@ -2592,9 +2214,8 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             "commits_frequency30": round(global_created_commits30 / 30, 1),
             "lines_added30": global_lines_added30,
             "lines_removed30": global_lines_removed30,
-            "mrs_created_last_30_days_xAxis": global_mrs_created_last_30_days_xAxis,
+            "charts_last_30_days_xAxis": last_30_days_xAxis,
             "mrs_created_last_30_days_yAxis": global_mrs_created_last_30_days_yAxis,
-            "mrs_reviewed_last_30_days_xAxis": global_mrs_reviewed_last_30_days_xAxis,
             "mrs_reviewed_last_30_days_yAxis": global_mrs_reviewed_last_30_days_yAxis,
             "commits_added_lines_last_30_days_yAxis": global_commits_added_lines_last_30_days_yAxis,
             "commits_removed_lines_last_30_days_yAxis": global_commits_removed_lines_last_30_days_yAxis,
@@ -2615,25 +2236,15 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             "previous_lines_removed30": global_previous_lines_removed30,
         }
 
-        print("teammemberCodingStats.body")
-        print(teammemberCodingStats.body)
-        print("global_counters7")
-        print(global_counters7)
-        print("global_counters30")
-        print(global_counters30)
-        print("global_previous_counters7")
-        print(global_previous_counters7)
-        print("global_previous_counters30")
-        print(global_previous_counters30)
-
-        # serializer.save(
-        #     teammember=teammember,
-        #     body=teammemberCodingStats.body,
-        #     counters7=global_counters7,
-        #     counters30=global_counters30,
-        #     previous7=global_previous_counters7,
-        #     previous30=global_previous_counters30,
-        # )
+        serializer.save(
+            teammember=teammember,
+            body=teammemberCodingStats.body,
+            counters7=global_counters7,
+            counters30=global_counters30,
+            previous7=global_previous_counters7,
+            previous30=global_previous_counters30,
+            latestUpdate=timezone.make_aware(datetime.now()),
+        )
 
 
 class TeammemberCodingStatsDeleteAPIView(DestroyAPIView):

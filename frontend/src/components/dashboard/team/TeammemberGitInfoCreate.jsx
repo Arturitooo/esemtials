@@ -109,11 +109,9 @@ export const TeammemberGitInfoCreate = () => {
 
         // Check if the coding stats response was successful
         if (
-          codingStatsResponse.status >= 200 &&
-          codingStatsResponse.status < 300
+          codingStatsResponse.status < 200 &&
+          codingStatsResponse.status >= 300
         ) {
-          console.log("all good");
-        } else {
           console.error(
             "Unexpected response status from coding stats:",
             codingStatsResponse.status

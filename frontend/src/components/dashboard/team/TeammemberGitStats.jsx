@@ -555,8 +555,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                         xAxis={[
                           {
                             data: [
-                              ...counters7.mrs_created_last_7_days_xAxis,
-                              ...counters7.mrs_reviewed_last_7_days_xAxis,
+                              ...counters7.charts_last_7_days_xAxis,
+                              ...counters7.charts_last_7_days_xAxis,
                             ],
                             scaleType: "band",
                           },
@@ -602,8 +602,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                         xAxis={[
                           {
                             data: [
-                              ...counters30.mrs_created_last_30_days_xAxis,
-                              ...counters30.mrs_reviewed_last_30_days_xAxis,
+                              ...counters30.charts_last_30_days_xAxis,
+                              ...counters30.charts_last_30_days_xAxis,
                             ],
                             scaleType: "band",
                           },
@@ -894,8 +894,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                         xAxis={[
                           {
                             data: [
-                              ...counters7.mrs_reviewed_last_7_days_xAxis,
-                              ...counters7.mrs_reviewed_last_7_days_xAxis,
+                              ...counters7.charts_last_7_days_xAxis,
+                              ...counters7.charts_last_7_days_xAxis,
                             ],
                             scaleType: "band",
                           },
@@ -953,8 +953,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                         xAxis={[
                           {
                             data: [
-                              ...counters30.mrs_reviewed_last_30_days_xAxis,
-                              ...counters30.mrs_reviewed_last_30_days_xAxis,
+                              ...counters30.charts_last_30_days_xAxis,
+                              ...counters30.charts_last_30_days_xAxis,
                             ],
                             scaleType: "band",
                           },
