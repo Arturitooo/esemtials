@@ -2,6 +2,7 @@ import requests
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from .models import (
     Teammember,
     TeamMemberComment,
@@ -26,6 +27,8 @@ from rest_framework.generics import (
     DestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
+from .tasks import test_task
 
 from .utils import (
     gitlab_verification_api_call,
@@ -35,6 +38,7 @@ from .utils import (
     gitlab_commits_diff_api_call,
     gitlab_mrs_comments_api_call,
 )
+
 
 # set date limes to 30 days ago and convert to needed format
 data_limitation30 = str(datetime.today() - timedelta(days=30))
@@ -62,6 +66,24 @@ last_7_days = today - timedelta(days=7)
 last_30_days = today - timedelta(days=30)
 previous_7_days = today - timedelta(days=14)
 previous_30_days = today - timedelta(days=60)
+
+
+def index(request):
+    test_task.delay()
+    return HttpResponse("Task started!")
+
+
+def schedule_task(request):
+    interval, _ = IntervalSchedule.objects.get_or_create(
+        every=30,
+        period=IntervalSchedule.SECONDS,
+    )
+    PeriodicTask.objects.create(
+        interval=interval,
+        name="test-task-schedule",
+        task="team.tasks.test_task",
+    )
+    return HttpResponse("Task scheduled!")
 
 
 class TeammemberViewSet(viewsets.ModelViewSet):

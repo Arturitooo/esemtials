@@ -33,6 +33,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "users",
+    "knox",
+    "django_rest_passwordreset",
+    "rest_framework_swagger",
+    "dashboard",
+    "team",
+    "django_celery_beat",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,12 +48,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
-    "users",
-    "knox",
-    "django_rest_passwordreset",
-    "rest_framework_swagger",
-    "dashboard",
-    "team",
 ]
 
 MIDDLEWARE = [

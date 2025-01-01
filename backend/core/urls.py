@@ -21,10 +21,14 @@ from rest_framework.schemas import get_schema_view
 from django.views.generic import TemplateView
 from knox import views as knox_views
 from django.conf import settings
-from django.conf.urls.static import static  #
+from django.conf.urls.static import static
+
+from team import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("celery-root/", views.index, name="index"),
+    path("celery-test/", views.schedule_task, name="test_task"),
     path(
         "api_schema/",
         get_schema_view(title="API Schema", description="Guide for the REST API"),
