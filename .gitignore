@@ -64,3 +64,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# celery beat schedule file
+celerybeat-schedule
+.bak
+.dat
+.dir
