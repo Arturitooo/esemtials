@@ -15,11 +15,8 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks(["core", "team"])
 
 
-@app.task(bind=True)
-def debug_task(self):
-    print(f"Request: {self.request!r}")
-
-
 # CELERY COMMANDS
+# provide with non-expiring token
 # celery -A core worker -l INFO --pool=solo
 # celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+# go to http://127.0.0.1:8000/schedule_update_teammember_coding_stats/

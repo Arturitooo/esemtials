@@ -153,3 +153,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/uploads/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
+
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"  # Replace `user` and `password` with RabbitMQ credentials
+CELERY_RESULT_BACKEND = "rpc://"

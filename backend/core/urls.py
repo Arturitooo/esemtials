@@ -27,8 +27,11 @@ from team import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("celery-root/", views.index, name="index"),
-    path("celery-test/", views.schedule_task, name="test_task"),
+    path(
+        "schedule_update_teammember_coding_stats/",
+        views.schedule_update_teammember_coding_stats,
+        name="coding-stats-update-schedule",
+    ),
     path(
         "api_schema/",
         get_schema_view(title="API Schema", description="Guide for the REST API"),
