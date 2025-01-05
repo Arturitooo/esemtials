@@ -2,7 +2,6 @@ import requests
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 from .models import (
     Teammember,
     TeamMemberComment,
@@ -27,8 +26,6 @@ from rest_framework.generics import (
     DestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
-from django_celery_beat.models import PeriodicTask, IntervalSchedule
-from .tasks import update_teammember_coding_stats
 
 from .utils import (
     gitlab_verification_api_call,
@@ -61,25 +58,6 @@ last_7_days = today - timedelta(days=7)
 last_30_days = today - timedelta(days=30)
 previous_7_days = today - timedelta(days=14)
 previous_30_days = today - timedelta(days=60)
-
-
-# celery scheduled task
-def schedule_update_teammember_coding_stats(request):
-    interval, _ = IntervalSchedule.objects.get_or_create(
-        every=30,
-        period=IntervalSchedule.SECONDS,
-    )
-
-    # Check if the task already exists
-    if not PeriodicTask.objects.filter(name="coding-stats-update-schedule").exists():
-        PeriodicTask.objects.create(
-            interval=interval,
-            name="coding-stats-update-schedule",
-            task="team.tasks.update_teammember_coding_stats",
-        )
-        return HttpResponse("Task scheduled!")
-    else:
-        return HttpResponse("Task is already scheduled.")
 
 
 class TeammemberViewSet(viewsets.ModelViewSet):

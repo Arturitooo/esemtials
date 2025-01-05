@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 import os
 
 
@@ -154,5 +155,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/uploads/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
 
-CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"  # Replace `user` and `password` with RabbitMQ credentials
-CELERY_RESULT_BACKEND = "rpc://"
+# Celery Configuration Options
+CELERY_BROKER_URL = "pyamqp://guest:guest@localhost//"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_BACKEND = (
+    "rpc://"  # Optional result backend, can be adjusted to your needs
+)
+CELERY_TIMEZONE = "UTC"
+
+# Celery Beat Configuration (optional, if you're scheduling tasks)
+CELERY_BEAT_SCHEDULE = {
+    "update-teammember-coding-stats-every-day-at-1am": {
+        "task": "team.tasks.update_teammember_coding_stats",
+        "schedule": crontab(minute=00, hour=1),  # Run every day at 8 AM
+    },
+}

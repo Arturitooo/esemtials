@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AxiosInstance from "../AxiosInstance";
 import { UserInfo } from "../UserInfo";
 import { useForm } from "react-hook-form";
@@ -29,7 +29,6 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import Edit from "@mui/icons-material/Edit";
 
 dayjs.extend(localizedFormat);
 
@@ -225,9 +224,12 @@ export const Projects = () => {
             <h1>Projects</h1>
             <Card className="card empty-state-card">
               <CardContent>
-                <img src={emptyStateImage} alt="no-projects"/>
+                <img src={emptyStateImage} alt="no-projects" />
                 <h2>Build future with your projects</h2>
-                <p>Create a project to manage and monitor performance of your teams, create TODO lists, and more.</p>
+                <p>
+                  Create a project to manage and monitor performance of your
+                  teams, create a &quot;to do&quot; list, and more.
+                </p>
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -286,13 +288,15 @@ export const Projects = () => {
                         <div className="action-column">
                           <IconButton
                             onClick={() => handleOpenEditionModal(item)}
-                            color="primary">
-                            <EditIcon className="icon-S inline-icon"/>
+                            color="primary"
+                          >
+                            <EditIcon className="icon-S inline-icon" />
                           </IconButton>
                           <IconButton
                             onClick={() => handleConfirmDeleteProject(item.id)}
-                            color="primary"> 
-                            <DeleteIcon className="icon-S inline-icon"/>
+                            color="primary"
+                          >
+                            <DeleteIcon className="icon-S inline-icon" />
                           </IconButton>
                         </div>
                       </TableCell>
@@ -358,12 +362,22 @@ export const Projects = () => {
         title="Are you sure?"
         content={
           <>
-          <b>Deleting a project cannot be reverted.</b> You will permanently delete teams members, notes and related data. Do you still want to delete the project?
+            <b>Deleting a project cannot be reverted.</b> You will permanently
+            delete teams members, notes and related data. Do you still want to
+            delete the project?
           </>
         }
         actions={[
-          { label: "No, cancel", onClick: () => setConfirmProjectDelete(false), className:"modal-action-cancel"},
-          { label: "Yes, delete", onClick: handleDeleteProject, className:"modal-action-red"},
+          {
+            label: "No, cancel",
+            onClick: () => setConfirmProjectDelete(false),
+            className: "modal-action-cancel",
+          },
+          {
+            label: "Yes, delete",
+            onClick: handleDeleteProject,
+            className: "modal-action-red",
+          },
         ]}
       />
 

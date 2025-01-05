@@ -23,15 +23,8 @@ from knox import views as knox_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-from team import views
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path(
-        "schedule_update_teammember_coding_stats/",
-        views.schedule_update_teammember_coding_stats,
-        name="coding-stats-update-schedule",
-    ),
     path(
         "api_schema/",
         get_schema_view(title="API Schema", description="Guide for the REST API"),

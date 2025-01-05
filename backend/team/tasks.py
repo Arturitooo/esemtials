@@ -47,10 +47,8 @@ def update_teammember_coding_stats():
         # 4. Make the API call
         url = f"http://127.0.0.1:8000/team/teammember-coding-stats/{teammember_id}/update/"
         try:
-            print(now)
             response = requests.put(url, json=request_body, headers=headers)
             response.raise_for_status()  # Raise an error if the response code is not 200
-            print(f"git stats updated for the following teammember: {teammember_id}")
         except requests.RequestException as e:
             # Log or handle the error
             print(f"Error updating teammember {teammember_id}: {e}")
