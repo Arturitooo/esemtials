@@ -40,28 +40,23 @@ from .utils import (
 )
 
 
-# set date limes to 30 days ago and convert to needed format
-data_limitation30 = str(datetime.today() - timedelta(days=30))
-dt_object30 = datetime.strptime(data_limitation30, "%Y-%m-%d %H:%M:%S.%f")
-data_limitation_iso_format30 = dt_object30.strftime("%Y-%m-%dT%H:%M:%SZ")
+def get_date_in_iso_aware(days_ago):
+    # Get naive datetime
+    date = datetime.now() - timedelta(days=days_ago)
+    # Make timezone-aware
+    aware_date = timezone.make_aware(date)
+    # Format to ISO 8601
+    return aware_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-# set date limes to 60 days ago and convert to needed format
-data_limitation60 = str(datetime.today() - timedelta(days=60))
-dt_object60 = datetime.strptime(data_limitation60, "%Y-%m-%d %H:%M:%S.%f")
-data_limitation_iso_format60 = dt_object60.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-# set date limes to 7 days ago and convert to needed format
-data_limitation7 = str(datetime.today() - timedelta(days=7))
-dt_object7 = datetime.strptime(data_limitation7, "%Y-%m-%d %H:%M:%S.%f")
-data_limitation7_iso_format = dt_object7.strftime("%Y-%m-%dT%H:%M:%SZ")
+# base
+data_limitation30 = get_date_in_iso_aware(29)
+data_limitation60 = get_date_in_iso_aware(59)
+data_limitation7 = get_date_in_iso_aware(6)
+data_limitation14 = get_date_in_iso_aware(13)
 
-# set date limes to 14 days ago and convert to needed format
-data_limitation14 = str(datetime.today() - timedelta(days=14))
-dt_object14 = datetime.strptime(data_limitation14, "%Y-%m-%d %H:%M:%S.%f")
-data_limitation14_iso_format = dt_object14.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-# initialise variable for mrs chart created at data and counting the timeframes
-today = datetime.now()
+# Other variables for date ranges
+today = timezone.make_aware(datetime.now())
 last_7_days = today - timedelta(days=7)
 last_30_days = today - timedelta(days=30)
 previous_7_days = today - timedelta(days=14)
@@ -372,14 +367,14 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             teammember=teammember
         ).first()
 
-        # Add the 'data_limitation_iso_format' to the dictionary to use in api calls
+        # Add the 'data_limitation60' to the dictionary to use in api calls
         if gitIntegrationData:
             # Prepare the apiCallsInput
             apiCallsInput = {
                 "groupID": gitIntegrationData.teammemberGitGroupID,
                 "userID": gitIntegrationData.teammemberGitUserID,
                 "accessToken": gitIntegrationData.teammemberGitPersonalAccessToken,
-                "data_limitation": data_limitation_iso_format60,
+                "data_limitation": data_limitation60,
             }
 
         # Make created mrs api call with gitlab_merge_requests_api_call
@@ -563,6 +558,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
         for date_str, value in mr_created_chart_data.items():
             date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
+            date = timezone.make_aware(date)
             if date >= last_7_days:
                 mrs_created_last_7_days_data[date_str] = value  # Add to 7 days set
             if date <= last_7_days and date >= previous_7_days:
@@ -574,6 +570,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
         for date_str, value in mr_reviewed_chart_data.items():
             date = datetime.strptime(date_str, "%Y-%m-%d")  # Convert string to datetime
+            date = timezone.make_aware(date)
             if date >= last_7_days:
                 mrs_reviewed_last_7_days_data[date_str] = value  # Add to 7 days set
             if date <= last_7_days and date >= previous_7_days:
@@ -690,7 +687,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
             # Loop through each MR created to count active projects
             for created_mr in project_data["created_mrs_data"]:
-                if created_mr["created_at"] > data_limitation7_iso_format:
+                if created_mr["created_at"] > data_limitation7:
                     create_to_merge7sum += created_mr["create_to_merge"]
                     create_to_merge30sum += created_mr["create_to_merge"]
                     created_mrs_counter7 += 1
@@ -715,11 +712,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         comments_in_created_mrs7 += 1
                         comments_in_created_mrs30 += 1
 
-                if (
-                    data_limitation7_iso_format
-                    > created_mr["created_at"]
-                    > data_limitation_iso_format30
-                ):
+                if data_limitation7 > created_mr["created_at"] > data_limitation30:
                     # generate project set of data
                     temp_project_name = project_data["project_name"]
                     temp_project_url = project_data["project_url"]
@@ -736,21 +729,13 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs30 += 1
-                if (
-                    data_limitation7_iso_format
-                    > created_mr["created_at"]
-                    > data_limitation14_iso_format
-                ):
+                if data_limitation7 > created_mr["created_at"] > data_limitation14:
                     previous_created_mrs_counter7 += 1
                     previous_create_to_merge7sum += created_mr["create_to_merge"]
                     for comment in created_mr["comment_ids"]:
                         previous_comments_in_created_mrs7 += 1
 
-                if (
-                    data_limitation_iso_format30
-                    > created_mr["created_at"]
-                    > data_limitation_iso_format60
-                ):
+                if data_limitation30 > created_mr["created_at"] > data_limitation60:
                     previous_create_to_merge30sum += created_mr["create_to_merge"]
                     previous_created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
@@ -782,27 +767,15 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
             # Loop through each MR reviewed
             for reviewed_mr in project_data["reviewed_mrs_data"]:
-                if reviewed_mr["created_at"] > data_limitation7_iso_format:
+                if reviewed_mr["created_at"] > data_limitation7:
                     reviewed_mrs_counter7 += 1
                     reviewed_mrs_counter30 += 1
-                elif (
-                    data_limitation7_iso_format
-                    > reviewed_mr["created_at"]
-                    > data_limitation_iso_format30
-                ):
+                elif data_limitation7 > reviewed_mr["created_at"] > data_limitation30:
                     reviewed_mrs_counter30 += 1
 
-                if (
-                    data_limitation7_iso_format
-                    > reviewed_mr["created_at"]
-                    > data_limitation14_iso_format
-                ):
+                if data_limitation7 > reviewed_mr["created_at"] > data_limitation14:
                     previous_reviewed_mrs_counter7 += 1
-                elif (
-                    data_limitation_iso_format30
-                    > reviewed_mr["created_at"]
-                    > data_limitation_iso_format60
-                ):
+                elif data_limitation30 > reviewed_mr["created_at"] > data_limitation60:
                     previous_reviewed_mrs_counter30 += 1
 
             # If there were MRs created or reviewed - count as an active project
@@ -833,7 +806,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
             # Loop through each Commit created
             for commit in project_data["created_commits_data"]:
-                if commit["created_at"] > data_limitation7_iso_format:
+                if commit["created_at"] > data_limitation7:
                     created_commits7 += 1
                     created_commits30 += 1
 
@@ -855,11 +828,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         lines_removed7 += int(diff_item["lines_removed"])
                         lines_removed30 += int(diff_item["lines_removed"])
 
-                elif (
-                    data_limitation7_iso_format
-                    > commit["created_at"]
-                    > data_limitation_iso_format30
-                ):
+                elif data_limitation7 > commit["created_at"] > data_limitation30:
                     created_commits30 += 1
                     # provide simmplified date for commits
                     commit_created_at_simplified = datetime.strptime(
@@ -877,11 +846,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         lines_added30 += int(diff_item["lines_added"])
                         lines_removed30 += int(diff_item["lines_removed"])
 
-                if (
-                    data_limitation7_iso_format
-                    > commit["created_at"]
-                    > data_limitation14_iso_format
-                ):
+                if data_limitation7 > commit["created_at"] > data_limitation14:
                     previous_created_commits7 += 1
 
                     # provide simmplified date for commits
@@ -894,11 +859,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         previous_lines_added7 += int(diff_item["lines_added"])
                         previous_lines_removed7 += int(diff_item["lines_removed"])
 
-                elif (
-                    data_limitation_iso_format30
-                    > commit["created_at"]
-                    > data_limitation_iso_format60
-                ):
+                elif data_limitation30 > commit["created_at"] > data_limitation60:
                     previous_created_commits30 += 1
                     # provide simmplified date for commits
                     commit_created_at_simplified = datetime.strptime(
@@ -985,7 +946,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_created_commits7 = 0
         global_lines_added7 = 0
         global_lines_removed7 = 0
-        global_mrs_reviewed_last_7_days_xAxis = []
         global_mrs_created_last_7_days_yAxis = []
         global_mrs_reviewed_last_7_days_yAxis = []
         tmp_commits_added_lines_last_7_days_yAxis = [0] * 7
@@ -1196,7 +1156,6 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "lines_removed7": global_lines_removed7,
             "charts_last_7_days_xAxis": last_7_days_xAxis,
             "mrs_created_last_7_days_yAxis": global_mrs_created_last_7_days_yAxis,
-            "mrs_reviewed_last_7_days_xAxis": global_mrs_reviewed_last_7_days_xAxis,
             "mrs_reviewed_last_7_days_yAxis": global_mrs_reviewed_last_7_days_yAxis,
             "commits_added_lines_last_7_days_yAxis": global_commits_added_lines_last_7_days_yAxis,
             "commits_removed_lines_last_7_days_yAxis": global_commits_removed_lines_last_7_days_yAxis,
@@ -1258,6 +1217,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             counters30=global_counters30,
             previous7=global_previous_counters7,
             previous30=global_previous_counters30,
+            latestUpdate=timezone.make_aware(datetime.now()),
         )
 
 
@@ -1310,6 +1270,8 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
         )
 
         data_limitation = teammemberCodingStats.latestUpdate
+        # TODO delete when server running - this removes difference between my server and
+        data_limitation = data_limitation - timedelta(hours=1)
         data_limitation_iso_format = data_limitation.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         apiCallsInput = {
@@ -1626,7 +1588,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 if created_at_simplified in mr_created_chart_data:
                     mr_created_chart_data[created_at_simplified] += 1
 
-                if created_mr["created_at"] > data_limitation7_iso_format:
+                if created_mr["created_at"] > data_limitation7:
                     create_to_merge7sum += created_mr["create_to_merge"]
                     create_to_merge30sum += created_mr["create_to_merge"]
                     created_mrs_counter7 += 1
@@ -1651,11 +1613,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                         comments_in_created_mrs7 += 1
                         comments_in_created_mrs30 += 1
 
-                if (
-                    data_limitation7_iso_format
-                    > created_mr["created_at"]
-                    > data_limitation_iso_format30
-                ):
+                if data_limitation7 > created_mr["created_at"] > data_limitation30:
                     # generate project set of data
                     temp_project_name = project_data["project_name"]
                     temp_project_url = project_data["project_url"]
@@ -1672,21 +1630,13 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                     created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
                         comments_in_created_mrs30 += 1
-                if (
-                    data_limitation7_iso_format
-                    > created_mr["created_at"]
-                    > data_limitation14_iso_format
-                ):
+                if data_limitation7 > created_mr["created_at"] > data_limitation14:
                     previous_created_mrs_counter7 += 1
                     previous_create_to_merge7sum += created_mr["create_to_merge"]
                     for comment in created_mr["comment_ids"]:
                         previous_comments_in_created_mrs7 += 1
 
-                if (
-                    data_limitation_iso_format30
-                    > created_mr["created_at"]
-                    > data_limitation_iso_format60
-                ):
+                if data_limitation30 > created_mr["created_at"] > data_limitation60:
                     previous_create_to_merge30sum += created_mr["create_to_merge"]
                     previous_created_mrs_counter30 += 1
                     for comment in created_mr["comment_ids"]:
@@ -1726,27 +1676,15 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 if created_at_simplified in mr_reviewed_chart_data:
                     mr_reviewed_chart_data[created_at_simplified] += 1
 
-                if reviewed_mr["created_at"] > data_limitation7_iso_format:
+                if reviewed_mr["created_at"] > data_limitation7:
                     reviewed_mrs_counter7 += 1
                     reviewed_mrs_counter30 += 1
-                elif (
-                    data_limitation7_iso_format
-                    > reviewed_mr["created_at"]
-                    > data_limitation_iso_format30
-                ):
+                elif data_limitation7 > reviewed_mr["created_at"] > data_limitation30:
                     reviewed_mrs_counter30 += 1
 
-                if (
-                    data_limitation7_iso_format
-                    > reviewed_mr["created_at"]
-                    > data_limitation14_iso_format
-                ):
+                if data_limitation7 > reviewed_mr["created_at"] > data_limitation14:
                     previous_reviewed_mrs_counter7 += 1
-                elif (
-                    data_limitation_iso_format30
-                    > reviewed_mr["created_at"]
-                    > data_limitation_iso_format60
-                ):
+                elif data_limitation30 > reviewed_mr["created_at"] > data_limitation60:
                     previous_reviewed_mrs_counter30 += 1
 
             # If there were MRs created or reviewed - count as an active project
@@ -1766,6 +1704,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 date = datetime.strptime(
                     date_str, "%Y-%m-%d"
                 )  # Convert string to datetime
+                date = timezone.make_aware(date)
                 if date >= last_7_days:
                     mrs_created_last_7_days_data[date_str] = value  # Add to 7 days set
                 if date <= last_7_days and date >= previous_7_days:
@@ -1781,6 +1720,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 date = datetime.strptime(
                     date_str, "%Y-%m-%d"
                 )  # Convert string to datetime
+                date = timezone.make_aware(date)
                 if date >= last_7_days:
                     mrs_reviewed_last_7_days_data[date_str] = value  # Add to 7 days set
                 if date <= last_7_days and date >= previous_7_days:
@@ -1835,7 +1775,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 # Mark the commit as processed
                 processed_commit_ids.add(commit_id)
 
-                if commit["created_at"] > data_limitation7_iso_format:
+                if commit["created_at"] > data_limitation7:
                     created_commits7 += 1
                     created_commits30 += 1
 
@@ -1857,11 +1797,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                         lines_removed7 += int(diff_item["lines_removed"])
                         lines_removed30 += int(diff_item["lines_removed"])
 
-                elif (
-                    data_limitation7_iso_format
-                    > commit["created_at"]
-                    > data_limitation_iso_format30
-                ):
+                elif data_limitation7 > commit["created_at"] > data_limitation30:
                     created_commits30 += 1
                     # provide simmplified date for commits
                     commit_created_at_simplified = datetime.strptime(
@@ -1879,11 +1815,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                         lines_added30 += int(diff_item["lines_added"])
                         lines_removed30 += int(diff_item["lines_removed"])
 
-                if (
-                    data_limitation7_iso_format
-                    > commit["created_at"]
-                    > data_limitation14_iso_format
-                ):
+                if data_limitation7 > commit["created_at"] > data_limitation14:
                     previous_created_commits7 += 1
 
                     # provide simmplified date for commits
@@ -1896,11 +1828,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                         previous_lines_added7 += int(diff_item["lines_added"])
                         previous_lines_removed7 += int(diff_item["lines_removed"])
 
-                elif (
-                    data_limitation_iso_format30
-                    > commit["created_at"]
-                    > data_limitation_iso_format60
-                ):
+                elif data_limitation30 > commit["created_at"] > data_limitation60:
                     previous_created_commits30 += 1
                     # provide simmplified date for commits
                     commit_created_at_simplified = datetime.strptime(

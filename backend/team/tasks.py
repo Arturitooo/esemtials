@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from datetime import datetime
+from django.utils import timezone
+from datetime import timedelta
 import requests
 from .models import Teammember
 
@@ -18,14 +19,23 @@ def update_teammember_coding_stats():
         teammember_hasGitIntegration=True
     ).values_list("id", flat=True)
 
+    # TODO should be now instead of minus one hour
+    now = timezone.now()
+
+    # Subtract 1 hour
+    now_minus_one_hour = now - timedelta(hours=1)
+
+    # Format it in ISO 8601 format with UTC (Z at the end)
+    now_minus_one_hour_iso_format = (
+        now_minus_one_hour.strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:-4] + "Z"
+    )
+
     # 2. Loop through the IDs and send the API request for each
     for teammember_id in teammember_ids:
         # 3. Create the request body
-        now = (
-            datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:-4] + "Z"
-        )  # Format to match the given example
+
         request_body = {
-            "latestUpdate": now,
+            "latestUpdate": now_minus_one_hour_iso_format,
             "body": {},
             "counters7": {},
             "counters30": {},
@@ -37,6 +47,7 @@ def update_teammember_coding_stats():
         # 4. Make the API call
         url = f"http://127.0.0.1:8000/team/teammember-coding-stats/{teammember_id}/update/"
         try:
+            print(now)
             response = requests.put(url, json=request_body, headers=headers)
             response.raise_for_status()  # Raise an error if the response code is not 200
             print(f"git stats updated for the following teammember: {teammember_id}")
