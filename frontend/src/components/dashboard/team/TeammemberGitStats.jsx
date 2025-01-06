@@ -709,9 +709,9 @@ export const TeammemberGitStats = ({ teammember }) => {
                 }}
               >
                 <h3 style={{ margin: "0px", padding: "5px" }}>
-                  Created and Reviewed MR&apos;s over time
+                  MR&apos;s over time
                 </h3>
-                <Divider sx={{ marginBottom: "10px", width: "60%" }} />
+                <Divider sx={{ marginBottom: "10px", width: "20%" }} />
                 <Box sx={{ paddingLeft: "5px" }}>
                   {gitStatsTimeframe === 7 ? (
                     <>
@@ -821,7 +821,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 margin: "10px",
               }}
             >
-              <Box sx={{ width: "20%", paddingRight: "10px" }}>
+              <Box sx={{ width: "40%", paddingRight: "10px" }}>
                 <h3
                   style={{ margin: "0px", padding: "5px", textAlign: "left" }}
                 >
@@ -836,13 +836,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                 />
                 <Box
                   sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    width: "100%",
+                    display: "inline-flex",
+                    width: "80%",
+                    marginLeft: "10%",
+                    justifyContent: "space-between", // Space between items
+                    marginTop: "10%",
+                    alignItems: "center", // Vertically align items to the center
+                    gap: "20px", // Add space between items
                     textAlign: "center", // Align all content
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
                   }}
                 >
                   {[
@@ -940,7 +941,7 @@ export const TeammemberGitStats = ({ teammember }) => {
 
               <Divider orientation="vertical" flexItem />
               {/* TODO - chagne the chart */}
-              <Box sx={{ width: "80%", paddingLeft: "10px" }}>
+              <Box sx={{ width: "60%", paddingLeft: "10px" }}>
                 <h3 style={{ margin: "0px", padding: "5px" }}>
                   Time of commits
                 </h3>
@@ -991,7 +992,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 margin: "10px",
               }}
             >
-              <Box sx={{ width: "20%", paddingRight: "10px" }}>
+              <Box sx={{ width: "40%", paddingRight: "10px" }}>
                 <h3
                   style={{ margin: "0px", padding: "5px", textAlign: "left" }}
                 >
@@ -1006,13 +1007,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                 />
                 <Box
                   sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    width: "100%",
+                    display: "inline-flex",
+                    width: "80%",
+                    marginLeft: "10%",
+                    justifyContent: "space-between", // Space between items
+                    marginTop: "10%",
+                    alignItems: "center", // Vertically align items to the center
+                    gap: "20px", // Add space between items
                     textAlign: "center", // Align all content
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
                   }}
                 >
                   {[
@@ -1106,11 +1108,11 @@ export const TeammemberGitStats = ({ teammember }) => {
               </Box>
 
               <Divider orientation="vertical" flexItem />
-              <Box sx={{ width: "80%", paddingLeft: "10px" }}>
+              <Box sx={{ width: "60%", paddingLeft: "10px" }}>
                 <h3 style={{ margin: "0px", padding: "5px" }}>
-                  Lines of Code changed over time
+                  Code change over time
                 </h3>
-                <Divider sx={{ marginBottom: "10px", width: "60%" }} />
+                <Divider sx={{ marginBottom: "10px", width: "40%" }} />
                 <Box sx={{ paddingLeft: "5px" }}>
                   {gitStatsTimeframe === 7 ? (
                     <>
