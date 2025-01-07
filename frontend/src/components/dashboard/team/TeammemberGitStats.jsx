@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import AxiosInstance from "../../AxiosInstance";
 
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Divider } from "@mui/material";
 import Card from "@mui/material/Card";
-import Divider from "@mui/material/Divider";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { BarChart } from "@mui/x-charts/BarChart";
-import { ScatterChart } from "@mui/x-charts/ScatterChart";
+
+import HighchartsReact from "highcharts-react-official";
+import Highcharts from "highcharts";
 
 export const TeammemberGitStats = ({ teammember }) => {
   const [codingData, setCodingData] = useState(null);
@@ -19,174 +19,11 @@ export const TeammemberGitStats = ({ teammember }) => {
   const [counters30, setCounters30] = useState(null);
   const [previous7, setprevious7] = useState(null);
   const [previous30, setprevious30] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const successColor = "#42BC09";
   const warningColor = "rgba(32, 32, 32, 0.25)";
   const errorColor = "#D10000";
-
-  const chartData = [
-    {
-      id: "data-0",
-      x1: 329.39,
-      x2: 391.29,
-      y1: 443.28,
-      y2: 153.9,
-    },
-    {
-      id: "data-1",
-      x1: 96.94,
-      x2: 139.6,
-      y1: 110.5,
-      y2: 217.8,
-    },
-    {
-      id: "data-2",
-      x1: 336.35,
-      x2: 282.34,
-      y1: 175.23,
-      y2: 286.32,
-    },
-    {
-      id: "data-3",
-      x1: 159.44,
-      x2: 384.85,
-      y1: 195.97,
-      y2: 325.12,
-    },
-    {
-      id: "data-4",
-      x1: 188.86,
-      x2: 182.27,
-      y1: 351.77,
-      y2: 144.58,
-    },
-    {
-      id: "data-5",
-      x1: 143.86,
-      x2: 360.22,
-      y1: 43.253,
-      y2: 146.51,
-    },
-    {
-      id: "data-6",
-      x1: 202.02,
-      x2: 209.5,
-      y1: 376.34,
-      y2: 309.69,
-    },
-    {
-      id: "data-7",
-      x1: 384.41,
-      x2: 258.93,
-      y1: 31.514,
-      y2: 236.38,
-    },
-    {
-      id: "data-8",
-      x1: 256.76,
-      x2: 70.571,
-      y1: 231.31,
-      y2: 440.72,
-    },
-    {
-      id: "data-9",
-      x1: 143.79,
-      x2: 419.02,
-      y1: 108.04,
-      y2: 20.29,
-    },
-    {
-      id: "data-10",
-      x1: 103.48,
-      x2: 15.886,
-      y1: 321.77,
-      y2: 484.17,
-    },
-    {
-      id: "data-11",
-      x1: 272.39,
-      x2: 189.03,
-      y1: 120.18,
-      y2: 54.962,
-    },
-    {
-      id: "data-12",
-      x1: 23.57,
-      x2: 456.4,
-      y1: 366.2,
-      y2: 418.5,
-    },
-    {
-      id: "data-13",
-      x1: 219.73,
-      x2: 235.96,
-      y1: 451.45,
-      y2: 181.32,
-    },
-    {
-      id: "data-14",
-      x1: 54.99,
-      x2: 434.5,
-      y1: 294.8,
-      y2: 440.9,
-    },
-    {
-      id: "data-15",
-      x1: 134.13,
-      x2: 383.8,
-      y1: 121.83,
-      y2: 273.52,
-    },
-    {
-      id: "data-16",
-      x1: 12.7,
-      x2: 270.8,
-      y1: 287.7,
-      y2: 346.7,
-    },
-    {
-      id: "data-17",
-      x1: 176.51,
-      x2: 119.17,
-      y1: 134.06,
-      y2: 74.528,
-    },
-    {
-      id: "data-18",
-      x1: 65.05,
-      x2: 78.93,
-      y1: 104.5,
-      y2: 150.9,
-    },
-    {
-      id: "data-19",
-      x1: 162.25,
-      x2: 63.707,
-      y1: 413.07,
-      y2: 26.483,
-    },
-    {
-      id: "data-20",
-      x1: 68.88,
-      x2: 150.8,
-      y1: 74.68,
-      y2: 333.2,
-    },
-    {
-      id: "data-21",
-      x1: 95.29,
-      x2: 329.1,
-      y1: 360.6,
-      y2: 422.0,
-    },
-    {
-      id: "data-22",
-      x1: 390.62,
-      x2: 10.01,
-      y1: 330.72,
-      y2: 488.06,
-    },
-  ];
 
   useEffect(() => {
     GetGitData(teammember);
@@ -209,6 +46,7 @@ export const TeammemberGitStats = ({ teammember }) => {
       setprevious7(previous7);
       const previous30 = theCodingStats.previous30;
       setprevious30(previous30);
+      setLoading(false);
     });
   };
 
@@ -241,6 +79,21 @@ export const TeammemberGitStats = ({ teammember }) => {
       );
     }
   };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -708,106 +561,97 @@ export const TeammemberGitStats = ({ teammember }) => {
                   overflow: "hidden",
                 }}
               >
-                <h3 style={{ margin: "0px", padding: "5px" }}>
-                  MR&apos;s over time
-                </h3>
-                <Divider sx={{ marginBottom: "10px", width: "20%" }} />
-                <Box sx={{ paddingLeft: "5px" }}>
-                  {gitStatsTimeframe === 7 ? (
-                    <>
-                      <BarChart
-                        xAxis={[
-                          {
-                            data: [
-                              ...counters7.charts_last_7_days_xAxis,
-                              ...counters7.charts_last_7_days_xAxis,
-                            ],
-                            scaleType: "band",
+                <Box
+                  sx={{
+                    paddingLeft: "5px",
+                    paddingRight: "30px",
+                    width: "100%",
+                  }}
+                >
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={{
+                      chart: {
+                        type: "column",
+                        height: 230, // Set height as per your requirement
+                      },
+                      title: {
+                        text: "MR's over time",
+                        align: "left",
+                        style: {
+                          fontFamily: '"Ubuntu", sans-serif',
+                          fontWeight: 400,
+                          fontSize: "17px",
+                        },
+                      },
+                      credits: {
+                        enabled: false,
+                      },
+                      xAxis: {
+                        categories:
+                          gitStatsTimeframe === 7
+                            ? counters7.charts_last_7_days_xAxis
+                            : counters30.charts_last_30_days_xAxis,
+                        title: {
+                          text: "",
+                        },
+                        labels: {
+                          rotation: 0,
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
                           },
-                        ]}
-                        series={[
-                          {
-                            id: "created",
-                            data: counters7.mrs_created_last_7_days_yAxis,
-                            color: "#0451E5",
-                            stack: "stack1",
-                            label: "created",
+                          staggerLines: 1,
+                        },
+                        tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
+                      },
+                      yAxis: {
+                        min: 0,
+                        title: {
+                          text: "",
+                        },
+                        labels: {
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
                           },
-                          {
-                            id: "reviewed",
-                            data: counters7.mrs_reviewed_last_7_days_yAxis,
-                            color: "#EB8A17",
-                            stack: "stack1",
-                            label: "reviewed",
-                          },
-                        ]}
-                        grid={{ horizontal: true }}
-                        slotProps={{
-                          legend: {
-                            labelStyle: {
-                              fontSize: 12,
-                            },
-                          },
-                        }}
-                        sx={{
-                          "& .MuiChartsLegend-mark": {
-                            x: "14px",
-                            y: "-2px",
-                            width: "8px",
-                            height: "8px",
-                          },
-                        }}
-                        height={190}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <BarChart
-                        xAxis={[
-                          {
-                            data: [
-                              ...counters30.charts_last_30_days_xAxis,
-                              ...counters30.charts_last_30_days_xAxis,
-                            ],
-                            scaleType: "band",
-                          },
-                        ]}
-                        series={[
-                          {
-                            id: "created",
-                            data: counters30.mrs_created_last_30_days_yAxis,
-                            color: "#0451E5",
-                            stack: "stack1",
-                            label: "created",
-                          },
-                          {
-                            id: "reviewed",
-                            data: counters30.mrs_reviewed_last_30_days_yAxis,
-                            color: "#EB8A17",
-                            stack: "stack1",
-                            label: "reviewed",
-                          },
-                        ]}
-                        grid={{ horizontal: true }}
-                        slotProps={{
-                          legend: {
-                            labelStyle: {
-                              fontSize: 12,
-                            },
-                          },
-                        }}
-                        sx={{
-                          "& .MuiChartsLegend-mark": {
-                            x: "14px",
-                            y: "-2px",
-                            width: "8px",
-                            height: "8px",
-                          },
-                        }}
-                        height={190}
-                      />
-                    </>
-                  )}
+                        },
+                        tickInterval: 2,
+                      },
+                      series: [
+                        {
+                          name: "Reviewed",
+                          data:
+                            gitStatsTimeframe === 7
+                              ? counters7.mrs_reviewed_last_7_days_yAxis
+                              : counters30.mrs_reviewed_last_30_days_yAxis,
+                          color: "#EB8A17",
+                        },
+                        {
+                          name: "Created",
+                          data:
+                            gitStatsTimeframe === 7
+                              ? counters7.mrs_created_last_7_days_yAxis
+                              : counters30.mrs_created_last_30_days_yAxis,
+                          color: "#0451E5",
+                        },
+                      ],
+                      legend: {
+                        enabled: true,
+                        itemStyle: {
+                          fontSize: "12px",
+                        },
+                      },
+                      tooltip: {
+                        pointFormat: "{series.name}: <b>{point.y}</b>",
+                      },
+                      plotOptions: {
+                        column: {
+                          stacking: "normal", // Enable stacking of bars
+                        },
+                      },
+                    }}
+                  />
                 </Box>
               </Box>
             </Box>
@@ -821,7 +665,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                 margin: "10px",
               }}
             >
-              <Box sx={{ width: "40%", paddingRight: "10px" }}>
+              <Box
+                sx={{
+                  width: "40%",
+                  paddingRight: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <h3
                   style={{ margin: "0px", padding: "5px", textAlign: "left" }}
                 >
@@ -836,14 +687,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                 />
                 <Box
                   sx={{
-                    display: "inline-flex",
+                    display: "flex",
+                    flexDirection: "row",
                     width: "80%",
                     marginLeft: "10%",
-                    justifyContent: "space-between", // Space between items
-                    marginTop: "10%",
-                    alignItems: "center", // Vertically align items to the center
-                    gap: "20px", // Add space between items
-                    textAlign: "center", // Align all content
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    textAlign: "center",
+                    flexGrow: 1,
                   }}
                 >
                   {[
@@ -946,38 +797,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                   Time of commits
                 </h3>
                 <Divider sx={{ marginBottom: "10px", width: "20%" }} />
-                <Box sx={{ paddingLeft: "5px" }}>
-                  {gitStatsTimeframe === 7 ? (
-                    <>
-                      <ScatterChart
-                        height={190}
-                        series={[
-                          {
-                            data: chartData.map((v) => ({
-                              x: v.x1,
-                              y: v.y1,
-                              id: v.id,
-                            })),
-                          },
-                        ]}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <ScatterChart
-                        height={190}
-                        series={[
-                          {
-                            data: chartData.map((v) => ({
-                              x: v.x1,
-                              y: v.y1,
-                              id: v.id,
-                            })),
-                          },
-                        ]}
-                      />
-                    </>
-                  )}
+                <Box sx={{ paddingLeft: "5px", paddingRight: "25px" }}>
+                  {gitStatsTimeframe === 7 ? <>chart</> : <>chart</>}
                 </Box>
               </Box>
             </Box>
@@ -992,7 +813,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                 margin: "10px",
               }}
             >
-              <Box sx={{ width: "40%", paddingRight: "10px" }}>
+              <Box
+                sx={{
+                  width: "40%",
+                  paddingRight: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <h3
                   style={{ margin: "0px", padding: "5px", textAlign: "left" }}
                 >
@@ -1007,14 +835,14 @@ export const TeammemberGitStats = ({ teammember }) => {
                 />
                 <Box
                   sx={{
-                    display: "inline-flex",
+                    display: "flex",
+                    flexDirection: "row",
                     width: "80%",
                     marginLeft: "10%",
-                    justifyContent: "space-between", // Space between items
-                    marginTop: "10%",
-                    alignItems: "center", // Vertically align items to the center
-                    gap: "20px", // Add space between items
-                    textAlign: "center", // Align all content
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    textAlign: "center",
+                    flexGrow: 1,
                   }}
                 >
                   {[
@@ -1109,131 +937,153 @@ export const TeammemberGitStats = ({ teammember }) => {
 
               <Divider orientation="vertical" flexItem />
               <Box sx={{ width: "60%", paddingLeft: "10px" }}>
-                <h3 style={{ margin: "0px", padding: "5px" }}>
-                  Code change over time
-                </h3>
-                <Divider sx={{ marginBottom: "10px", width: "40%" }} />
-                <Box sx={{ paddingLeft: "5px" }}>
+                <Box sx={{ paddingLeft: "5px", paddingRight: "25px" }}>
                   {gitStatsTimeframe === 7 ? (
-                    <>
-                      <BarChart
-                        xAxis={[
-                          {
-                            data: [
-                              ...counters7.charts_last_7_days_xAxis,
-                              ...counters7.charts_last_7_days_xAxis,
-                            ],
-                            scaleType: "band",
+                    <HighchartsReact
+                      highcharts={Highcharts}
+                      options={{
+                        chart: {
+                          type: "column", // Use a column chart similar to the BarChart
+                          height: 230, // Keep the height the same
+                        },
+                        title: {
+                          text: "Lines of Code over time",
+                          align: "left",
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontWeight: 400,
+                            fontSize: "17px",
                           },
-                        ]}
-                        yAxis={[
-                          {
-                            min: Math.min(
-                              ...counters7.commits_added_lines_last_7_days_yAxis,
-                              ...counters7.commits_removed_lines_last_7_days_yAxis
-                            ), // Minimum value from both datasets
-                            max: Math.max(
-                              ...counters7.commits_added_lines_last_7_days_yAxis,
-                              ...counters7.commits_removed_lines_last_7_days_yAxis
-                            ), // Maximum value from both datasets
+                        },
+                        credits: {
+                          enabled: false,
+                        },
+                        xAxis: {
+                          categories: counters7.charts_last_7_days_xAxis,
+                          title: {
+                            text: "",
                           },
-                        ]}
-                        series={[
+                          labels: {
+                            style: {
+                              fontFamily: '"Ubuntu", sans-serif',
+                              fontSize: "12px",
+                            },
+                            staggerLines: 1,
+                          },
+                        },
+                        yAxis: {
+                          min: Math.min(
+                            ...counters7.commits_added_lines_last_7_days_yAxis,
+                            ...counters7.commits_removed_lines_last_7_days_yAxis
+                          ),
+                          max: Math.max(
+                            ...counters7.commits_added_lines_last_7_days_yAxis,
+                            ...counters7.commits_removed_lines_last_7_days_yAxis
+                          ),
+                          title: {
+                            text: "",
+                          },
+                          labels: {
+                            style: {
+                              fontFamily: '"Ubuntu", sans-serif',
+                              fontSize: "12px",
+                            },
+                          },
+                        },
+                        series: [
                           {
-                            id: "added",
+                            name: "Added",
                             data: counters7.commits_added_lines_last_7_days_yAxis,
                             color: "#0451E5",
-                            stack: "stack1",
-                            label: "added",
+                            stacking: "normal",
                           },
                           {
-                            id: "removed",
+                            name: "Removed",
                             data: counters7.commits_removed_lines_last_7_days_yAxis,
                             color: "#1D212F",
-                            stack: "stack1",
-                            label: "removed",
+                            stacking: "normal",
                           },
-                        ]}
-                        grid={{ horizontal: true }}
-                        slotProps={{
-                          legend: {
-                            labelStyle: {
-                              fontSize: 12,
-                            },
+                        ],
+                        legend: {
+                          enabled: true,
+                          itemStyle: {
+                            fontSize: "12px",
                           },
-                        }}
-                        sx={{
-                          "& .MuiChartsLegend-mark": {
-                            x: "14px",
-                            y: "-2px",
-                            width: "8px",
-                            height: "8px",
-                          },
-                        }}
-                        height={190}
-                      />
-                    </>
+                        },
+                        tooltip: {
+                          pointFormat: "{series.name}: <b>{point.y}</b>",
+                        },
+                      }}
+                    />
                   ) : (
-                    <>
-                      <BarChart
-                        xAxis={[
-                          {
-                            data: [
-                              ...counters30.charts_last_30_days_xAxis,
-                              ...counters30.charts_last_30_days_xAxis,
-                            ],
-                            scaleType: "band",
+                    <HighchartsReact
+                      highcharts={Highcharts}
+                      options={{
+                        chart: {
+                          type: "column", // Use a column chart similar to the BarChart
+                          height: 230, // Keep the height the same
+                        },
+                        title: {
+                          text: "Lines of Code change",
+                          align: "left",
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontWeight: 400,
+                            fontSize: "17px",
                           },
-                        ]}
-                        yAxis={[
-                          {
-                            min: Math.min(
-                              ...counters30.commits_added_lines_last_30_days_yAxis,
-                              ...counters30.commits_removed_lines_last_30_days_yAxis
-                            ), // Minimum value from both datasets
-                            max: Math.max(
-                              ...counters30.commits_added_lines_last_30_days_yAxis,
-                              ...counters30.commits_removed_lines_last_30_days_yAxis
-                            ), // Maximum value from both datasets
+                        },
+                        xAxis: {
+                          categories: counters30.charts_last_30_days_xAxis,
+                          title: {
+                            text: "",
                           },
-                        ]}
-                        series={[
+                          labels: {
+                            style: {
+                              fontFamily: '"Ubuntu", sans-serif',
+                              fontSize: "12px",
+                            },
+                            staggerLines: 1,
+                          },
+                          tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
+                        },
+                        yAxis: {
+                          min: Math.min(
+                            ...counters30.commits_added_lines_last_30_days_yAxis,
+                            ...counters30.commits_removed_lines_last_30_days_yAxis
+                          ),
+                          max: Math.max(
+                            ...counters30.commits_added_lines_last_30_days_yAxis,
+                            ...counters30.commits_removed_lines_last_30_days_yAxis
+                          ),
+                          title: {
+                            text: "",
+                          },
+                        },
+                        series: [
                           {
-                            id: "added",
+                            name: "Added",
                             data: counters30.commits_added_lines_last_30_days_yAxis,
                             color: "#0451E5",
-                            stack: "stack1",
-                            label: "added",
-                            baseline: 0,
+                            stacking: "normal",
                           },
                           {
-                            id: "removed",
+                            name: "Removed",
                             data: counters30.commits_removed_lines_last_30_days_yAxis,
                             color: "#1D212F",
-                            stack: "stack1",
-                            label: "removed",
-                            baseline: 0,
+                            stacking: "normal",
                           },
-                        ]}
-                        grid={{ horizontal: true }}
-                        slotProps={{
-                          legend: {
-                            labelStyle: {
-                              fontSize: 12,
-                            },
+                        ],
+                        legend: {
+                          enabled: true,
+                          itemStyle: {
+                            fontSize: "12px",
                           },
-                        }}
-                        sx={{
-                          "& .MuiChartsLegend-mark": {
-                            x: "14px",
-                            y: "-2px",
-                            width: "8px",
-                            height: "8px",
-                          },
-                        }}
-                        height={190}
-                      />
-                    </>
+                        },
+                        tooltip: {
+                          pointFormat: "{series.name}: <b>{point.y}</b>",
+                        },
+                      }}
+                    />
                   )}
                 </Box>
               </Box>
