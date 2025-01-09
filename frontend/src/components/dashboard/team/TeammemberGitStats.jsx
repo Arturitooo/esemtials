@@ -137,7 +137,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 margin: "10px",
               }}
             >
-              <Box sx={{ width: "40%", paddingRight: "10px" }}>
+              <Box sx={{ width: "30%", paddingRight: "10px" }}>
                 <h3 style={{ margin: "0px", padding: "5px" }}>Repositories</h3>
                 <Divider sx={{ marginBottom: "10px", width: "40%" }} />
                 <Box
@@ -158,58 +158,67 @@ export const TeammemberGitStats = ({ teammember }) => {
                   >
                     Active repositories
                   </div>
-                  <div
-                    style={{
-                      margin: "auto",
-                      fontWeight: "400",
-                      fontSize: "40px",
-                      lineHeight: "40px",
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center", // Vertically centers content
+                      justifyContent: "center", // Horizontally centers content within the Box
+                      paddingBottom: "10px",
                     }}
                   >
-                    {gitStatsTimeframe === 7 ? (
-                      <>{counters7.active_projects7}</>
-                    ) : (
-                      <>{counters30.active_projects30}</>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      margin: "auto",
-                      fontWeight: "400",
-                      fontSize: "14px",
-                      color:
-                        gitStatsTimeframe === 7
-                          ? getColor(
-                              counters7.active_projects7,
-                              previous7.previous_active_projects7
-                            )
-                          : getColor(
-                              counters30.active_projects30,
-                              previous30.previous_active_projects30
-                            ),
-                      paddingBottom: "15px",
-                    }}
-                  >
-                    {gitStatsTimeframe === 7 ? (
-                      <>
-                        {calculateChange(
-                          counters7.active_projects7,
-                          previous7.previous_active_projects7
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {calculateChange(
-                          counters30.active_projects30,
-                          previous30.previous_active_projects30
-                        )}
-                      </>
-                    )}
-                  </div>
+                    <div
+                      style={{
+                        fontWeight: "400",
+                        fontSize: "40px",
+                        lineHeight: "25px", // Matches height proportionally for the font size
+                        textAlign: "center",
+                      }}
+                    >
+                      {gitStatsTimeframe === 7 ? (
+                        <>{counters7.active_projects7}</>
+                      ) : (
+                        <>{counters30.active_projects30}</>
+                      )}
+                    </div>
+                    <div
+                      style={{
+                        fontWeight: "400",
+                        fontSize: "14px",
+                        lineHeight: "14px", // Matches font size for proper vertical centering
+                        color:
+                          gitStatsTimeframe === 7
+                            ? getColor(
+                                counters7.active_projects7,
+                                previous7.previous_active_projects7
+                              )
+                            : getColor(
+                                counters30.active_projects30,
+                                previous30.previous_active_projects30
+                              ),
+                        marginLeft: "5px", // Ensures spacing between value and change
+                      }}
+                    >
+                      {gitStatsTimeframe === 7 ? (
+                        <>
+                          {calculateChange(
+                            counters7.active_projects7,
+                            previous7.previous_active_projects7
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {calculateChange(
+                            counters30.active_projects30,
+                            previous30.previous_active_projects30
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </Box>
                 </Box>
               </Box>
               <Divider orientation="vertical" flexItem />
-              <Box sx={{ width: "60%", paddingLeft: "10px" }}>
+              <Box sx={{ width: "70%", paddingLeft: "10px" }}>
                 <div>
                   <span
                     style={{
@@ -276,6 +285,7 @@ export const TeammemberGitStats = ({ teammember }) => {
               </Box>
             </Box>
           </Card>
+
           {/* MRs stats */}
           <Card className="card-section">
             <Box
@@ -285,7 +295,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 margin: "10px",
               }}
             >
-              <Box sx={{ width: "40%", paddingRight: "10px" }}>
+              <Box sx={{ width: "30%", paddingRight: "10px" }}>
                 <h3
                   style={{ margin: "0px", padding: "5px", textAlign: "left" }}
                 >
@@ -301,237 +311,189 @@ export const TeammemberGitStats = ({ teammember }) => {
                 <Box
                   sx={{
                     display: "flex",
-                    flexWrap: "wrap",
+                    flexDirection: "column",
                     width: "100%",
-                    textAlign: "center", // Center-align all content
+                    textAlign: "center",
                   }}
                 >
-                  {/* Left column */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "50%",
-                    }}
-                  >
-                    {[
-                      {
-                        label: "MR's created",
-                        value:
-                          gitStatsTimeframe === 7
-                            ? counters7.created_mrs_counter7
-                            : counters30.created_mrs_counter30,
-                        change:
-                          gitStatsTimeframe === 7
-                            ? calculateChange(
-                                counters7.created_mrs_counter7,
-                                previous7.previous_created_mrs_counter7
-                              )
-                            : calculateChange(
-                                counters30.created_mrs_counter30,
-                                previous30.previous_created_mrs_counter30
-                              ),
-                        color:
-                          gitStatsTimeframe === 7
-                            ? getColor(
-                                counters7.created_mrs_counter7,
-                                previous7.previous_created_mrs_counter7
-                              )
-                            : getColor(
-                                counters30.created_mrs_counter30,
-                                previous30.previous_created_mrs_counter30
-                              ),
-                      },
-                      {
-                        label: "CR comments received",
-                        value:
-                          gitStatsTimeframe === 7
-                            ? counters7.comments_in_created_mrs7
-                            : counters30.comments_in_created_mrs30,
-                        change:
-                          gitStatsTimeframe === 7
-                            ? calculateChange(
-                                counters7.comments_in_created_mrs7,
-                                previous7.previous_comments_in_created_mrs7
-                              )
-                            : calculateChange(
-                                counters30.comments_in_created_mrs30,
-                                previous30.previous_comments_in_created_mrs30
-                              ),
-                        color:
-                          gitStatsTimeframe === 7
-                            ? getNegativeColor(
-                                counters7.comments_in_created_mrs7,
-                                previous7.previous_comments_in_created_mrs7
-                              )
-                            : getNegativeColor(
-                                counters30.comments_in_created_mrs30,
-                                previous30.previous_comments_in_created_mrs30
-                              ),
-                      },
-                    ].map((item, index) => (
-                      <Box key={index}>
-                        <div
-                          style={{
-                            color: "rgba(32, 32, 32, 0.5)",
-                            fontWeight: "400",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {item.label}
-                        </div>
-                        <div
-                          style={{
-                            fontWeight: "400",
-                            fontSize: "40px",
-                            lineHeight: "40px",
-                          }}
-                        >
-                          {item.value}
-                        </div>
-                        <div
-                          style={{
-                            fontWeight: "400",
-                            fontSize: "12px",
-                            color: item.color,
-                            paddingBottom: "15px",
-                          }}
-                        >
-                          {item.change}
-                        </div>
-                      </Box>
-                    ))}
-                  </Box>
-                  {/* Right column */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "50%",
-                    }}
-                  >
-                    {[
-                      {
-                        label: "MR's reviewed",
-                        value:
-                          gitStatsTimeframe === 7
-                            ? counters7.reviewed_mrs_counter7
-                            : counters30.reviewed_mrs_counter30,
-                        change:
-                          gitStatsTimeframe === 7
-                            ? calculateChange(
-                                counters7.reviewed_mrs_counter7,
-                                previous7.previous_reviewed_mrs_counter7
-                              )
-                            : calculateChange(
-                                counters30.reviewed_mrs_counter30,
-                                previous30.previous_reviewed_mrs_counter30
-                              ),
-                        color:
-                          gitStatsTimeframe === 7
-                            ? getColor(
-                                counters7.reviewed_mrs_counter7,
-                                previous7.previous_reviewed_mrs_counter7
-                              )
-                            : getColor(
-                                counters30.reviewed_mrs_counter30,
-                                previous30.previous_reviewed_mrs_counter30
-                              ),
-                      },
-                      {
-                        label: "MR create to merge time",
-                        value:
-                          gitStatsTimeframe === 7
-                            ? `${
-                                Math.floor(counters7.create_to_merge7 / 3600) >
-                                0
-                                  ? `${Math.floor(
-                                      counters7.create_to_merge7 / 3600
-                                    )} h `
-                                  : ""
-                              }${
-                                Math.floor(
-                                  (counters7.create_to_merge7 % 3600) / 60
-                                ) > 0
-                                  ? `${Math.floor(
-                                      (counters7.create_to_merge7 % 3600) / 60
-                                    )} min `
-                                  : ""
-                              }${
-                                Math.floor(counters7.create_to_merge7 % 60) > 0
-                                  ? `${Math.floor(
-                                      counters7.create_to_merge7 % 60
-                                    )} sec`
-                                  : ""
-                              }`
-                            : `${
-                                Math.floor(
-                                  counters30.create_to_merge30 / 3600
-                                ) > 0
-                                  ? `${Math.floor(
-                                      counters30.create_to_merge30 / 3600
-                                    )} h `
-                                  : ""
-                              }${
-                                Math.floor(
-                                  (counters30.create_to_merge30 % 3600) / 60
-                                ) > 0
-                                  ? `${Math.floor(
-                                      (counters30.create_to_merge30 % 3600) / 60
-                                    )} min `
-                                  : ""
-                              }${
-                                Math.floor(counters30.create_to_merge30 % 60) >
-                                0
-                                  ? `${Math.floor(
-                                      counters30.create_to_merge30 % 60
-                                    )} sec`
-                                  : ""
-                              }`,
-                        change:
-                          gitStatsTimeframe === 7
-                            ? calculateChange(
-                                counters7.create_to_merge7,
-                                previous7.previous_create_to_merge7
-                              )
-                            : calculateChange(
-                                counters30.create_to_merge30,
-                                previous30.previous_create_to_merge30
-                              ),
-                        color:
-                          gitStatsTimeframe === 7
-                            ? getNegativeColor(
-                                counters7.create_to_merge7,
-                                previous7.previous_create_to_merge7
-                              )
-                            : getNegativeColor(
-                                counters30.create_to_merge30,
-                                previous30.previous_create_to_merge30
-                              ),
-                      },
-                    ].map((item, index) => (
-                      <Box key={index}>
-                        <div
-                          style={{
-                            color: "rgba(32, 32, 32, 0.5)",
-                            fontWeight: "400",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {item.label}
-                        </div>
+                  {[
+                    {
+                      label: "MR's created",
+                      value:
+                        gitStatsTimeframe === 7
+                          ? counters7.created_mrs_counter7
+                          : counters30.created_mrs_counter30,
+                      change:
+                        gitStatsTimeframe === 7
+                          ? calculateChange(
+                              counters7.created_mrs_counter7,
+                              previous7.previous_created_mrs_counter7
+                            )
+                          : calculateChange(
+                              counters30.created_mrs_counter30,
+                              previous30.previous_created_mrs_counter30
+                            ),
+                      color:
+                        gitStatsTimeframe === 7
+                          ? getColor(
+                              counters7.created_mrs_counter7,
+                              previous7.previous_created_mrs_counter7
+                            )
+                          : getColor(
+                              counters30.created_mrs_counter30,
+                              previous30.previous_created_mrs_counter30
+                            ),
+                    },
+                    {
+                      label: "CR comments received",
+                      value:
+                        gitStatsTimeframe === 7
+                          ? counters7.comments_in_created_mrs7
+                          : counters30.comments_in_created_mrs30,
+                      change:
+                        gitStatsTimeframe === 7
+                          ? calculateChange(
+                              counters7.comments_in_created_mrs7,
+                              previous7.previous_comments_in_created_mrs7
+                            )
+                          : calculateChange(
+                              counters30.comments_in_created_mrs30,
+                              previous30.previous_comments_in_created_mrs30
+                            ),
+                      color:
+                        gitStatsTimeframe === 7
+                          ? getNegativeColor(
+                              counters7.comments_in_created_mrs7,
+                              previous7.previous_comments_in_created_mrs7
+                            )
+                          : getNegativeColor(
+                              counters30.comments_in_created_mrs30,
+                              previous30.previous_comments_in_created_mrs30
+                            ),
+                    },
+                    {
+                      label: "MR's reviewed",
+                      value:
+                        gitStatsTimeframe === 7
+                          ? counters7.reviewed_mrs_counter7
+                          : counters30.reviewed_mrs_counter30,
+                      change:
+                        gitStatsTimeframe === 7
+                          ? calculateChange(
+                              counters7.reviewed_mrs_counter7,
+                              previous7.previous_reviewed_mrs_counter7
+                            )
+                          : calculateChange(
+                              counters30.reviewed_mrs_counter30,
+                              previous30.previous_reviewed_mrs_counter30
+                            ),
+                      color:
+                        gitStatsTimeframe === 7
+                          ? getColor(
+                              counters7.reviewed_mrs_counter7,
+                              previous7.previous_reviewed_mrs_counter7
+                            )
+                          : getColor(
+                              counters30.reviewed_mrs_counter30,
+                              previous30.previous_reviewed_mrs_counter30
+                            ),
+                    },
+                    {
+                      label: "MR create to merge time",
+                      value:
+                        gitStatsTimeframe === 7
+                          ? `${
+                              Math.floor(counters7.create_to_merge7 / 3600) > 0
+                                ? `${Math.floor(
+                                    counters7.create_to_merge7 / 3600
+                                  )} h `
+                                : ""
+                            }${
+                              Math.floor(
+                                (counters7.create_to_merge7 % 3600) / 60
+                              ) > 0
+                                ? `${Math.floor(
+                                    (counters7.create_to_merge7 % 3600) / 60
+                                  )} min `
+                                : ""
+                            }${
+                              Math.floor(counters7.create_to_merge7 % 60) > 0
+                                ? `${Math.floor(
+                                    counters7.create_to_merge7 % 60
+                                  )} sec`
+                                : ""
+                            }`
+                          : `${
+                              Math.floor(counters30.create_to_merge30 / 3600) >
+                              0
+                                ? `${Math.floor(
+                                    counters30.create_to_merge30 / 3600
+                                  )} h `
+                                : ""
+                            }${
+                              Math.floor(
+                                (counters30.create_to_merge30 % 3600) / 60
+                              ) > 0
+                                ? `${Math.floor(
+                                    (counters30.create_to_merge30 % 3600) / 60
+                                  )} min `
+                                : ""
+                            }${
+                              Math.floor(counters30.create_to_merge30 % 60) > 0
+                                ? `${Math.floor(
+                                    counters30.create_to_merge30 % 60
+                                  )} sec`
+                                : ""
+                            }`,
+                      change:
+                        gitStatsTimeframe === 7
+                          ? calculateChange(
+                              counters7.create_to_merge7,
+                              previous7.previous_create_to_merge7
+                            )
+                          : calculateChange(
+                              counters30.create_to_merge30,
+                              previous30.previous_create_to_merge30
+                            ),
+                      color:
+                        gitStatsTimeframe === 7
+                          ? getNegativeColor(
+                              counters7.create_to_merge7,
+                              previous7.previous_create_to_merge7
+                            )
+                          : getNegativeColor(
+                              counters30.create_to_merge30,
+                              previous30.previous_create_to_merge30
+                            ),
+                    },
+                  ].map((item, index) => (
+                    <Box key={index}>
+                      <div
+                        style={{
+                          color: "rgba(32, 32, 32, 0.5)",
+                          fontWeight: "400",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                      <Box
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center", // Vertically centers content
+                          justifyContent: "center", // Horizontally centers content within the Box
+                          paddingBottom: "10px",
+                        }}
+                      >
                         <div
                           style={{
                             fontWeight: "400",
                             fontSize:
                               item.label === "MR create to merge time"
-                                ? "16px"
-                                : "40px",
-                            lineHeight: "40px",
+                                ? "14px"
+                                : "30px",
+                            lineHeight: "25px",
+                            textAlign: "center", // Ensures item.value is centered in its container
                           }}
                         >
                           {item.value}
@@ -539,123 +501,117 @@ export const TeammemberGitStats = ({ teammember }) => {
                         <div
                           style={{
                             fontWeight: "400",
-                            fontSize: "12px",
+                            fontSize: "10px",
                             color: item.color,
-                            paddingBottom: "15px",
+                            marginLeft: "5px", // Adds a small gap between item.value and item.change
                           }}
                         >
                           {item.change}
                         </div>
                       </Box>
-                    ))}
-                  </Box>
+                    </Box>
+                  ))}
                 </Box>
               </Box>
 
               <Divider orientation="vertical" flexItem />
               <Box
                 sx={{
-                  width: "60%",
+                  width: "70%",
                   maxWidth: "100%",
-                  paddingLeft: "10px",
+                  paddingLeft: "15px",
+                  paddingRight: "30px",
                   overflow: "hidden",
                 }}
               >
-                <Box
-                  sx={{
-                    paddingLeft: "5px",
-                    paddingRight: "30px",
-                    width: "100%",
-                  }}
-                >
-                  <HighchartsReact
-                    highcharts={Highcharts}
-                    options={{
-                      chart: {
-                        type: "column",
-                        height: 230, // Set height as per your requirement
+                <HighchartsReact
+                  highcharts={Highcharts}
+                  options={{
+                    chart: {
+                      type: "column",
+                      height: 270, // Set height as per your requirement
+                    },
+                    title: {
+                      text: "MR's over time",
+                      align: "left",
+                      style: {
+                        fontFamily: '"Ubuntu", sans-serif',
+                        fontWeight: 400,
+                        fontSize: "17px",
                       },
+                    },
+                    credits: {
+                      enabled: false,
+                    },
+                    xAxis: {
+                      categories:
+                        gitStatsTimeframe === 7
+                          ? counters7.charts_last_7_days_xAxis
+                          : counters30.charts_last_30_days_xAxis,
                       title: {
-                        text: "MR's over time",
-                        align: "left",
+                        text: "",
+                      },
+                      labels: {
+                        rotation: 0,
                         style: {
                           fontFamily: '"Ubuntu", sans-serif',
-                          fontWeight: 400,
-                          fontSize: "17px",
+                          fontSize: "12px",
                         },
+                        staggerLines: 1,
                       },
-                      credits: {
-                        enabled: false,
+                      tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
+                    },
+                    yAxis: {
+                      min: 0,
+                      title: {
+                        text: "",
                       },
-                      xAxis: {
-                        categories:
-                          gitStatsTimeframe === 7
-                            ? counters7.charts_last_7_days_xAxis
-                            : counters30.charts_last_30_days_xAxis,
-                        title: {
-                          text: "",
-                        },
-                        labels: {
-                          rotation: 0,
-                          style: {
-                            fontFamily: '"Ubuntu", sans-serif',
-                            fontSize: "12px",
-                          },
-                          staggerLines: 1,
-                        },
-                        tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
-                      },
-                      yAxis: {
-                        min: 0,
-                        title: {
-                          text: "",
-                        },
-                        labels: {
-                          style: {
-                            fontFamily: '"Ubuntu", sans-serif',
-                            fontSize: "12px",
-                          },
-                        },
-                        tickInterval: 2,
-                      },
-                      series: [
-                        {
-                          name: "Reviewed",
-                          data:
-                            gitStatsTimeframe === 7
-                              ? counters7.mrs_reviewed_last_7_days_yAxis
-                              : counters30.mrs_reviewed_last_30_days_yAxis,
-                          color: "#EB8A17",
-                        },
-                        {
-                          name: "Created",
-                          data:
-                            gitStatsTimeframe === 7
-                              ? counters7.mrs_created_last_7_days_yAxis
-                              : counters30.mrs_created_last_30_days_yAxis,
-                          color: "#0451E5",
-                        },
-                      ],
-                      legend: {
-                        enabled: true,
-                        itemStyle: {
+                      labels: {
+                        style: {
+                          fontFamily: '"Ubuntu", sans-serif',
                           fontSize: "12px",
                         },
                       },
-                      tooltip: {
-                        pointFormat: "{series.name}: <b>{point.y}</b>",
+                      tickInterval: 2,
+                    },
+                    series: [
+                      {
+                        name: "Reviewed",
+                        data:
+                          gitStatsTimeframe === 7
+                            ? counters7.mrs_reviewed_last_7_days_yAxis
+                            : counters30.mrs_reviewed_last_30_days_yAxis,
+                        color: "#EB8A17",
                       },
-                      plotOptions: {
-                        column: {
-                          stacking: "normal", // Enable stacking of bars
-                        },
+                      {
+                        name: "Created",
+                        data:
+                          gitStatsTimeframe === 7
+                            ? counters7.mrs_created_last_7_days_yAxis
+                            : counters30.mrs_created_last_30_days_yAxis,
+                        color: "#0451E5",
                       },
-                    }}
-                  />
-                </Box>
+                    ],
+                    legend: {
+                      enabled: true,
+                      itemStyle: {
+                        fontSize: "12px",
+                      },
+                    },
+                    tooltip: {
+                      pointFormat: "{series.name}: <b>{point.y}</b>",
+                    },
+                    plotOptions: {
+                      column: {
+                        stacking: "normal", // Enable stacking of bars
+                      },
+                    },
+                  }}
+                />
               </Box>
             </Box>
           </Card>
+
           {/* Commits stats */}
           <Card className="card-section">
             <Box
@@ -667,7 +623,7 @@ export const TeammemberGitStats = ({ teammember }) => {
             >
               <Box
                 sx={{
-                  width: "40%",
+                  width: "30%",
                   paddingRight: "10px",
                   display: "flex",
                   flexDirection: "column",
@@ -688,10 +644,9 @@ export const TeammemberGitStats = ({ teammember }) => {
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "row",
+                    flexDirection: "column",
                     width: "80%",
                     marginLeft: "10%",
-                    justifyContent: "space-between",
                     alignItems: "center",
                     textAlign: "center",
                     flexGrow: 1,
@@ -763,28 +718,38 @@ export const TeammemberGitStats = ({ teammember }) => {
                       >
                         {item.label}
                       </div>
-                      <div
-                        style={{
-                          fontWeight: "400",
-                          fontSize:
-                            item.label === "Commits Frequency"
-                              ? "16px"
-                              : "40px",
-                          lineHeight: "40px",
+                      <Box
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center", // Vertically centers content
+                          justifyContent: "center", // Horizontally centers content within the Box
+                          paddingBottom: "10px",
                         }}
                       >
-                        {item.value}
-                      </div>
-                      <div
-                        style={{
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: item.color,
-                          paddingBottom: "15px",
-                        }}
-                      >
-                        {item.change}
-                      </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize:
+                              item.label === "Commits Frequency"
+                                ? "14px"
+                                : "30px",
+                            lineHeight: "25px",
+                            textAlign: "center", // Ensures item.value is centered in its container
+                          }}
+                        >
+                          {item.value}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "10px",
+                            color: item.color,
+                            marginLeft: "5px", // Adds a small gap between item.value and item.change
+                          }}
+                        >
+                          {item.change}
+                        </div>
+                      </Box>
                     </Box>
                   ))}
                 </Box>
@@ -792,14 +757,156 @@ export const TeammemberGitStats = ({ teammember }) => {
 
               <Divider orientation="vertical" flexItem />
               {/* TODO - chagne the chart */}
-              <Box sx={{ width: "60%", paddingLeft: "10px" }}>
-                <h3 style={{ margin: "0px", padding: "5px" }}>
-                  Time of commits
-                </h3>
-                <Divider sx={{ marginBottom: "10px", width: "20%" }} />
-                <Box sx={{ paddingLeft: "5px", paddingRight: "25px" }}>
-                  {gitStatsTimeframe === 7 ? <>chart</> : <>chart</>}
-                </Box>
+              <Box
+                sx={{ width: "70%", paddingLeft: "15px", paddingRight: "25px" }}
+              >
+                {gitStatsTimeframe === 7 ? (
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={{
+                      chart: {
+                        type: "scatter",
+                        height: 270,
+                      },
+                      title: {
+                        text: "Lines of Code over time",
+                        align: "left",
+                        style: {
+                          fontFamily: '"Ubuntu", sans-serif',
+                          fontWeight: 400,
+                          fontSize: "17px",
+                        },
+                      },
+                      credits: {
+                        enabled: false,
+                      },
+                      xAxis: {
+                        categories: counters7.charts_last_7_days_xAxis,
+                        title: {
+                          text: "",
+                        },
+                        labels: {
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
+                          },
+                          staggerLines: 1,
+                        },
+                      },
+                      yAxis: {
+                        min: Math.min(
+                          ...counters7.commits_added_lines_last_7_days_yAxis,
+                          ...counters7.commits_removed_lines_last_7_days_yAxis
+                        ),
+                        max: Math.max(
+                          ...counters7.commits_added_lines_last_7_days_yAxis,
+                          ...counters7.commits_removed_lines_last_7_days_yAxis
+                        ),
+                        title: {
+                          text: "",
+                        },
+                        labels: {
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
+                          },
+                        },
+                      },
+                      series: [
+                        {
+                          name: "Added",
+                          data: counters7.commits_added_lines_last_7_days_yAxis,
+                          color: "#0451E5",
+                          stacking: "normal",
+                        },
+                        {
+                          name: "Removed",
+                          data: counters7.commits_removed_lines_last_7_days_yAxis,
+                          color: "#1D212F",
+                          stacking: "normal",
+                        },
+                      ],
+                      legend: {
+                        enabled: true,
+                        itemStyle: {
+                          fontSize: "12px",
+                        },
+                      },
+                      tooltip: {
+                        pointFormat: "{series.name}: <b>{point.y}</b>",
+                      },
+                    }}
+                  />
+                ) : (
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={{
+                      chart: {
+                        type: "scatter", // Use a column chart similar to the BarChart
+                        height: 270, // Keep the height the same
+                      },
+                      title: {
+                        text: "Lines of Code change",
+                        align: "left",
+                        style: {
+                          fontFamily: '"Ubuntu", sans-serif',
+                          fontWeight: 400,
+                          fontSize: "17px",
+                        },
+                      },
+                      xAxis: {
+                        categories: counters30.charts_last_30_days_xAxis,
+                        title: {
+                          text: "",
+                        },
+                        labels: {
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
+                          },
+                          staggerLines: 1,
+                        },
+                        tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
+                      },
+                      yAxis: {
+                        min: Math.min(
+                          ...counters30.commits_added_lines_last_30_days_yAxis,
+                          ...counters30.commits_removed_lines_last_30_days_yAxis
+                        ),
+                        max: Math.max(
+                          ...counters30.commits_added_lines_last_30_days_yAxis,
+                          ...counters30.commits_removed_lines_last_30_days_yAxis
+                        ),
+                        title: {
+                          text: "",
+                        },
+                      },
+                      series: [
+                        {
+                          name: "Added",
+                          data: counters30.commits_added_lines_last_30_days_yAxis,
+                          color: "#0451E5",
+                          stacking: "normal",
+                        },
+                        {
+                          name: "Removed",
+                          data: counters30.commits_removed_lines_last_30_days_yAxis,
+                          color: "#1D212F",
+                          stacking: "normal",
+                        },
+                      ],
+                      legend: {
+                        enabled: true,
+                        itemStyle: {
+                          fontSize: "12px",
+                        },
+                      },
+                      tooltip: {
+                        pointFormat: "{series.name}: <b>{point.y}</b>",
+                      },
+                    }}
+                  />
+                )}
               </Box>
             </Box>
           </Card>
@@ -815,7 +922,7 @@ export const TeammemberGitStats = ({ teammember }) => {
             >
               <Box
                 sx={{
-                  width: "40%",
+                  width: "30%",
                   paddingRight: "10px",
                   display: "flex",
                   flexDirection: "column",
@@ -836,10 +943,9 @@ export const TeammemberGitStats = ({ teammember }) => {
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "row",
+                    flexDirection: "column",
                     width: "80%",
                     marginLeft: "10%",
-                    justifyContent: "space-between",
                     alignItems: "center",
                     textAlign: "center",
                     flexGrow: 1,
@@ -911,181 +1017,191 @@ export const TeammemberGitStats = ({ teammember }) => {
                       >
                         {item.label}
                       </div>
-                      <div
-                        style={{
-                          fontWeight: "400",
-                          fontSize: "40px",
-                          lineHeight: "40px",
+                      <Box
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center", // Vertically centers content
+                          justifyContent: "center", // Horizontally centers content within the Box
+                          paddingBottom: "10px",
                         }}
                       >
-                        {item.value}
-                      </div>
-                      <div
-                        style={{
-                          fontWeight: "400",
-                          fontSize: "12px",
-                          color: item.color,
-                          paddingBottom: "15px",
-                        }}
-                      >
-                        {item.change}
-                      </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "30px",
+                            lineHeight: "25px",
+                            textAlign: "center", // Ensures item.value is centered in its container
+                          }}
+                        >
+                          {item.value}
+                        </div>
+                        <div
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "10px",
+                            color: item.color,
+                            marginLeft: "5px", // Adds a small gap between item.value and item.change
+                          }}
+                        >
+                          {item.change}
+                        </div>
+                      </Box>
                     </Box>
                   ))}
                 </Box>
               </Box>
 
               <Divider orientation="vertical" flexItem />
-              <Box sx={{ width: "60%", paddingLeft: "10px" }}>
-                <Box sx={{ paddingLeft: "5px", paddingRight: "25px" }}>
-                  {gitStatsTimeframe === 7 ? (
-                    <HighchartsReact
-                      highcharts={Highcharts}
-                      options={{
-                        chart: {
-                          type: "column", // Use a column chart similar to the BarChart
-                          height: 230, // Keep the height the same
+              <Box
+                sx={{ width: "70%", paddingLeft: "15px", paddingRight: "25px" }}
+              >
+                {gitStatsTimeframe === 7 ? (
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={{
+                      chart: {
+                        type: "column",
+                        height: 270,
+                      },
+                      title: {
+                        text: "Lines of Code over time",
+                        align: "left",
+                        style: {
+                          fontFamily: '"Ubuntu", sans-serif',
+                          fontWeight: 400,
+                          fontSize: "17px",
                         },
+                      },
+                      credits: {
+                        enabled: false,
+                      },
+                      xAxis: {
+                        categories: counters7.charts_last_7_days_xAxis,
                         title: {
-                          text: "Lines of Code over time",
-                          align: "left",
+                          text: "",
+                        },
+                        labels: {
                           style: {
                             fontFamily: '"Ubuntu", sans-serif',
-                            fontWeight: 400,
-                            fontSize: "17px",
+                            fontSize: "12px",
                           },
+                          staggerLines: 1,
                         },
-                        credits: {
-                          enabled: false,
+                      },
+                      yAxis: {
+                        min: Math.min(
+                          ...counters7.commits_added_lines_last_7_days_yAxis,
+                          ...counters7.commits_removed_lines_last_7_days_yAxis
+                        ),
+                        max: Math.max(
+                          ...counters7.commits_added_lines_last_7_days_yAxis,
+                          ...counters7.commits_removed_lines_last_7_days_yAxis
+                        ),
+                        title: {
+                          text: "",
                         },
-                        xAxis: {
-                          categories: counters7.charts_last_7_days_xAxis,
-                          title: {
-                            text: "",
-                          },
-                          labels: {
-                            style: {
-                              fontFamily: '"Ubuntu", sans-serif',
-                              fontSize: "12px",
-                            },
-                            staggerLines: 1,
-                          },
-                        },
-                        yAxis: {
-                          min: Math.min(
-                            ...counters7.commits_added_lines_last_7_days_yAxis,
-                            ...counters7.commits_removed_lines_last_7_days_yAxis
-                          ),
-                          max: Math.max(
-                            ...counters7.commits_added_lines_last_7_days_yAxis,
-                            ...counters7.commits_removed_lines_last_7_days_yAxis
-                          ),
-                          title: {
-                            text: "",
-                          },
-                          labels: {
-                            style: {
-                              fontFamily: '"Ubuntu", sans-serif',
-                              fontSize: "12px",
-                            },
-                          },
-                        },
-                        series: [
-                          {
-                            name: "Added",
-                            data: counters7.commits_added_lines_last_7_days_yAxis,
-                            color: "#0451E5",
-                            stacking: "normal",
-                          },
-                          {
-                            name: "Removed",
-                            data: counters7.commits_removed_lines_last_7_days_yAxis,
-                            color: "#1D212F",
-                            stacking: "normal",
-                          },
-                        ],
-                        legend: {
-                          enabled: true,
-                          itemStyle: {
+                        labels: {
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
                             fontSize: "12px",
                           },
                         },
-                        tooltip: {
-                          pointFormat: "{series.name}: <b>{point.y}</b>",
+                      },
+                      series: [
+                        {
+                          name: "Added",
+                          data: counters7.commits_added_lines_last_7_days_yAxis,
+                          color: "#0451E5",
+                          stacking: "normal",
                         },
-                      }}
-                    />
-                  ) : (
-                    <HighchartsReact
-                      highcharts={Highcharts}
-                      options={{
-                        chart: {
-                          type: "column", // Use a column chart similar to the BarChart
-                          height: 230, // Keep the height the same
+                        {
+                          name: "Removed",
+                          data: counters7.commits_removed_lines_last_7_days_yAxis,
+                          color: "#1D212F",
+                          stacking: "normal",
                         },
+                      ],
+                      legend: {
+                        enabled: true,
+                        itemStyle: {
+                          fontSize: "12px",
+                        },
+                      },
+                      tooltip: {
+                        pointFormat: "{series.name}: <b>{point.y}</b>",
+                      },
+                    }}
+                  />
+                ) : (
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={{
+                      chart: {
+                        type: "column", // Use a column chart similar to the BarChart
+                        height: 270, // Keep the height the same
+                      },
+                      title: {
+                        text: "Lines of Code change",
+                        align: "left",
+                        style: {
+                          fontFamily: '"Ubuntu", sans-serif',
+                          fontWeight: 400,
+                          fontSize: "17px",
+                        },
+                      },
+                      xAxis: {
+                        categories: counters30.charts_last_30_days_xAxis,
                         title: {
-                          text: "Lines of Code change",
-                          align: "left",
+                          text: "",
+                        },
+                        labels: {
                           style: {
                             fontFamily: '"Ubuntu", sans-serif',
-                            fontWeight: 400,
-                            fontSize: "17px",
-                          },
-                        },
-                        xAxis: {
-                          categories: counters30.charts_last_30_days_xAxis,
-                          title: {
-                            text: "",
-                          },
-                          labels: {
-                            style: {
-                              fontFamily: '"Ubuntu", sans-serif',
-                              fontSize: "12px",
-                            },
-                            staggerLines: 1,
-                          },
-                          tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
-                        },
-                        yAxis: {
-                          min: Math.min(
-                            ...counters30.commits_added_lines_last_30_days_yAxis,
-                            ...counters30.commits_removed_lines_last_30_days_yAxis
-                          ),
-                          max: Math.max(
-                            ...counters30.commits_added_lines_last_30_days_yAxis,
-                            ...counters30.commits_removed_lines_last_30_days_yAxis
-                          ),
-                          title: {
-                            text: "",
-                          },
-                        },
-                        series: [
-                          {
-                            name: "Added",
-                            data: counters30.commits_added_lines_last_30_days_yAxis,
-                            color: "#0451E5",
-                            stacking: "normal",
-                          },
-                          {
-                            name: "Removed",
-                            data: counters30.commits_removed_lines_last_30_days_yAxis,
-                            color: "#1D212F",
-                            stacking: "normal",
-                          },
-                        ],
-                        legend: {
-                          enabled: true,
-                          itemStyle: {
                             fontSize: "12px",
                           },
+                          staggerLines: 1,
                         },
-                        tooltip: {
-                          pointFormat: "{series.name}: <b>{point.y}</b>",
+                        tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
+                      },
+                      yAxis: {
+                        min: Math.min(
+                          ...counters30.commits_added_lines_last_30_days_yAxis,
+                          ...counters30.commits_removed_lines_last_30_days_yAxis
+                        ),
+                        max: Math.max(
+                          ...counters30.commits_added_lines_last_30_days_yAxis,
+                          ...counters30.commits_removed_lines_last_30_days_yAxis
+                        ),
+                        title: {
+                          text: "",
                         },
-                      }}
-                    />
-                  )}
-                </Box>
+                      },
+                      series: [
+                        {
+                          name: "Added",
+                          data: counters30.commits_added_lines_last_30_days_yAxis,
+                          color: "#0451E5",
+                          stacking: "normal",
+                        },
+                        {
+                          name: "Removed",
+                          data: counters30.commits_removed_lines_last_30_days_yAxis,
+                          color: "#1D212F",
+                          stacking: "normal",
+                        },
+                      ],
+                      legend: {
+                        enabled: true,
+                        itemStyle: {
+                          fontSize: "12px",
+                        },
+                      },
+                      tooltip: {
+                        pointFormat: "{series.name}: <b>{point.y}</b>",
+                      },
+                    }}
+                  />
+                )}
               </Box>
             </Box>
           </Card>
