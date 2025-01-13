@@ -15,7 +15,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
@@ -23,8 +22,6 @@ import ListItemText from "@mui/material/ListItemText";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import GroupIcon from "@mui/icons-material/Group";
 import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const drawerWidth = 240;
 
@@ -208,7 +205,10 @@ export function Navbar(props) {
             <ProjectSelectField />
           </Box>
           <Divider />
-          <List className="main-navbar__list">
+          <List
+            className="main-navbar__list"
+            sx={{ color: "#F5F7F9!important" }}
+          >
             {/* <ListItem key={1} disablePadding>
               <ListItemButton component={Link} to="/dashboard" selected={"/dashboard"===path}>
                 <ListItemText sx={{color: '#F5F7F9'}} primary={"Dashboard"} />
@@ -245,7 +245,6 @@ export function Navbar(props) {
                 <GroupIcon />
                 <ListItemText
                   className="main-navbar__list__item-text"
-                  sx={{ color: "#F5F7F9" }}
                   primary={"Team"}
                 />
               </ListItemButton>

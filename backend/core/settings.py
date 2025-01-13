@@ -168,6 +168,6 @@ CELERY_TIMEZONE = "UTC"
 CELERY_BEAT_SCHEDULE = {
     "update-teammember-coding-stats-every-day-at-1am": {
         "task": "team.tasks.update_teammember_coding_stats",
-        "schedule": crontab(minute=00, hour=1),  # Run every day at 1 AM
+        "schedule": crontab(minute=49, hour=18),  # Run every day at 1 AM
     },
 }

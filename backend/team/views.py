@@ -777,6 +777,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
 
             # Reverse the dictionary to have the latest date as the last item
             commit_chart_data = dict(reversed(list(commit_chart_data.items())))
+            time_of_commit_y7Axis = []
+            time_of_commit_y30Axis = []
             commits_added_lines_last_30_days_yAxis = []
             commits_removed_lines_last_30_days_yAxis = []
             commits_added_lines_last_7_days_yAxis = []
@@ -788,11 +790,25 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     created_commits7 += 1
                     created_commits30 += 1
 
+                    # TODO fix the commit hours
+
                     # provide simmplified date for commits
                     commit_created_at_simplified = datetime.strptime(
                         commit["created_at"].replace("+00:00", "Z"),
                         "%Y-%m-%dT%H:%M:%S.%fZ",
                     ).strftime("%Y-%m-%d")
+
+                    commit_index = last_7_days_xAxis.index(commit_created_at_simplified)
+                    commit_hours = int(commit["created_at"][11:12])
+                    commit_minutes = int(commit["created_at"][14:15])
+                    commit_time = commit_hours * 60 + commit_minutes
+
+                    time_of_commit_y7Axis.append({"x": commit_index, "y": commit_time})
+
+                    commit_index = last_30_days_xAxis.index(
+                        commit_created_at_simplified
+                    )
+                    time_of_commit_y30Axis.append({"x": commit_index, "y": commit_time})
 
                     for diff_item in commit["diff_data"]:
                         commit_chart_data[commit_created_at_simplified][0] += int(
@@ -813,6 +829,15 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         commit["created_at"].replace("+00:00", "Z"),
                         "%Y-%m-%dT%H:%M:%S.%fZ",
                     ).strftime("%Y-%m-%d")
+
+                    commit_index = last_30_days_xAxis.index(
+                        commit_created_at_simplified
+                    )
+
+                    commit_hours = int(commit["created_at"][11:12])
+                    commit_minutes = int(commit["created_at"][14:15])
+                    commit_time = commit_hours * 60 + commit_minutes
+                    time_of_commit_y30Axis.append({"x": commit_index, "y": commit_time})
 
                     for diff_item in commit["diff_data"]:
                         commit_chart_data[commit_created_at_simplified][0] += int(
@@ -872,6 +897,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "charts_last_7_days_xAxis": last_7_days_xAxis,
                 "mrs_created_last_7_days_yAxis": mrs_created_last_7_days_yAxis,
                 "mrs_reviewed_last_7_days_yAxis": mrs_reviewed_last_7_days_yAxis,
+                "time_of_commit_last_7_days_yAxis": time_of_commit_y7Axis,
                 "commits_added_lines_last_7_days_yAxis": commits_added_lines_last_7_days_yAxis,
                 "commits_removed_lines_last_7_days_yAxis": commits_removed_lines_last_7_days_yAxis,
             }
@@ -888,6 +914,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 "charts_last_30_days_xAxis": last_30_days_xAxis,
                 "mrs_created_last_30_days_yAxis": mrs_created_last_30_days_yAxis,
                 "mrs_reviewed_last_30_days_yAxis": mrs_reviewed_last_30_days_yAxis,
+                "time_of_commit_last_30_days_yAxis": time_of_commit_y30Axis,
                 "commits_added_lines_last_30_days_yAxis": commits_added_lines_last_30_days_yAxis,
                 "commits_removed_lines_last_30_days_yAxis": commits_removed_lines_last_30_days_yAxis,
             }
@@ -1121,12 +1148,38 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                 global_commits_removed_lines_last_30_days_yAxis
             )
 
+        if global_active_projects7 == 0:
+            global_create_to_merge7 = 0
+        else:
+            global_create_to_merge7 = global_create_to_merge7 / global_active_projects7
+
+        if global_active_projects30 == 0:
+            global_create_to_merge30 = 0
+        else:
+            global_create_to_merge30 = (
+                global_create_to_merge30 / global_active_projects30
+            )
+
+        if global_previous_active_projects7 == 0:
+            global_previous_create_to_merge7 = 0
+        else:
+            global_previous_create_to_merge7 = (
+                global_previous_create_to_merge7 / global_previous_active_projects7
+            )
+
+        if global_previous_active_projects30 == 0:
+            global_previous_create_to_merge30 = 0
+        else:
+            global_previous_create_to_merge30 = (
+                global_previous_create_to_merge30 / global_previous_active_projects30
+            )
+
         global_counters7 = {
             "active_projects7": global_active_projects7,
             "active_projects7_list": active_projects7_list,
             "created_mrs_counter7": global_created_mrs_counter7,
             "reviewed_mrs_counter7": global_reviewed_mrs_counter7,
-            "create_to_merge7": global_create_to_merge7 / global_active_projects7,
+            "create_to_merge7": global_create_to_merge7,
             "comments_in_created_mrs7": global_comments_in_created_mrs7,
             "created_commits7": global_created_commits7,
             "commits_frequency7": round(global_created_commits7 / 7, 1),
@@ -1143,8 +1196,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "previous_active_projects7": global_previous_active_projects7,
             "previous_created_mrs_counter7": global_previous_created_mrs_counter7,
             "previous_reviewed_mrs_counter7": global_previous_reviewed_mrs_counter7,
-            "previous_create_to_merge7": global_previous_create_to_merge7
-            / global_previous_active_projects7,
+            "previous_create_to_merge7": global_previous_create_to_merge7,
             "previous_comments_in_created_mrs7": global_previous_comments_in_created_mrs7,
             "previous_created_commits7": global_previous_created_commits7,
             "previous_commits_frequency7": round(
@@ -1159,7 +1211,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "active_projects30_list": active_projects30_list,
             "created_mrs_counter30": global_created_mrs_counter30,
             "reviewed_mrs_counter30": global_reviewed_mrs_counter30,
-            "create_to_merge30": global_create_to_merge30 / global_active_projects30,
+            "create_to_merge30": global_create_to_merge30,
             "comments_in_created_mrs30": global_comments_in_created_mrs30,
             "created_commits30": global_created_commits30,
             "commits_frequency30": round(global_created_commits30 / 30, 1),
@@ -1176,8 +1228,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "previous_active_projects30": global_previous_active_projects30,
             "previous_created_mrs_counter30": global_previous_created_mrs_counter30,
             "previous_reviewed_mrs_counter30": global_previous_reviewed_mrs_counter30,
-            "previous_create_to_merge30": global_previous_create_to_merge30
-            / global_previous_active_projects30,
+            "previous_create_to_merge30": global_previous_create_to_merge30,
             "previous_comments_in_created_mrs30": global_previous_comments_in_created_mrs30,
             "previous_created_commits30": global_previous_created_commits30,
             "previous_commits_frequency30": round(
@@ -2099,12 +2150,36 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
                 global_commits_removed_lines_last_30_days_yAxis
             )
 
+        if global_active_projects7 == 0:
+            create_to_merge7 = 0
+        else:
+            global_create_to_merge7 = global_create_to_merge7 / global_active_projects7
+
+        if global_active_projects30 == 0:
+            create_to_merge30 = 0
+        else:
+            create_to_merge30 = global_create_to_merge30 / global_active_projects30
+
+        if global_previous_active_projects7 == 0:
+            global_previous_create_to_merge7 = 0
+        else:
+            global_previous_create_to_merge7 = (
+                global_previous_create_to_merge7 / global_previous_active_projects7
+            )
+
+        if global_previous_active_projects30 == 0:
+            global_previous_create_to_merge30 = 0
+        else:
+            global_previous_create_to_merge30 = (
+                global_previous_create_to_merge30 / global_previous_active_projects30
+            )
+
         global_counters7 = {
             "active_projects7": global_active_projects7,
             "active_projects7_list": active_projects7_list,
             "created_mrs_counter7": global_created_mrs_counter7,
             "reviewed_mrs_counter7": global_reviewed_mrs_counter7,
-            "create_to_merge7": global_create_to_merge7 / global_active_projects7,
+            "create_to_merge7": create_to_merge7,
             "comments_in_created_mrs7": global_comments_in_created_mrs7,
             "created_commits7": global_created_commits7,
             "commits_frequency7": round(global_created_commits7 / 7, 1),
@@ -2121,8 +2196,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             "previous_active_projects7": global_previous_active_projects7,
             "previous_created_mrs_counter7": global_previous_created_mrs_counter7,
             "previous_reviewed_mrs_counter7": global_previous_reviewed_mrs_counter7,
-            "previous_create_to_merge7": global_previous_create_to_merge7
-            / global_previous_active_projects7,
+            "previous_create_to_merge7": global_previous_create_to_merge7,
             "previous_comments_in_created_mrs7": global_previous_comments_in_created_mrs7,
             "previous_created_commits7": global_previous_created_commits7,
             "previous_commits_frequency7": round(
@@ -2137,7 +2211,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             "active_projects30_list": active_projects30_list,
             "created_mrs_counter30": global_created_mrs_counter30,
             "reviewed_mrs_counter30": global_reviewed_mrs_counter30,
-            "create_to_merge30": global_create_to_merge30 / global_active_projects30,
+            "create_to_merge30": create_to_merge30,
             "comments_in_created_mrs30": global_comments_in_created_mrs30,
             "created_commits30": global_created_commits30,
             "commits_frequency30": round(global_created_commits30 / 30, 1),
@@ -2154,8 +2228,7 @@ class TeammemberCodingStatsUpdateAPIView(UpdateAPIView):
             "previous_active_projects30": global_previous_active_projects30,
             "previous_created_mrs_counter30": global_previous_created_mrs_counter30,
             "previous_reviewed_mrs_counter30": global_previous_reviewed_mrs_counter30,
-            "previous_create_to_merge30": global_previous_create_to_merge30
-            / global_previous_active_projects30,
+            "previous_create_to_merge30": global_previous_create_to_merge30,
             "previous_comments_in_created_mrs30": global_previous_comments_in_created_mrs30,
             "previous_created_commits30": global_previous_created_commits30,
             "previous_commits_frequency30": round(
