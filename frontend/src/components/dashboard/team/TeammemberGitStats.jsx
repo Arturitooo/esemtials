@@ -39,6 +39,7 @@ export const TeammemberGitStats = ({ teammember }) => {
       const theCodingStats = JSON.parse(stringData);
       setCodingData(theCodingStats);
       const counters7 = theCodingStats.counters7;
+      console.log("Counters7 Data:", counters7);
       setCounters7(counters7);
       const counters30 = theCodingStats.counters30;
       setCounters30(counters30);
@@ -762,7 +763,6 @@ export const TeammemberGitStats = ({ teammember }) => {
             </Card>
 
             <Card className="card-section">
-              {/* TODO - chagne the chart */}
               <Box
                 sx={{
                   maxWidth: "100%",
@@ -791,29 +791,27 @@ export const TeammemberGitStats = ({ teammember }) => {
                         align: "center",
                         style: {
                           fontFamily: '"Ubuntu", sans-serif',
-                          fontWeight: 500,
+                          fontWeight: 400,
                           fontSize: "17px",
                         },
                       },
+                      credits: {
+                        enabled: false,
+                      },
                       xAxis: {
-                        categories: [
-                          "07.01.2025",
-                          "08.01.2025",
-                          "09.01.2025",
-                          "10.01.2025",
-                          "11.01.2025",
-                          "12.01.2025",
-                          "13.01.2025",
-                        ],
+                        categories: counters7.charts_last_7_days_xAxis,
                         title: {
                           text: "",
                         },
                         labels: {
+                          rotation: 0,
                           style: {
-                            fontSize: "12px",
                             fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
                           },
+                          staggerLines: 1,
                         },
+                        tickInterval: 1,
                       },
                       yAxis: {
                         title: {
@@ -831,6 +829,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                               .padStart(2, "0")} ${ampm}`;
                           },
                           style: {
+                            fontFamily: '"Ubuntu", sans-serif',
                             fontSize: "12px",
                           },
                         },
@@ -840,13 +839,16 @@ export const TeammemberGitStats = ({ teammember }) => {
                       },
                       tooltip: {
                         formatter: function () {
+                          // Access categories via xAxis options
+                          const categories =
+                            this.series.chart.xAxis[0].categories;
+                          const date = categories[this.point.x]; // Get the corresponding date
                           const hours = Math.floor(this.y / 60);
                           const minutes = this.y % 60;
                           const ampm = hours < 12 || hours === 24 ? "am" : "pm";
                           const displayHours = hours % 12 || 12; // Convert 24-hour to 12-hour format
-                          return `<b>${
-                            this.x
-                          }</b><br>Time: ${displayHours}:${minutes
+
+                          return `<b>${date}</b><br>${displayHours}:${minutes
                             .toString()
                             .padStart(2, "0")} ${ampm}`;
                         },
@@ -854,16 +856,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                       series: [
                         {
                           name: "Event Times",
-                          data: [
-                            { x: 0, y: 577 }, // 07.01.2025 - 9:37 am
-                            { x: 1, y: 682 }, // 08.01.2025 - 11:22 am
-                            { x: 2, y: 852 }, // 09.01.2025 - 2:12 pm
-                            { x: 2, y: 900 }, // 09.01.2025 - 3:00 pm (second point on the same day)
-                            { x: 4, y: 735 }, // 11.01.2025 - 12:15 pm
-                            { x: 4, y: 1410 }, // 11.01.2025 - 1:30 pm (second point on the same day)
-                            { x: 6, y: 780 }, // 13.01.2025 - 1:00 pm
-                          ],
-                          color: "#0451E5",
+                          data: counters7.time_of_commit_last_7_days_yAxis,
+                          color: "#3007C5",
                         },
                       ],
                     }}
@@ -873,18 +867,20 @@ export const TeammemberGitStats = ({ teammember }) => {
                     highcharts={Highcharts}
                     options={{
                       chart: {
-                        type: "scatter", // Use a column chart similar to the BarChart
-                        height: 320, // Keep the height the same
+                        type: "scatter", // Allows overlapping points on the same category
+                        height: 300,
+                      },
+                      legend: {
+                        enabled: false,
                       },
                       title: {
                         text: "",
-                        align: "left",
+                        align: "center",
                         style: {
                           fontFamily: '"Ubuntu", sans-serif',
                           fontWeight: 400,
                           fontSize: "17px",
                         },
-                        margin: 26,
                       },
                       credits: {
                         enabled: false,
@@ -895,6 +891,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                           text: "",
                         },
                         labels: {
+                          rotation: 0,
                           style: {
                             fontFamily: '"Ubuntu", sans-serif',
                             fontSize: "12px",
@@ -904,41 +901,52 @@ export const TeammemberGitStats = ({ teammember }) => {
                         tickInterval: gitStatsTimeframe === 30 ? 5 : 1,
                       },
                       yAxis: {
-                        min: Math.min(
-                          ...counters30.commits_added_lines_last_30_days_yAxis,
-                          ...counters30.commits_removed_lines_last_30_days_yAxis
-                        ),
-                        max: Math.max(
-                          ...counters30.commits_added_lines_last_30_days_yAxis,
-                          ...counters30.commits_removed_lines_last_30_days_yAxis
-                        ),
                         title: {
                           text: "",
+                        },
+                        labels: {
+                          formatter: function () {
+                            const hours = Math.floor(this.value / 60);
+                            const minutes = this.value % 60;
+                            const ampm =
+                              hours < 12 || hours === 24 ? "am" : "pm";
+                            const displayHours = hours % 12 || 12; // Convert 24-hour to 12-hour format
+                            return `${displayHours}:${minutes
+                              .toString()
+                              .padStart(2, "0")} ${ampm}`;
+                          },
+                          style: {
+                            fontFamily: '"Ubuntu", sans-serif',
+                            fontSize: "12px",
+                          },
+                        },
+                        min: 0, // 12:00 am
+                        max: 1439, // 11:59 pm
+                        tickInterval: 240,
+                      },
+                      tooltip: {
+                        formatter: function () {
+                          // Access categories via xAxis options
+                          const categories =
+                            this.series.chart.xAxis[0].categories;
+                          const date = categories[this.point.x]; // Get the corresponding date
+                          const hours = Math.floor(this.y / 60);
+                          const minutes = this.y % 60;
+                          const ampm = hours < 12 || hours === 24 ? "am" : "pm";
+                          const displayHours = hours % 12 || 12; // Convert 24-hour to 12-hour format
+
+                          return `<b>${date}</b><br>${displayHours}:${minutes
+                            .toString()
+                            .padStart(2, "0")} ${ampm}`;
                         },
                       },
                       series: [
                         {
-                          name: "Added",
-                          data: counters30.commits_added_lines_last_30_days_yAxis,
+                          name: "Event Times",
+                          data: counters30.time_of_commit_last_30_days_yAxis,
                           color: "#3007C5",
-                          stacking: "normal",
-                        },
-                        {
-                          name: "Removed",
-                          data: counters30.commits_removed_lines_last_30_days_yAxis,
-                          color: "#1D212F",
-                          stacking: "normal",
                         },
                       ],
-                      legend: {
-                        enabled: true,
-                        itemStyle: {
-                          fontSize: "12px",
-                        },
-                      },
-                      tooltip: {
-                        pointFormat: "{series.name}: <b>{point.y}</b>",
-                      },
                     }}
                   />
                 )}
