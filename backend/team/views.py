@@ -799,8 +799,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                     ).strftime("%Y-%m-%d")
 
                     commit_index = last_7_days_xAxis.index(commit_created_at_simplified)
-                    commit_hours = int(commit["created_at"][11:12])
-                    commit_minutes = int(commit["created_at"][14:15])
+                    commit_hours = int(commit["created_at"][11:13])
+                    commit_minutes = int(commit["created_at"][14:16])
                     commit_time = commit_hours * 60 + commit_minutes
 
                     time_of_commit_y7Axis.append({"x": commit_index, "y": commit_time})
@@ -834,8 +834,8 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
                         commit_created_at_simplified
                     )
 
-                    commit_hours = int(commit["created_at"][11:12])
-                    commit_minutes = int(commit["created_at"][14:15])
+                    commit_hours = int(commit["created_at"][11:13])
+                    commit_minutes = int(commit["created_at"][14:16])
                     commit_time = commit_hours * 60 + commit_minutes
                     time_of_commit_y30Axis.append({"x": commit_index, "y": commit_time})
 
@@ -955,6 +955,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_mrs_reviewed_last_7_days_yAxis = []
         tmp_commits_added_lines_last_7_days_yAxis = [0] * 7
         tmp_commits_removed_lines_last_7_days_yAxis = [0] * 7
+        global_time_of_commit_last_7_days_yAxis = []
 
         global_previous_active_projects7 = 0
         global_previous_created_mrs_counter7 = 0
@@ -977,10 +978,12 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
         global_mrs_reviewed_last_30_days_yAxis = []
         tmp_mrs_created_last_30_days_yAxis = [0] * 30
         tmp_mrs_reviewed_last_30_days_yAxis = [0] * 30
+        global_time_of_commit_last_30_days_yAxis = []
         global_commits_added_lines_last_30_days_yAxis = []
         global_commits_removed_lines_last_30_days_yAxis = []
         tmp_commits_added_lines_last_30_days_yAxis = [0] * 30
         tmp_commits_removed_lines_last_30_days_yAxis = [0] * 30
+
         global_previous_active_projects30 = 0
         global_previous_created_mrs_counter30 = 0
         global_previous_reviewed_mrs_counter30 = 0
@@ -1021,6 +1024,9 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_previous_created_commits7 += project_data["previous7"][
                 "previous_created_commits7"
             ]
+            global_time_of_commit_last_7_days_yAxis.extend(
+                project_data["counters7"]["time_of_commit_last_7_days_yAxis"]
+            )
             global_lines_added7 += project_data["counters7"]["lines_added7"]
             global_previous_lines_added7 += project_data["previous7"][
                 "previous_lines_added7"
@@ -1098,6 +1104,9 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             global_previous_created_commits30 += project_data["previous30"][
                 "previous_created_commits30"
             ]
+            global_time_of_commit_last_30_days_yAxis.extend(
+                project_data["counters30"]["time_of_commit_last_30_days_yAxis"]
+            )
             global_lines_added30 += project_data["counters30"]["lines_added30"]
             global_previous_lines_added30 += project_data["previous30"][
                 "previous_lines_added30"
@@ -1188,6 +1197,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "charts_last_7_days_xAxis": last_7_days_xAxis,
             "mrs_created_last_7_days_yAxis": global_mrs_created_last_7_days_yAxis,
             "mrs_reviewed_last_7_days_yAxis": global_mrs_reviewed_last_7_days_yAxis,
+            "global_time_of_commit_last_7_days_yAxis": global_time_of_commit_last_7_days_yAxis,
             "commits_added_lines_last_7_days_yAxis": global_commits_added_lines_last_7_days_yAxis,
             "commits_removed_lines_last_7_days_yAxis": global_commits_removed_lines_last_7_days_yAxis,
         }
@@ -1220,6 +1230,7 @@ class TeammemberCodingStatsCreateAPIView(CreateAPIView):
             "charts_last_30_days_xAxis": last_30_days_xAxis,
             "mrs_created_last_30_days_yAxis": global_mrs_created_last_30_days_yAxis,
             "mrs_reviewed_last_30_days_yAxis": global_mrs_reviewed_last_30_days_yAxis,
+            "global_time_of_commit_last_30_days_yAxis": global_time_of_commit_last_30_days_yAxis,
             "commits_added_lines_last_30_days_yAxis": global_commits_added_lines_last_30_days_yAxis,
             "commits_removed_lines_last_30_days_yAxis": global_commits_removed_lines_last_30_days_yAxis,
         }
