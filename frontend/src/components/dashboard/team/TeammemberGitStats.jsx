@@ -7,7 +7,6 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import RemoveIcon from "@mui/icons-material/Remove";
 
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
@@ -83,13 +82,6 @@ export const TeammemberGitStats = ({ teammember }) => {
     }
   };
 
-  const getArrowDirection = (currentValue, previousValue) => {
-    if (currentValue > previousValue)
-      return <KeyboardDoubleArrowUpIcon sx={{ fontSize: "small" }} />;
-    if (currentValue < previousValue)
-      return <KeyboardDoubleArrowDownIcon sx={{ fontSize: "small" }} />;
-  };
-
   const getColor = (currentValue, previousValue) => {
     if (currentValue > previousValue) return successColor;
     if (currentValue < previousValue) return errorColor;
@@ -105,9 +97,33 @@ export const TeammemberGitStats = ({ teammember }) => {
   const calculateChange = (currentValue, previousValue) => {
     if (currentValue === previousValue) {
       return "0%";
-    } else {
+    }
+    if (currentValue < previousValue) {
       return (
-        Math.round(((currentValue - previousValue) / previousValue) * 100) + "%"
+        <Box
+          style={{
+            display: "inline-flex",
+            alignItems: "center", // Align icon and text horizontally
+          }}
+        >
+          <KeyboardDoubleArrowDownIcon sx={{ fontSize: "small" }} />
+          {Math.round((-(currentValue - previousValue) / previousValue) * 100) +
+            "%"}
+        </Box>
+      );
+    }
+    if (currentValue > previousValue) {
+      return (
+        <Box
+          style={{
+            display: "inline-flex",
+            alignItems: "center", // Align icon and text horizontally
+          }}
+        >
+          <KeyboardDoubleArrowUpIcon sx={{ fontSize: "small" }} />
+          {Math.round(((currentValue - previousValue) / previousValue) * 100) +
+            "%"}
+        </Box>
       );
     }
   };
@@ -244,27 +260,25 @@ export const TeammemberGitStats = ({ teammember }) => {
                         marginLeft: "8px", // Ensures spacing between value and change
                       }}
                     >
-                      {gitStatsTimeframe === 7 ? (
-                        <Box
-                          sx={{ display: "inline-flex", alignItems: "center" }}
-                        >
-                          {getArrowDirection(
-                            counters7.active_projects7,
-                            previous7.previous_active_projects7
-                          )}
-                          {calculateChange(
-                            counters7.active_projects7,
-                            previous7.previous_active_projects7
-                          )}
-                        </Box>
-                      ) : (
-                        <>
-                          {calculateChange(
-                            counters30.active_projects30,
-                            previous30.previous_active_projects30
-                          )}
-                        </>
-                      )}
+                      <Box
+                        sx={{ display: "inline-flex", alignItems: "center" }}
+                      >
+                        {gitStatsTimeframe === 7 ? (
+                          <>
+                            {calculateChange(
+                              counters7.active_projects7,
+                              previous7.previous_active_projects7
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {calculateChange(
+                              counters30.active_projects30,
+                              previous30.previous_active_projects30
+                            )}
+                          </>
+                        )}
+                      </Box>
                     </div>
                   </Box>
                 </Box>
@@ -555,6 +569,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                               fontSize: "11.5px",
                               color: item.color,
                               marginLeft: "8px", // Adds a small gap between item.value and item.change
+                              display: "inline-flex",
+                              alignItems: "center",
                             }}
                           >
                             {item.change}
@@ -788,6 +804,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                             fontSize: "11.5px",
                             color: item.color,
                             marginLeft: "8px", // Adds a small gap between item.value and item.change
+                            display: "inline-flex",
+                            alignItems: "center",
                           }}
                         >
                           {item.change}
@@ -836,7 +854,12 @@ export const TeammemberGitStats = ({ teammember }) => {
                         enabled: false,
                       },
                       xAxis: {
-                        categories: counters7.charts_last_7_days_xAxis,
+                        categories: Array.from(
+                          { length: 7 },
+                          (_, i) =>
+                            counters7.charts_last_7_days_xAxis[i] ||
+                            `Day ${i + 1}` // Ensure 7 categories are always present
+                        ),
                         title: {
                           text: "",
                         },
@@ -892,7 +915,17 @@ export const TeammemberGitStats = ({ teammember }) => {
                       series: [
                         {
                           name: "Event Times",
-                          data: adjustedData7,
+                          data: Array(7)
+                            .fill(null)
+                            .map((_, i) => {
+                              // Ensure adjustedData7 is defined and is an array
+                              const safeAdjustedData7 = Array.isArray(
+                                adjustedData7
+                              )
+                                ? adjustedData7
+                                : [];
+                              return safeAdjustedData7[i] || { x: i, y: null }; // Use data or fallback to null
+                            }),
                           color: "#3007C5",
                         },
                       ],
@@ -1087,8 +1120,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                       <Box
                         sx={{
                           display: "inline-flex",
-                          alignItems: "center", // Vertically centers content
-                          justifyContent: "center", // Horizontally centers content within the Box
+                          alignItems: "center",
+                          justifyContent: "center",
                           paddingBottom: "20px",
                         }}
                       >
@@ -1100,7 +1133,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                                 ? "20px"
                                 : "27px",
                             lineHeight: "25px",
-                            textAlign: "center", // Ensures item.value is centered in its container
+                            textAlign: "center",
                           }}
                         >
                           {item.value}
@@ -1111,6 +1144,8 @@ export const TeammemberGitStats = ({ teammember }) => {
                             fontSize: "11.5px",
                             color: item.color,
                             marginLeft: "8px", // Adds a small gap between item.value and item.change
+                            display: "inline-flex",
+                            alignItems: "center",
                           }}
                         >
                           {item.change}
