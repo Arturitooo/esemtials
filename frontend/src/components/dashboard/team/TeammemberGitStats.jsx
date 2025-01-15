@@ -5,6 +5,9 @@ import { Box, CircularProgress } from "@mui/material";
 import Card from "@mui/material/Card";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
@@ -17,9 +20,11 @@ export const TeammemberGitStats = ({ teammember }) => {
   });
   const [counters7, setCounters7] = useState(null);
   const [counters30, setCounters30] = useState(null);
-  const [previous7, setprevious7] = useState(null);
-  const [previous30, setprevious30] = useState(null);
+  const [previous7, setPrevious7] = useState(null);
+  const [previous30, setPrevious30] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [adjustedData7, setadjustedData7] = useState(null);
+  const [adjustedData30, setadjustedData30] = useState(null);
 
   const successColor = "#42BC09";
   const warningColor = "rgba(32, 32, 32, 0.25)";
@@ -28,6 +33,17 @@ export const TeammemberGitStats = ({ teammember }) => {
   useEffect(() => {
     GetGitData(teammember);
   }, [teammember]);
+
+  useEffect(() => {
+    if (counters7 && counters30) {
+      setadjustedData7(
+        adjustToLocalTimezone(counters7.time_of_commit_last_7_days_yAxis)
+      );
+      setadjustedData30(
+        adjustToLocalTimezone(counters30.time_of_commit_last_30_days_yAxis)
+      );
+    }
+  }, [counters7, counters30]);
 
   const GetGitData = (teammember_id) => {
     const url = `team/teammember-coding-stats/${teammember_id}/`;
@@ -44,12 +60,20 @@ export const TeammemberGitStats = ({ teammember }) => {
       const counters30 = theCodingStats.counters30;
       setCounters30(counters30);
       const previous7 = theCodingStats.previous7;
-      setprevious7(previous7);
+      setPrevious7(previous7);
       const previous30 = theCodingStats.previous30;
-      setprevious30(previous30);
+      setPrevious30(previous30);
       setLoading(false);
     });
   };
+
+  function adjustToLocalTimezone(data) {
+    const timezoneOffsetMinutes = new Date().getTimezoneOffset(); // User's offset in minutes
+    return data.map((point) => ({
+      x: point.x, // Keep x (day index) unchanged
+      y: (point.y - timezoneOffsetMinutes + 1440) % 1440, // Adjust and wrap around 24 hours
+    }));
+  }
 
   const handleToggleChange = (event, newAlignment) => {
     if (newAlignment !== null) {
@@ -57,6 +81,13 @@ export const TeammemberGitStats = ({ teammember }) => {
       setGitStatsTimeframe(newAlignment);
       localStorage.setItem("gitStatsTimeframe", newAlignment); // Keep localStorage updated
     }
+  };
+
+  const getArrowDirection = (currentValue, previousValue) => {
+    if (currentValue > previousValue)
+      return <KeyboardDoubleArrowUpIcon sx={{ fontSize: "small" }} />;
+    if (currentValue < previousValue)
+      return <KeyboardDoubleArrowDownIcon sx={{ fontSize: "small" }} />;
   };
 
   const getColor = (currentValue, previousValue) => {
@@ -214,12 +245,18 @@ export const TeammemberGitStats = ({ teammember }) => {
                       }}
                     >
                       {gitStatsTimeframe === 7 ? (
-                        <>
+                        <Box
+                          sx={{ display: "inline-flex", alignItems: "center" }}
+                        >
+                          {getArrowDirection(
+                            counters7.active_projects7,
+                            previous7.previous_active_projects7
+                          )}
                           {calculateChange(
                             counters7.active_projects7,
                             previous7.previous_active_projects7
                           )}
-                        </>
+                        </Box>
                       ) : (
                         <>
                           {calculateChange(
@@ -547,7 +584,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                 options={{
                   chart: {
                     type: "column",
-                    height: 320, // Set height as per your requirement
+                    height: 300, // Set height as per your requirement
                   },
                   title: {
                     text: "",
@@ -811,7 +848,6 @@ export const TeammemberGitStats = ({ teammember }) => {
                           },
                           staggerLines: 1,
                         },
-                        tickInterval: 1,
                       },
                       yAxis: {
                         title: {
@@ -856,7 +892,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                       series: [
                         {
                           name: "Event Times",
-                          data: counters7.time_of_commit_last_7_days_yAxis,
+                          data: adjustedData7,
                           color: "#3007C5",
                         },
                       ],
@@ -943,7 +979,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                       series: [
                         {
                           name: "Event Times",
-                          data: counters30.time_of_commit_last_30_days_yAxis,
+                          data: adjustedData30,
                           color: "#3007C5",
                         },
                       ],
@@ -1105,7 +1141,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                     options={{
                       chart: {
                         type: "column",
-                        height: 320,
+                        height: 300,
                       },
                       title: {
                         text: "",
@@ -1183,7 +1219,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                     options={{
                       chart: {
                         type: "column", // Use a column chart similar to the BarChart
-                        height: 320, // Keep the height the same
+                        height: 300, // Keep the height the same
                       },
                       title: {
                         text: "",
