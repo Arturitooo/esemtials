@@ -22,6 +22,11 @@ import ListItemText from "@mui/material/ListItemText";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import GroupIcon from "@mui/icons-material/Group";
 import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import CommitIcon from "@mui/icons-material/Commit";
+import CompareIcon from "@mui/icons-material/Compare";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
 
 const drawerWidth = 240;
 
@@ -198,6 +203,7 @@ export function Navbar(props) {
             sx={{
               display: "flex",
               marginTop: "10px",
+              marginBottom: "20px",
               marginLeft: "10px",
               marginRight: "10px",
             }}
@@ -221,14 +227,14 @@ export function Navbar(props) {
             >
               <ListItemButton
                 component={Link}
-                to="/dashboard/notes/"
-                selected={"/dashboard/notes/" === path}
+                to="/dashboard/"
+                selected={path === "/dashboard/"}
               >
-                <StickyNote2Icon />
+                <DashboardIcon />
                 <ListItemText
                   className="main-navbar__list__item-text"
                   sx={{ color: "#F5F7F9" }}
-                  primary={"Notes"}
+                  primary={"Dashboard"}
                 />
               </ListItemButton>
             </ListItem>
@@ -262,11 +268,92 @@ export function Navbar(props) {
                   path === "/monitoring/risk_register"
                 }
               >
-                <DataSaverOffIcon />
+                <CommitIcon />
                 <ListItemText
                   className="main-navbar__list__item-text"
                   sx={{ color: "#F5F7F9" }}
-                  primary={"Monitoring"}
+                  primary={"Performance"}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem
+              key={4}
+              disablePadding
+              className="main-navbar__list__item"
+            >
+              <ListItemButton
+                component={Link}
+                to="/monitoring/"
+                selected={
+                  path === "/monitoring/" ||
+                  path === "/monitoring/risk_register"
+                }
+              >
+                <CompareIcon />
+                <ListItemText
+                  className="main-navbar__list__item-text"
+                  sx={{ color: "#F5F7F9" }}
+                  primary={"Compare"}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem
+              key={5}
+              disablePadding
+              className="main-navbar__list__item"
+            >
+              <ListItemButton
+                component={Link}
+                to="/monitoring/"
+                selected={
+                  path === "/monitoring/" ||
+                  path === "/monitoring/risk_register"
+                }
+              >
+                <AccessTimeIcon />
+                <ListItemText
+                  className="main-navbar__list__item-text"
+                  sx={{ color: "#F5F7F9" }}
+                  primary={"Timesheet"}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem
+              key={6}
+              disablePadding
+              className="main-navbar__list__item"
+            >
+              <ListItemButton
+                component={Link}
+                to="/monitoring/"
+                selected={
+                  path === "/monitoring/" ||
+                  path === "/monitoring/risk_register"
+                }
+              >
+                <AnalyticsIcon />
+                <ListItemText
+                  className="main-navbar__list__item-text"
+                  sx={{ color: "#F5F7F9" }}
+                  primary={"Deep Analysis"}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem
+              key={7}
+              disablePadding
+              className="main-navbar__list__item"
+            >
+              <ListItemButton
+                component={Link}
+                to="/dashboard/notes/"
+                selected={"/dashboard/notes/" === path}
+              >
+                <StickyNote2Icon />
+                <ListItemText
+                  className="main-navbar__list__item-text"
+                  sx={{ color: "#F5F7F9" }}
+                  primary={"Notes"}
                 />
               </ListItemButton>
             </ListItem>

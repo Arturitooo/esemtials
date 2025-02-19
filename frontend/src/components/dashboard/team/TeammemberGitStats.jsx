@@ -406,7 +406,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                               ),
                       },
                       {
-                        label: "CR comments received",
+                        label: "MR's comments",
                         value:
                           gitStatsTimeframe === 7
                             ? counters7.comments_in_created_mrs7
@@ -483,7 +483,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                                   ? `${Math.floor(
                                       counters7.create_to_merge7 % 60
                                     )} sec`
-                                  : ""
+                                  : "0 sec"
                               }`
                             : `${
                                 Math.floor(
@@ -507,7 +507,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                                   ? `${Math.floor(
                                       counters30.create_to_merge30 % 60
                                     )} sec`
-                                  : ""
+                                  : "0 sec"
                               }`,
                         change:
                           gitStatsTimeframe === 7
@@ -653,7 +653,7 @@ export const TeammemberGitStats = ({ teammember }) => {
                         gitStatsTimeframe === 7
                           ? counters7.mrs_reviewed_last_7_days_yAxis
                           : counters30.mrs_reviewed_last_30_days_yAxis,
-                      color: "#EB8A17",
+                      color: "#e1276d",
                     },
                     {
                       name: "Created",
