@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
-import { UserInfo } from "../../UserInfo";
+import { UserContext } from "../../UserContext";
 import AxiosInstance from "../../AxiosInstance";
 import { useNavigate, useLocation } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,7 +18,7 @@ import { MyContainedButton } from "../../forms/MyContainedButton";
 import { Box } from "@mui/material";
 
 export const TMUpdate = () => {
-  const { userData } = UserInfo();
+  const { user } = useContext(UserContext);
   const location = useLocation();
   const { tmData } = location.state || {};
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ export const TMUpdate = () => {
       if (image) {
         formData.append("tm_photo", image);
       }
-      formData.append("created_by", userData.id);
+      formData.append("created_by", user.id);
 
       const res = await AxiosInstance.put(
         `team/teammember/${tmData.id}/`,
@@ -236,7 +236,7 @@ export const TMUpdate = () => {
             name={"summary"}
             control={control}
           />
-          
+
           <MyContainedButton label="Submit" type="submit" />
         </form>
       </Box>

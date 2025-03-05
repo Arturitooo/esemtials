@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../../UserContext";
 import { useForm } from "react-hook-form";
-import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,7 +18,7 @@ import { MyContainedButton } from "../../forms/MyContainedButton";
 import { Box } from "@mui/material";
 
 export const TMCreate = () => {
-  const { userData } = UserInfo();
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // State to hold image preview URL
@@ -68,7 +68,7 @@ export const TMCreate = () => {
       if (image) {
         formData.append("tm_photo", image);
       }
-      formData.append("created_by", userData.id);
+      formData.append("created_by", user.id);
 
       const res = await AxiosInstance.post("team/teammember/", formData, {
         headers: {

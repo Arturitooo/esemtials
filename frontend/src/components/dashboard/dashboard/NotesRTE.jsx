@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   Editor,
   EditorState,
@@ -13,7 +13,7 @@ import debounce from "lodash.debounce";
 import "./NotesRTE.css";
 import AxiosInstance from "../../AxiosInstance";
 import Button from "@mui/material/Button";
-import { UserInfo } from "../../UserInfo";
+import { UserContext } from "../../UserContext";
 import { MyModal } from "../../forms/MyModal";
 import { MyToastMessage } from "../../forms/MyToastMessage";
 import chooseProjectImage from "../../../assets/illustrations/pick-a-project.svg";
@@ -44,7 +44,7 @@ const NotesRTE = ({ limitHeight }) => {
   const [editingNoteName, setEditingNoteName] = useState(false); // State to manage editing mode
   const [editedNoteName, setEditedNoteName] = useState(""); // State to store the edited note name
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { userData } = UserInfo();
+  const { user } = useContext(UserContext);
 
   const editorRef = React.createRef();
   const newNoteRef = useRef(null);
@@ -177,7 +177,7 @@ const NotesRTE = ({ limitHeight }) => {
     setEditingNoteName(true);
     const newNote = {
       note_updated: new Date().toISOString(),
-      note_owner: userData.id,
+      note_owner: user.id,
       project: Number(selectedProjectId),
     };
 

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { UserContext } from "../UserContext";
 import AxiosInstance from "../AxiosInstance";
-import { UserInfo } from "../UserInfo";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -39,7 +39,7 @@ const schema = yup.object({
 
 export const Projects = () => {
   const [emptyState, setEmptyState] = useState(false);
-  const { userData } = UserInfo();
+  const { user } = useContext(UserContext);
   const [projectData, setProjectData] = useState([]);
   const [openCreationModal, setOpenCreationModal] = useState(false);
   const [openEditionModal, setOpenEditionModal] = useState(false);
@@ -101,7 +101,7 @@ export const Projects = () => {
   const handleCreateProject = async (data) => {
     try {
       const response = await AxiosInstance.post("dashboard/project/create/", {
-        project_owner: userData.id,
+        project_owner: user.id,
         project_name: data.projectName,
         project_description: data.projectDescription,
         project_created: new Date().toISOString(),
@@ -152,7 +152,7 @@ export const Projects = () => {
       const response = await AxiosInstance.put(
         `dashboard/project/${selectedProjectId}/update/`,
         {
-          project_owner: userData.id,
+          project_owner: user.id,
           project_name: data.projectName,
           project_description: data.projectDescription,
           project_created: selectedProjectData.project_created,

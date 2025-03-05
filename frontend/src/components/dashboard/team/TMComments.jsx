@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../UserContext";
 import AxiosInstance from "../../AxiosInstance";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,8 +24,9 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import AddIcon from "@mui/icons-material/Add";
 
-export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
+export const TMComments = ({ tm_id, onCommentAdded }) => {
   const [comment, setComment] = useState([]);
+  const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [commentToDeleteId, setCommentToDeleteId] = useState(null);
@@ -93,7 +95,7 @@ export const TMComments = ({ userData_id, tm_id, onCommentAdded }) => {
     AxiosInstance.post("team/teammember-comment/", {
       isPositive: Positive,
       commentContent: data.comment,
-      created_by: userData_id,
+      created_by: user.id,
       teammember: tm_id,
       updateDate: new Date(),
     })

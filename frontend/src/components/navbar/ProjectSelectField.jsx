@@ -1,18 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import AxiosInstance from "../AxiosInstance";
 import { MyModal } from "../forms/MyModal";
-import { UserInfo } from "../UserInfo";
 import { FormControl, Select, MenuItem, Box, Button } from "@mui/material";
 import { MyTextField } from "../forms/MyTextField";
 import { MyMultilineTextField } from "../forms/MyMultilineTextField";
 import { MyToastMessage } from "../forms/MyToastMessage";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
-
-
 
 const schema = yup.object({
   projectName: yup.string().required("Project name is required"),
@@ -21,7 +17,6 @@ const schema = yup.object({
 
 export const ProjectSelectField = () => {
   const [loading, setLoading] = useState(true);
-  const { userData } = UserInfo();
   const [projectList, setProjectList] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -92,7 +87,6 @@ export const ProjectSelectField = () => {
   const handleCreateProject = async (data) => {
     try {
       const response = await AxiosInstance.post("dashboard/project/create/", {
-        project_owner: userData.id,
         project_name: data.projectName,
         project_description: data.projectDescription,
         project_created: new Date().toISOString(),
@@ -173,11 +167,11 @@ export const ProjectSelectField = () => {
                 {project.project_name}
               </MenuItem>
             ))}
-            <hr/>
+          <hr />
           <MenuItem value="">
             <a href="/projects/">
-              <Button 
-                startIcon={<WorkHistoryOutlinedIcon className="icon-M"/>}
+              <Button
+                startIcon={<WorkHistoryOutlinedIcon className="icon-M" />}
               >
                 Manage Projects
               </Button>

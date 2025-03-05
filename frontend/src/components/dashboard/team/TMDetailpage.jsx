@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { UserContext } from "../../UserContext";
 import { useParams, useNavigate } from "react-router-dom";
-import { UserInfo } from "../../UserInfo";
 import AxiosInstance from "../../AxiosInstance";
 import { MyModal } from "../../forms/MyModal";
 import { TMComments } from "./TMComments";
@@ -20,7 +20,7 @@ import IntegrationInstructionsIcon from "@mui/icons-material/IntegrationInstruct
 
 export const TMDetailpage = () => {
   const { id } = useParams();
-  const { userData } = UserInfo();
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [tmData, setTMData] = useState(null);
@@ -444,7 +444,7 @@ export const TMDetailpage = () => {
           )}
 
           <TMComments
-            userData={userData.id}
+            user={user.id}
             tm_id={id}
             onCommentAdded={handleCommentAdded}
             key={commentsRefreshKey}

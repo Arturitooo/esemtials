@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../UserContext";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,7 +18,7 @@ export function AccountMenuNavbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
   const [authenticated, setAuthenticated] = React.useState(false);
-  const [userData, setUserData] = useState(null);
+  const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -51,15 +52,6 @@ export function AccountMenuNavbar() {
     setAuthenticated(isAuthenticated);
   }, []);
 
-  useEffect(() => {
-    if (authenticated) {
-      AxiosInstance.get("user-info/").then((res) => {
-        setUserData(res.data);
-        setLoading(false);
-      });
-    }
-  }, [authenticated]);
-
   return (
     <>
       {authenticated ? (
@@ -76,7 +68,7 @@ export function AccountMenuNavbar() {
               >
                 {loading ? null : (
                   <p>
-                    Hello <b>{userData && userData.username}</b>
+                    Hello <b>{user?.username}</b>
                   </p>
                 )}
                 <IconButton
@@ -142,7 +134,7 @@ export function AccountMenuNavbar() {
                 }}
               >
                 <ListItemIcon>
-                  <WorkHistoryOutlinedIcon className="icon-S inline-icon"/>
+                  <WorkHistoryOutlinedIcon className="icon-S inline-icon" />
                 </ListItemIcon>
                 Manage Projects
               </Link>
@@ -150,7 +142,7 @@ export function AccountMenuNavbar() {
 
             <MenuItem onClick={handleLogoutAndClose}>
               <ListItemIcon>
-                <Logout className="icon-S inline-icon"/>
+                <Logout className="icon-S inline-icon" />
               </ListItemIcon>
               Logout
             </MenuItem>

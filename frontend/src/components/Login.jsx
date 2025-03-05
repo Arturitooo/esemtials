@@ -8,13 +8,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import React, { useState } from "react";
+import { useState, useContext } from "react";
 import AxiosInstance from "./AxiosInstance";
 import { MyMessage } from "./forms/MyMessage";
+import { UserContext } from "./UserContext";
 
 export const Login = () => {
   const navigate = useNavigate();
   const [showMessage, setShowMessage] = useState(false);
+  const { setUser } = useContext(UserContext);
   const schema = yup.object({
     email: yup
       .string()
@@ -30,7 +32,22 @@ export const Login = () => {
       password: data.password,
     })
       .then((response) => {
-        localStorage.setItem("Token", response.data.token), navigate(`/`);
+        localStorage.setItem("Token", response.data.token);
+
+        AxiosInstance.get("user-info/")
+          .then((res) => {
+            setUser({
+              id: res.data.id,
+              email: res.data.email,
+              username: res.data.username,
+              subscription: res.data.subscription,
+              role: res.data.role,
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching user info:", error);
+          });
+        navigate(`/`);
       })
       .catch((error) => {
         setShowMessage(true);
