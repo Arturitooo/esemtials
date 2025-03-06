@@ -50,6 +50,7 @@ export function AccountMenuNavbar() {
   useEffect(() => {
     const isAuthenticated = checkAuthenticationStatus();
     setAuthenticated(isAuthenticated);
+    setLoading(false);
   }, []);
 
   return (
