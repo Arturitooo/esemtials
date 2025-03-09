@@ -251,7 +251,7 @@ export function Navbar(props) {
                 <GroupIcon />
                 <ListItemText
                   className="main-navbar__list__item-text"
-                  primary={"Team"}
+                  primary={"Resources"}
                 />
               </ListItemButton>
             </ListItem>
@@ -272,7 +272,7 @@ export function Navbar(props) {
                 <ListItemText
                   className="main-navbar__list__item-text"
                   sx={{ color: "#F5F7F9" }}
-                  primary={"Performance"}
+                  primary={"Productivity"}
                 />
               </ListItemButton>
             </ListItem>
@@ -289,71 +289,11 @@ export function Navbar(props) {
                   path === "/monitoring/risk_register"
                 }
               >
-                <CompareIcon />
-                <ListItemText
-                  className="main-navbar__list__item-text"
-                  sx={{ color: "#F5F7F9" }}
-                  primary={"Compare"}
-                />
-              </ListItemButton>
-            </ListItem>
-            <ListItem
-              key={5}
-              disablePadding
-              className="main-navbar__list__item"
-            >
-              <ListItemButton
-                component={Link}
-                to="/monitoring/"
-                selected={
-                  path === "/monitoring/" ||
-                  path === "/monitoring/risk_register"
-                }
-              >
                 <AccessTimeIcon />
                 <ListItemText
                   className="main-navbar__list__item-text"
                   sx={{ color: "#F5F7F9" }}
                   primary={"Timesheet"}
-                />
-              </ListItemButton>
-            </ListItem>
-            <ListItem
-              key={6}
-              disablePadding
-              className="main-navbar__list__item"
-            >
-              <ListItemButton
-                component={Link}
-                to="/monitoring/"
-                selected={
-                  path === "/monitoring/" ||
-                  path === "/monitoring/risk_register"
-                }
-              >
-                <AnalyticsIcon />
-                <ListItemText
-                  className="main-navbar__list__item-text"
-                  sx={{ color: "#F5F7F9" }}
-                  primary={"Deep Analysis"}
-                />
-              </ListItemButton>
-            </ListItem>
-            <ListItem
-              key={7}
-              disablePadding
-              className="main-navbar__list__item"
-            >
-              <ListItemButton
-                component={Link}
-                to="/dashboard/notes/"
-                selected={"/dashboard/notes/" === path}
-              >
-                <StickyNote2Icon />
-                <ListItemText
-                  className="main-navbar__list__item-text"
-                  sx={{ color: "#F5F7F9" }}
-                  primary={"Notes"}
                 />
               </ListItemButton>
             </ListItem>
